@@ -301,6 +301,19 @@ assert(calibratedPolyResult.code === 'POLY', `Explicit calibrated POLY override 
 assert(calibratedPolyResult.isPolyglot === true, 'Calibrated POLY is flagged as polyglot')
 
 // -------------------------------------------------------------
+// Test 12: Ordering Unsafe & Not-Recommended Items Last in Categories
+// -------------------------------------------------------------
+console.log('\n--- Test Suite 12: Category Sorting & Unsafe Demotion ---')
+const nutFreeCategoryItems = nutFreeResult.categorizedMenu['levantine-signature'].items
+const lastItem = nutFreeCategoryItems[nutFreeCategoryItems.length - 1]
+assert(lastItem.isUnsafe === true, `Last item in category is unsafe for nut-free guest (Actual: ${lastItem.name}, Reason: ${lastItem.unsafeReason})`)
+assert(nutFreeCategoryItems[0].isUnsafe === false, `First item in category is strictly safe (Actual: ${nutFreeCategoryItems[0].name})`)
+
+const veganCategoryItems = veganResult.categorizedMenu['velvet-milk'].items
+const lastVeganItem = veganCategoryItems[veganCategoryItems.length - 1]
+assert(lastVeganItem.isUnsafe === true, `Last item in category is unsafe for vegan guest (Actual: ${lastVeganItem.name})`)
+
+// -------------------------------------------------------------
 // Summary
 // -------------------------------------------------------------
 console.log(`\n========================================`)

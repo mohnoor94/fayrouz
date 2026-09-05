@@ -85,15 +85,36 @@ function AppContent() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.25 }}
-              className="flex flex-col items-center justify-center w-full py-4"
+              className="flex flex-col items-center justify-center w-full py-2"
             >
-              <div className="text-center mb-4">
-                <span className="text-xs font-mono text-fayrouz-amber uppercase tracking-widest">
-                  Customer Experience Simulator
+              <div className="flex flex-col items-center text-center mb-3">
+                <span className="text-[11px] font-mono text-fayrouz-amber uppercase tracking-widest font-semibold">
+                  Customer Experience Simulator • iPhone 16 Pro
                 </span>
-                <h2 className="text-2xl font-serif font-bold text-fayrouz-cream">
+                <h2 className="text-xl sm:text-2xl font-serif font-bold text-fayrouz-cream mt-0.5">
                   Sensory Onboarding & Taste Passport
                 </h2>
+
+                {/* Quick Cross-Device Switcher Ribbon */}
+                <div className="flex items-center gap-2 mt-2">
+                  <button
+                    type="button"
+                    onClick={() => setActiveDeviceView('split')}
+                    className="px-3 py-1 rounded-xl bg-fayrouz-surface/90 hover:bg-fayrouz-surface border border-fayrouz-border hover:border-fayrouz-amber/50 text-xs font-serif text-fayrouz-foam flex items-center gap-1.5 transition-all shadow-sm cursor-pointer"
+                  >
+                    <SplitSquareVertical className="w-3.5 h-3.5 text-fayrouz-amber" />
+                    <span>⚡ Dual-Device Pitch</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setActiveDeviceView('tablet')}
+                    className="px-3 py-1 rounded-xl bg-fayrouz-surface/90 hover:bg-fayrouz-surface border border-fayrouz-border hover:border-fayrouz-gold/50 text-xs font-serif text-fayrouz-foam flex items-center gap-1.5 transition-all shadow-sm cursor-pointer"
+                  >
+                    <Tablet className="w-3.5 h-3.5 text-fayrouz-gold" />
+                    <span>📟 Counter Kiosk Simulator</span>
+                  </button>
+                </div>
               </div>
               <WizardContainer />
             </motion.div>
@@ -107,15 +128,36 @@ function AppContent() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.25 }}
-              className="flex flex-col items-center justify-center w-full py-4"
+              className="flex flex-col items-center justify-center w-full py-2"
             >
-              <div className="text-center mb-4">
-                <span className="text-xs font-mono text-fayrouz-amber uppercase tracking-widest">
-                  Counter Roastery Kiosk Simulator
+              <div className="flex flex-col items-center text-center mb-3">
+                <span className="text-[11px] font-mono text-fayrouz-amber uppercase tracking-widest font-semibold">
+                  Counter Roastery Kiosk Simulator • iPad Pro
                 </span>
-                <h2 className="text-2xl font-serif font-bold text-fayrouz-cream">
+                <h2 className="text-xl sm:text-2xl font-serif font-bold text-fayrouz-cream mt-0.5">
                   The Magic Dynamic Menu & Barista Tray
                 </h2>
+
+                {/* Quick Cross-Device Switcher Ribbon */}
+                <div className="flex items-center gap-2 mt-2">
+                  <button
+                    type="button"
+                    onClick={() => setActiveDeviceView('split')}
+                    className="px-3 py-1 rounded-xl bg-fayrouz-surface/90 hover:bg-fayrouz-surface border border-fayrouz-border hover:border-fayrouz-amber/50 text-xs font-serif text-fayrouz-foam flex items-center gap-1.5 transition-all shadow-sm cursor-pointer"
+                  >
+                    <SplitSquareVertical className="w-3.5 h-3.5 text-fayrouz-amber" />
+                    <span>⚡ Dual-Device Pitch</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setActiveDeviceView('mobile')}
+                    className="px-3 py-1 rounded-xl bg-fayrouz-surface/90 hover:bg-fayrouz-surface border border-fayrouz-border hover:border-fayrouz-amber/50 text-xs font-serif text-fayrouz-foam flex items-center gap-1.5 transition-all shadow-sm cursor-pointer"
+                  >
+                    <Smartphone className="w-3.5 h-3.5 text-fayrouz-amber" />
+                    <span>📱 Guest Mobile Pass</span>
+                  </button>
+                </div>
               </div>
               <KioskContainer />
             </motion.div>
@@ -129,8 +171,27 @@ function AppContent() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.25 }}
-              className="w-full max-w-7xl py-4"
+              className="w-full max-w-7xl py-2"
             >
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-fayrouz-border/60">
+                <div>
+                  <span className="text-xs font-mono text-fayrouz-amber uppercase tracking-widest font-semibold">
+                    Under-The-Hood Architecture
+                  </span>
+                  <h2 className="text-xl sm:text-2xl font-serif font-bold text-fayrouz-cream">
+                    Personalization Matrix & Safeguard Engine
+                  </h2>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveDeviceView('split')}
+                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian font-serif font-bold text-xs flex items-center gap-1.5 shadow-amber-glow cursor-pointer"
+                >
+                  <SplitSquareVertical className="w-3.5 h-3.5" />
+                  <span>Return to Dual Pitch</span>
+                </button>
+              </div>
               <EnginePlayground />
             </motion.div>
           )}

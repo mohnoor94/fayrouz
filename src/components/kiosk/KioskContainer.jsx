@@ -113,19 +113,20 @@ export default function KioskContainer() {
               {/* NFC Sync Status / Reset Button */}
               {isNfcSynced ? (
                 <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-fayrouz-cardamom/20 text-fayrouz-cardamom border border-fayrouz-cardamom/30 text-xs font-medium">
+                  <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-xl bg-fayrouz-cardamom/20 text-fayrouz-cardamom border border-fayrouz-cardamom/30 text-xs font-medium">
                     <span className="w-2 h-2 rounded-full bg-fayrouz-cardamom animate-pulse" />
-                    <span>{userProfile.name}'s FayrouzPass Synced</span>
+                    <span className="truncate max-w-[140px] sm:max-w-none">{userProfile.name}'s Pass Synced</span>
                   </div>
 
                   <button
                     type="button"
                     onClick={() => { soundFx.playTap(); resetNfcSync(); }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-fayrouz-surface hover:bg-fayrouz-surface/80 border border-fayrouz-border text-xs text-fayrouz-foam transition-colors cursor-pointer"
+                    className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-fayrouz-surface hover:bg-fayrouz-surface/80 border border-fayrouz-border text-xs text-fayrouz-foam transition-colors cursor-pointer"
                     title="Unsync and return to neutral catalog"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
-                    <span>Unsync / New Guest</span>
+                    <span className="hidden sm:inline">Unsync / New Guest</span>
+                    <span className="sm:hidden">Reset</span>
                   </button>
                 </div>
               ) : (
@@ -133,30 +134,20 @@ export default function KioskContainer() {
                   <button
                     type="button"
                     onClick={() => { soundFx.playTap(); setIsLookupModalOpen(true); }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-fayrouz-surface/80 hover:bg-fayrouz-surface border border-fayrouz-border hover:border-fayrouz-amber/50 text-fayrouz-cream text-xs font-serif transition-colors cursor-pointer"
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-fayrouz-surface/80 hover:bg-fayrouz-surface border border-fayrouz-border hover:border-fayrouz-amber/50 text-fayrouz-cream text-xs font-serif transition-colors cursor-pointer"
                     title="Returning Guest? Enter Phone # or FayrouzPass ID"
                   >
                     <Phone className="w-3.5 h-3.5 text-fayrouz-amber" />
-                    <span className="hidden sm:inline">Phone # / ID</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => { soundFx.playTap(); setIsKioskWizardOpen(true); }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-fayrouz-surface/70 hover:bg-fayrouz-surface border border-fayrouz-amber/40 text-fayrouz-gold text-xs font-serif transition-colors cursor-pointer"
-                    title="Create your Fayrouz Taste Passport directly on this kiosk"
-                  >
-                    <Sparkles className="w-3.5 h-3.5 text-fayrouz-gold" />
-                    <span className="hidden sm:inline">New? Create FayrouzPass</span>
+                    <span className="hidden md:inline">Phone # / ID</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => { soundFx.playNfcBeam(); triggerNfcSync(); }}
-                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian font-serif font-bold text-xs shadow-amber-glow cursor-pointer"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian font-serif font-bold text-xs shadow-amber-glow cursor-pointer"
                   >
                     <Radio className="w-3.5 h-3.5 animate-pulse" />
-                    <span>Tap Phone (FayrouzPass NFC)</span>
+                    <span>Tap Phone (NFC)</span>
                   </button>
                 </div>
               )}

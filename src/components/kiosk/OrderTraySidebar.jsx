@@ -15,7 +15,8 @@ import {
   Sparkles, 
   Coffee, 
   RotateCcw,
-  Clock
+  Clock,
+  Users
 } from 'lucide-react'
 
 export default function OrderTraySidebar({ onResetKiosk }) {
@@ -30,6 +31,7 @@ export default function OrderTraySidebar({ onResetKiosk }) {
 
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [ticketNumber, setTicketNumber] = useState('')
+  const [lastOrderFriendDrinks, setLastOrderFriendDrinks] = useState(false)
 
   const { subtotal, tax, total, itemCount } = calculateOrderTotals(orderTray)
 
@@ -37,6 +39,7 @@ export default function OrderTraySidebar({ onResetKiosk }) {
     if (orderTray.length === 0) return
     soundFx.playPassportReveal()
     setTicketNumber(generateOrderTicketNumber())
+    setLastOrderFriendDrinks(orderTray.some(item => item.isFriendDrink))
     setShowConfirmation(true)
   }
 
@@ -44,6 +47,7 @@ export default function OrderTraySidebar({ onResetKiosk }) {
     soundFx.playTap()
     clearOrderTray()
     setShowConfirmation(false)
+    setLastOrderFriendDrinks(false)
     onResetKiosk?.()
   }
 
@@ -117,6 +121,16 @@ export default function OrderTraySidebar({ onResetKiosk }) {
                             <span className="font-arabic text-[11px] text-fayrouz-amber/80 leading-tight">
                               {item.nameAr}
                             </span>
+                          )}
+                          {/* Companion Drink Tag */}
+                          {item.isFriendDrink && (
+                            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[10px] font-mono mt-1 w-fit">
+                              <Users className="w-3 h-3 flex-shrink-0 text-fayrouz-gold" />
+                              <span className="font-bold">Companion</span>
+                              {item.unsafeReason && (
+                                <span className="text-amber-200/80 font-normal">({item.unsafeReason})</span>
+                              )}
+                            </div>
                           )}
                         </div>
                         <span className="text-xs font-serif font-bold text-fayrouz-gold flex-shrink-0 whitespace-nowrap">
@@ -314,6 +328,19 @@ export default function OrderTraySidebar({ onResetKiosk }) {
                 <Clock className="w-4 h-4 text-fayrouz-amber" />
                 <span>Estimated Prep Time: <strong>~3 minutes</strong></span>
               </div>
+
+              {/* Reassuring Barista Alert for Companion Allergen Items */}
+              {lastOrderFriendDrinks && (
+                <div className="flex items-start gap-2.5 p-3 rounded-2xl bg-amber-950/40 border border-amber-500/30 mt-3 text-left w-full">
+                  <Users className="w-4 h-4 text-fayrouz-gold flex-shrink-0 mt-0.5" />
+                  <div className="flex flex-col">
+                    <span className="font-bold text-xs text-fayrouz-gold">Includes Companion Item(s)</span>
+                    <span className="text-[11px] text-fayrouz-foam/85 leading-tight mt-0.5">
+                      Barista Noor is tagged with allergen isolation protocols for sanitized pitcher separation.
+                    </span>
+                  </div>
+                </div>
+              )}
 
               {/* Action Button: Manual Reset to control pitch pacing */}
               <motion.button

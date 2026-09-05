@@ -47,6 +47,7 @@ export default function PitchControlBar() {
   const handleLoadPreset = (presetId) => {
     soundFx.playStepChime()
     loadPreset(presetId)
+    triggerNfcSync()
   }
 
   const handleToggleAmbient = () => {

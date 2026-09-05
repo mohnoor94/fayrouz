@@ -13,12 +13,21 @@ import {
   CheckCircle2, 
   RotateCcw,
   Smartphone,
+  Tablet,
   Check,
   ArrowRight
 } from 'lucide-react'
 
 export default function TasteProfileCard({ onRestart, isKiosk = false, onKioskComplete }) {
-  const { userProfile, triggerNfcSync, isNfcSynced, isSyncing, completeProfile } = useProfile()
+  const { 
+    userProfile, 
+    triggerNfcSync, 
+    isNfcSynced, 
+    isSyncing, 
+    completeProfile,
+    activeDeviceView,
+    setActiveDeviceView 
+  } = useProfile()
   const [hasTriggeredConfetti, setHasTriggeredConfetti] = useState(false)
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false)
 
@@ -218,33 +227,48 @@ export default function TasteProfileCard({ onRestart, isKiosk = false, onKioskCo
 
     {/* Pinned Primary Action Button */}
       <div className="flex flex-col gap-1.5 pt-2 pb-1 flex-shrink-0 border-t border-fayrouz-border/60 bg-fayrouz-obsidian z-20">
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={handleAction}
-          disabled={isSyncing}
-          className={`w-full py-3 rounded-2xl font-serif font-bold text-xs sm:text-sm flex items-center justify-center gap-2.5 shadow-amber-glow transition-all ${
-            isNfcSynced && !isKiosk
-              ? 'bg-fayrouz-cardamom text-fayrouz-obsidian cursor-default'
-              : 'bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian cursor-pointer'
-          }`}
-        >
-          <Radio className={`w-4 h-4 ${isSyncing ? 'animate-spin' : 'animate-pulse'}`} />
-          <span>
-            {isKiosk
-              ? 'Start Ordering with FayrouzPass'
-              : isSyncing 
-                ? 'Beaming FayrouzPass via NFC...' 
-                : isNfcSynced 
-                  ? 'FayrouzPass Synced at Counter!' 
+        {isNfcSynced && !isKiosk ? (
+          <div className="flex flex-col gap-1.5">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => {
+                soundFx.playTap()
+                setActiveDeviceView(activeDeviceView === 'mobile' ? 'tablet' : 'split')
+              }}
+              className="w-full py-3 rounded-2xl font-serif font-bold text-xs sm:text-sm bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian flex items-center justify-center gap-2 shadow-amber-glow cursor-pointer"
+            >
+              <Tablet className="w-4 h-4" />
+              <span>View Transformed Counter Kiosk →</span>
+            </motion.button>
+            <div className="flex items-center justify-center gap-1.5 text-[11px] font-mono text-fayrouz-cardamom">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              <span>FayrouzPass Synced • 3 Curated Drinks at Counter</span>
+            </div>
+          </div>
+        ) : (
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={handleAction}
+            disabled={isSyncing}
+            className="w-full py-3 rounded-2xl font-serif font-bold text-xs sm:text-sm flex items-center justify-center gap-2.5 shadow-amber-glow transition-all bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian cursor-pointer"
+          >
+            <Radio className={`w-4 h-4 ${isSyncing ? 'animate-spin' : 'animate-pulse'}`} />
+            <span>
+              {isKiosk
+                ? 'Start Ordering with FayrouzPass'
+                : isSyncing 
+                  ? 'Beaming FayrouzPass via NFC...' 
                   : 'Step Up to Counter & Tap FayrouzPass'}
-          </span>
-        </motion.button>
+            </span>
+          </motion.button>
+        )}
 
         <button
           type="button"
           onClick={() => { soundFx.playTap(); onRestart(); }}
-          className="text-[10px] text-fayrouz-muted hover:text-fayrouz-cream flex items-center justify-center gap-1 py-0.5 transition-colors"
+          className="text-[10px] text-fayrouz-muted hover:text-fayrouz-cream flex items-center justify-center gap-1 py-0.5 transition-colors cursor-pointer"
         >
           <RotateCcw className="w-3 h-3" />
           <span>Edit Taste Profile</span>

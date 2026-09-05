@@ -12,9 +12,11 @@ import {
   Plus, 
   Sparkles, 
   Coffee, 
-  ShieldCheck,
-  Leaf,
-  Info
+  ShieldCheck, 
+  Leaf, 
+  Info,
+  AlertTriangle,
+  Users
 } from 'lucide-react'
 
 export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAdd }) {
@@ -116,8 +118,12 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
     const customizedItem = {
       ...item,
       id: `${item.id}-${temperature}-${hasMilkOption ? milk : 'nomilk'}-${size}-${addOns.join('-')}`,
-      customizedName: `${item.name} (${nameSpecs})`,
+      customizedName: item.isUnsafe 
+        ? `${item.name} (${nameSpecs}) [👥 Friend Order]` 
+        : `${item.name} (${nameSpecs})`,
       effectivePrice: finalPrice,
+      isFriendDrink: Boolean(item.isUnsafe),
+      unsafeReason: item.unsafeReason || null,
       customizations: {
         temperature,
         size,
@@ -189,6 +195,19 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
             <X className="w-4 h-4" />
           </button>
         </div>
+
+        {/* Companion Allergen Warning Banner */}
+        {item.isUnsafe && (
+          <div className="flex items-start gap-2.5 p-3 rounded-2xl bg-amber-950/70 border border-amber-500/50 text-amber-200 text-xs shadow-inner mt-2 mb-1 flex-shrink-0">
+            <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <span className="font-bold text-amber-300 block">Allergen & Dietary Companion Override</span>
+              <span className="text-[11px] text-amber-200/90 leading-tight block mt-0.5">
+                This drink {item.unsafeReason}. Ordering will flag it as a <strong>👥 Companion Order</strong> for Barista Noor with sanitized equipment.
+              </span>
+            </div>
+          </div>
+        )}
 
         {/* Modal Scrollable Body: Customization Options */}
         <div className="flex-1 overflow-y-auto py-4 flex flex-col gap-5 pr-1 relative z-10">
@@ -620,7 +639,7 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
               className="px-6 py-3 rounded-2xl font-serif font-bold text-xs sm:text-sm bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian shadow-amber-glow flex items-center gap-2 cursor-pointer"
             >
               <Plus className="w-4 h-4 stroke-[3]" />
-              <span>{saveToPassport ? 'Save to FayrouzPass & Add' : 'Add'}</span>
+              <span>{item.isUnsafe ? 'Confirm & Add for Friend' : (saveToPassport ? 'Save to FayrouzPass & Add' : 'Add')}</span>
             </motion.button>
           </div>
         </div>

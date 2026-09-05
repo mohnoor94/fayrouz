@@ -448,6 +448,22 @@ export function generatePersonalizedMenu(rawMenuItems, profile = {}) {
     categorizedMenu[cat].items.push(item)
   })
 
+  // Order items within each category: safe items first by match score, not-recommended/unsafe items ordered last
+  Object.values(categorizedMenu).forEach(categoryGroup => {
+    categoryGroup.items.sort((a, b) => {
+      // 1. Unsafe items (e.g. nut allergy, non-vegan) are strictly ordered last
+      if (a.isUnsafe && !b.isUnsafe) return 1
+      if (!a.isUnsafe && b.isUnsafe) return -1
+
+      // 2. Temperature mismatch is placed after matching temperature items
+      if (a.temperatureMismatch && !b.temperatureMismatch) return 1
+      if (!a.temperatureMismatch && b.temperatureMismatch) return -1
+
+      // 3. Within the same safety tier, order by highest matchScore descending
+      return b.matchScore - a.matchScore
+    })
+  })
+
   return {
     curatedMatches,
     adventurousPick,
