@@ -26,6 +26,7 @@ export default function KioskItemCard({
 }) {
   const { isNfcSynced, userProfile, addToOrderTray } = useProfile()
   const [isHovered, setIsHovered] = useState(false)
+  const [isFastAdded, setIsFastAdded] = useState(false)
   const isUnsafe = Boolean(item.isUnsafe)
   const isAdapted = Boolean(item.isAdapted)
   const basePrice = item.effectivePrice ?? item.price
@@ -82,6 +83,8 @@ export default function KioskItemCard({
       }
     }
     addToOrderTray(customizedItem)
+    setIsFastAdded(true)
+    setTimeout(() => setIsFastAdded(false), 1200)
   }
 
   const handleAdd = (e) => {
@@ -253,11 +256,24 @@ export default function KioskItemCard({
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={handleFastAdd}
-                  className="flex-1 px-4 py-2 rounded-xl bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian font-serif font-bold text-xs sm:text-sm shadow-amber-glow flex items-center justify-center gap-1.5 cursor-pointer"
+                  className={`flex-1 px-4 py-2 rounded-xl font-serif font-bold text-xs sm:text-sm shadow-amber-glow flex items-center justify-center gap-1.5 cursor-pointer transition-all ${
+                    isFastAdded
+                      ? 'bg-emerald-500 text-fayrouz-obsidian shadow-[0_0_20px_rgba(16,185,129,0.5)]'
+                      : 'bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian'
+                  }`}
                   title="1-Tap add directly with your passport spec"
                 >
-                  <Plus className="w-4 h-4 stroke-[3]" />
-                  <span>Add (${calculatedPrice.toFixed(2)})</span>
+                  {isFastAdded ? (
+                    <>
+                      <Check className="w-4 h-4 stroke-[3]" />
+                      <span>Added!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="w-4 h-4 stroke-[3]" />
+                      <span>Add (${calculatedPrice.toFixed(2)})</span>
+                    </>
+                  )}
                 </motion.button>
               </div>
             ) : (
@@ -418,11 +434,24 @@ export default function KioskItemCard({
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={handleFastAdd}
-                className="flex-1 sm:flex-initial px-3 py-1.5 rounded-xl bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian font-serif font-bold text-xs shadow-amber-glow flex items-center justify-center gap-1 cursor-pointer"
+                className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-xl font-serif font-bold text-xs shadow-amber-glow flex items-center justify-center gap-1 cursor-pointer transition-all ${
+                  isFastAdded
+                    ? 'bg-emerald-500 text-fayrouz-obsidian shadow-[0_0_20px_rgba(16,185,129,0.5)]'
+                    : 'bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian'
+                }`}
                 title="1-Tap add directly with your passport spec"
               >
-                <Plus className="w-3.5 h-3.5 stroke-[3]" />
-                <span>Add (${calculatedPrice.toFixed(2)})</span>
+                {isFastAdded ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 stroke-[3]" />
+                    <span>Added!</span>
+                  </>
+                ) : (
+                  <>
+                    <Plus className="w-3.5 h-3.5 stroke-[3]" />
+                    <span>Add (${calculatedPrice.toFixed(2)})</span>
+                  </>
+                )}
               </motion.button>
             </div>
           ) : (

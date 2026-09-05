@@ -34,10 +34,11 @@ const CATEGORY_TABS = [
 ]
 
 export default function DynamicCuratedMenu({ onAdd }) {
-  const { userProfile, personalizedMenu, rawMenuData } = useProfile()
+  const { userProfile, personalizedMenu, rawMenuData, addToOrderTray } = useProfile()
   const [activeTab, setActiveTab] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [customizingItem, setCustomizingItem] = useState(null)
+  const [isUsualJustAdded, setIsUsualJustAdded] = useState(false)
 
   const { curatedMatches, adventurousPick, categorizedMenu, stats } = personalizedMenu
   const persona = generateCoffeePersona(userProfile)
@@ -46,17 +47,40 @@ export default function DynamicCuratedMenu({ onAdd }) {
   const usualConfig = userProfile?.usualDrink
   const usualItem = usualConfig ? rawMenuData.find(i => i.id === usualConfig.itemId) : null
 
+  // Calculate accurate price with usual customizations
+  let usualCalculatedPrice = usualItem ? (usualItem.effectivePrice ?? usualItem.price) : 0
+  if (usualConfig?.size === 'large') usualCalculatedPrice += 0.75
+  if (usualConfig?.milk === 'oat' || usualConfig?.milk === 'almond') usualCalculatedPrice += 0.50
+
   // Fast 1-Tap Reorder for "Your Usual"
-  const handleQuickOrderUsual = () => {
+  const handleQuickOrderUsual = (e) => {
+    e?.stopPropagation?.()
     if (!usualItem) return
+
     soundFx.playCelebration()
+
     const fastUsualItem = {
       ...usualItem,
-      id: `${usualItem.id}-usual-${Date.now()}`,
+      id: `${usualItem.id}-usual-${usualConfig.size || 'reg'}-${usualConfig.temperature || 'hot'}-${usualConfig.milk || 'none'}`,
       customizedName: `${usualItem.name} (${usualConfig.note || 'Your Usual'})`,
-      effectivePrice: usualItem.effectivePrice ?? usualItem.price
+      effectivePrice: usualCalculatedPrice,
+      customizations: {
+        temperature: usualConfig.temperature || 'hot',
+        size: usualConfig.size || 'regular',
+        milk: usualConfig.milk || null,
+        sweetness: usualConfig.sweetness || '50',
+        addOns: usualConfig.addOns || []
+      }
     }
-    onAdd?.(fastUsualItem)
+
+    if (onAdd) {
+      onAdd(fastUsualItem)
+    } else if (addToOrderTray) {
+      addToOrderTray(fastUsualItem)
+    }
+
+    setIsUsualJustAdded(true)
+    setTimeout(() => setIsUsualJustAdded(false), 1400)
   }
 
   // Filter catalog items
@@ -221,10 +245,18 @@ export default function DynamicCuratedMenu({ onAdd }) {
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.98 }}
               onClick={handleQuickOrderUsual}
-              className="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian font-serif font-bold text-xs sm:text-sm shadow-amber-glow flex items-center justify-center gap-2 cursor-pointer transition-transform"
+              className={`w-full py-3 px-4 rounded-2xl font-serif font-bold text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer transition-all ${
+                isUsualJustAdded
+                  ? 'bg-emerald-500 text-fayrouz-obsidian shadow-[0_0_20px_rgba(16,185,129,0.5)]'
+                  : 'bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian shadow-amber-glow'
+              }`}
             >
               <Check className="w-4 h-4 stroke-[3]" />
-              <span>1-Tap Order Usual (${(usualItem.effectivePrice ?? usualItem.price).toFixed(2)})</span>
+              <span>
+                {isUsualJustAdded
+                  ? `✓ Added to Order! ($${usualCalculatedPrice.toFixed(2)})`
+                  : `1-Tap Order Usual ($${usualCalculatedPrice.toFixed(2)})`}
+              </span>
             </motion.button>
 
             <button
