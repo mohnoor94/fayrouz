@@ -123,21 +123,21 @@ export default function InitialStateMenu({ onAdd }) {
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-[11px] font-mono uppercase tracking-widest text-fayrouz-gold font-bold flex items-center gap-1.5 bg-fayrouz-obsidian/80 px-2.5 py-0.5 rounded-md border border-fayrouz-amber/30">
                 <Zap className="w-3.5 h-3.5 text-fayrouz-gold" />
-                NFC Universal Passport Reader
+                FayrouzPass™ Reader
               </span>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-fayrouz-cardamom/20 text-fayrouz-cardamom border border-fayrouz-cardamom/30 font-medium">
                 Instant Recognition Active
               </span>
             </div>
 
-            {/* Clear, Solid, High-Contrast Headline (NO webkit gradient text fill to guarantee 100% visibility) */}
+            {/* Clear, Solid, High-Contrast Headline */}
             <h3 className="text-xl sm:text-2xl font-serif font-bold text-fayrouz-cream leading-snug">
-              Have a Universal Coffee Passport? <span className="text-fayrouz-amber">Tap Phone Here</span>
+              Have a Fayrouz Taste Passport? <span className="text-fayrouz-amber">Tap Phone Here</span>
             </h3>
 
             {/* Arabic Invitation */}
             <div className="font-arabic text-sm text-fayrouz-amber font-normal">
-              معك جواز تذوق عالمي؟ قرّب هاتفك هنا لتنهار القائمة إلى اختياراتك الثلاثة الآمنة
+              معك جواز فيروز للتذوق؟ قرّب هاتفك هنا لتنهار القائمة إلى اختياراتك الثلاثة الآمنة
             </div>
 
             {/* Explanatory Subtitle */}
@@ -154,7 +154,7 @@ export default function InitialStateMenu({ onAdd }) {
             className="py-3 px-4 rounded-2xl bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian font-serif font-bold text-xs sm:text-sm shadow-amber-glow flex items-center justify-center gap-2 group-hover:scale-[1.01] transition-transform cursor-pointer"
           >
             <Radio className={`w-4 h-4 ${isSyncing ? 'animate-spin' : 'animate-pulse'}`} />
-            <span>{isSyncing ? 'Beaming Passport...' : 'Tap Phone (Simulate NFC Wave)'}</span>
+            <span>{isSyncing ? 'Beaming FayrouzPass...' : 'Tap Phone (FayrouzPass NFC)'}</span>
           </div>
 
           <button
@@ -168,7 +168,7 @@ export default function InitialStateMenu({ onAdd }) {
             title="Create your complete taste passport with dietary rules in 30 seconds"
           >
             <Sparkles className="w-4 h-4 text-fayrouz-gold flex-shrink-0" />
-            <span>New Guest? Create Taste Passport (30s)</span>
+            <span>New Guest? Create Fayrouz Passport (30s)</span>
           </button>
         </div>
       </motion.div>

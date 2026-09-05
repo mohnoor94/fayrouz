@@ -122,7 +122,7 @@ export default function DynamicCuratedMenu({ onAdd }) {
               <div className="flex items-center gap-2 mb-0.5">
                 <span className="w-2 h-2 rounded-full bg-fayrouz-cardamom animate-pulse flex-shrink-0" />
                 <span className="text-[10px] font-mono uppercase tracking-wider text-fayrouz-amber font-bold truncate">
-                  Universal Passport Synchronized • {persona.passportNumber}
+                  Fayrouz Taste Passport Synced • {persona.passportNumber}
                 </span>
               </div>
 

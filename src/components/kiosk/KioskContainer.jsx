@@ -111,7 +111,7 @@ export default function KioskContainer() {
                 <div className="flex items-center gap-2">
                   <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-fayrouz-cardamom/20 text-fayrouz-cardamom border border-fayrouz-cardamom/30 text-xs font-medium">
                     <span className="w-2 h-2 rounded-full bg-fayrouz-cardamom animate-pulse" />
-                    <span>{userProfile.name}'s Passport Synced</span>
+                    <span>{userProfile.name}'s FayrouzPass Synced</span>
                   </div>
 
                   <button
@@ -130,10 +130,10 @@ export default function KioskContainer() {
                     type="button"
                     onClick={() => { soundFx.playTap(); setIsKioskWizardOpen(true); }}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-fayrouz-surface/70 hover:bg-fayrouz-surface border border-fayrouz-amber/40 text-fayrouz-gold text-xs font-serif transition-colors cursor-pointer"
-                    title="Create your Taste Passport directly on this kiosk"
+                    title="Create your Fayrouz Taste Passport directly on this kiosk"
                   >
                     <Sparkles className="w-3.5 h-3.5 text-fayrouz-gold" />
-                    <span className="hidden sm:inline">New? Create Passport</span>
+                    <span className="hidden sm:inline">New? Create FayrouzPass</span>
                   </button>
 
                   <button
@@ -142,7 +142,7 @@ export default function KioskContainer() {
                     className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian font-serif font-bold text-xs shadow-amber-glow cursor-pointer"
                   >
                     <Radio className="w-3.5 h-3.5 animate-pulse" />
-                    <span>Tap Phone (Simulate NFC)</span>
+                    <span>Tap Phone (FayrouzPass NFC)</span>
                   </button>
                 </div>
               )}

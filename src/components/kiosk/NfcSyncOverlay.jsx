@@ -49,16 +49,16 @@ export default function NfcSyncOverlay() {
           <div className="flex items-center gap-2 mb-1.5">
             <Sparkles className="w-4 h-4 text-fayrouz-gold animate-spin" />
             <span className="text-xs font-mono uppercase tracking-widest text-fayrouz-gold font-bold">
-              NFC Passport Handshake Verified
+              FayrouzPass™ NFC Handshake Verified
             </span>
           </div>
 
           <h3 className="text-2xl font-serif font-bold text-gold-gradient">
-            Synchronizing with {userProfile.name || 'Guest'}'s Passport...
+            Synchronizing with {userProfile.name || 'Guest'}'s FayrouzPass...
           </h3>
 
           <span className="font-arabic text-base text-fayrouz-amber mt-1">
-            جاري تحضير قائمتك المختارة وفق تفضيلاتك
+            جاري قراءة جواز فيروز للتذوق وتحضير قائمتك المختارة
           </span>
 
           <div className="text-xs text-fayrouz-foam/70 mt-2 font-mono">

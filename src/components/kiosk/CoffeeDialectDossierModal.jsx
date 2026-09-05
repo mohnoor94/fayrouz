@@ -73,7 +73,7 @@ export default function CoffeeDialectDossierModal({
                 </span>
               </div>
               <div className="text-[11px] font-mono text-fayrouz-muted">
-                Ambar Specialty Roasters • Universal Taste Passport Certified
+                Ambar Specialty Roasters • Fayrouz Taste Passport Certified
               </div>
             </div>
 
@@ -312,7 +312,7 @@ export default function CoffeeDialectDossierModal({
           <div className="p-4 border-t border-fayrouz-border/70 flex flex-wrap items-center justify-between gap-3 relative z-10 flex-shrink-0 bg-[#120d09]">
             <div className="flex items-center gap-2 text-xs font-mono text-fayrouz-muted">
               <Sparkles className="w-3.5 h-3.5 text-fayrouz-gold" />
-              <span>Calibrated via Universal Taste Passport • Ambar Codex</span>
+              <span>Calibrated via Fayrouz Taste Passport • Ambar Codex</span>
             </div>
 
             <button

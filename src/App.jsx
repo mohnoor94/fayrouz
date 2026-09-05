@@ -67,7 +67,7 @@ function AppContent() {
               {BRAND_CONFIG.shortName} <span className="font-arabic font-normal text-fayrouz-amber text-2xl sm:text-3xl">({BRAND_CONFIG.shortNameAr})</span>
             </h1>
             <p className="text-sm sm:text-base text-fayrouz-foam/80 mt-1 max-w-xl">
-              {BRAND_CONFIG.name} • Universal Coffee Passport & Dynamic Kiosk Engine
+              {BRAND_CONFIG.name} • Powered by Fayrouz Taste Passport™ & Dynamic Kiosk Engine
             </p>
           </div>
 

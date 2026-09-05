@@ -63,10 +63,10 @@ export default function NameStep({ onNext }) {
             صباح الخير.. أهلاً وسهلاً بك في فيروز
           </span>
           <h2 className="text-xl font-serif font-bold text-fayrouz-cream mt-0.5 tracking-tight">
-            Universal Coffee Passport
+            Fayrouz Taste Passport™
           </h2>
           <p className="text-xs text-fayrouz-foam/80 mt-0.5 max-w-xs">
-            Personal hospitality linked to your phone for instant NFC counter recognition.
+            Bespoke coffee identity linked to your phone for instant FayrouzPass™ counter recognition.
           </p>
         </div>
 

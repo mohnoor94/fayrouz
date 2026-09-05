@@ -600,7 +600,7 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
                 className="w-3.5 h-3.5 rounded border-fayrouz-border bg-fayrouz-surface accent-fayrouz-amber cursor-pointer"
               />
               <span className="text-[11px] font-sans">
-                Remember changes as my new permanent Taste Passport defaults
+                Remember changes as my new permanent FayrouzPass defaults
               </span>
             </motion.label>
           )}
@@ -620,7 +620,7 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
               className="px-6 py-3 rounded-2xl font-serif font-bold text-xs sm:text-sm bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian shadow-amber-glow flex items-center gap-2 cursor-pointer"
             >
               <Plus className="w-4 h-4 stroke-[3]" />
-              <span>{saveToPassport ? 'Save to Passport & Add' : 'Add'}</span>
+              <span>{saveToPassport ? 'Save to FayrouzPass & Add' : 'Add'}</span>
             </motion.button>
           </div>
         </div>

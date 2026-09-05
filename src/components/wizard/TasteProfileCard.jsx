@@ -54,14 +54,14 @@ export default function TasteProfileCard({ onRestart, isKiosk = false, onKioskCo
         <div className="flex items-center gap-2 mb-1">
           <span className="w-2 h-2 rounded-full bg-fayrouz-amber animate-ping" />
           <span className="text-[10px] font-mono uppercase tracking-widest text-fayrouz-amber font-semibold">
-            Universal Coffee Passport Active
+            Fayrouz Taste Passport Active
           </span>
         </div>
         <h2 className="text-lg font-serif font-bold text-gold-gradient">
-          {userProfile.name}'s Taste Passport
+          {userProfile.name}'s Fayrouz Taste Passport
         </h2>
         <span className="font-arabic text-xs text-fayrouz-amber">
-          جواز سفر القهوة الحرفية — فيروز
+          جواز فيروز للتذوق الحرفي — Ambar Certified
         </span>
       </div>
 
@@ -83,7 +83,7 @@ export default function TasteProfileCard({ onRestart, isKiosk = false, onKioskCo
             </div>
             <div>
               <div className="text-[9px] font-mono uppercase tracking-widest text-fayrouz-muted">
-                FAYROUZ PASSPORT
+                FAYROUZ TASTE PASSPORT
               </div>
               <div className="text-sm font-serif font-bold text-fayrouz-cream leading-tight">
                 {userProfile.name}
@@ -188,7 +188,7 @@ export default function TasteProfileCard({ onRestart, isKiosk = false, onKioskCo
             <CheckCircle2 className="w-3 h-3" />
             3 Curated Matches Ready
           </span>
-          <span className="text-fayrouz-gold">WALLET PASS LINKED</span>
+          <span className="text-fayrouz-gold font-bold">FAYROUZPASS™ LINKED</span>
         </div>
       </motion.div>
     </div>
@@ -209,12 +209,12 @@ export default function TasteProfileCard({ onRestart, isKiosk = false, onKioskCo
           <Radio className={`w-4 h-4 ${isSyncing ? 'animate-spin' : 'animate-pulse'}`} />
           <span>
             {isKiosk
-              ? 'Start Ordering with My Passport'
+              ? 'Start Ordering with FayrouzPass'
               : isSyncing 
-                ? 'Beaming Passport via NFC...' 
+                ? 'Beaming FayrouzPass via NFC...' 
                 : isNfcSynced 
-                  ? 'Passport Synced at Counter!' 
-                  : 'Step Up to Counter & Tap (NFC)'}
+                  ? 'FayrouzPass Synced at Counter!' 
+                  : 'Step Up to Counter & Tap FayrouzPass'}
           </span>
         </motion.button>
 
