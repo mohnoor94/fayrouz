@@ -5,15 +5,70 @@ import { soundFx } from '../../utils/soundEffects'
 import { BRAND_CONFIG } from '../../constants/brandConfig'
 import KioskItemCard from './KioskItemCard'
 import ItemCustomizerModal from './ItemCustomizerModal'
-import { Radio, Sparkles, Coffee, Search, ArrowRight, Zap, ShieldCheck } from 'lucide-react'
+import { 
+  Radio, 
+  Sparkles, 
+  Coffee, 
+  Search, 
+  ArrowRight, 
+  Zap, 
+  Flame, 
+  Snowflake, 
+  Heart, 
+  Compass 
+} from 'lucide-react'
+
+export const CATEGORY_DEFINITIONS = [
+  { 
+    id: 'espresso-black', 
+    name: 'Espresso & Black', 
+    nameAr: 'القهوة النقية والإسبريسو',
+    icon: Flame,
+    color: 'text-fayrouz-amber',
+    borderColor: 'border-fayrouz-amber/40',
+    description: 'Pristine single-origin clarity, unmasked terroir, double ristretto & cezve extractions'
+  },
+  { 
+    id: 'velvet-milk', 
+    name: 'Velvet & Milk', 
+    nameAr: 'مخمليات الحليب والمايكروفوم',
+    icon: Sparkles,
+    color: 'text-fayrouz-gold',
+    borderColor: 'border-fayrouz-gold/40',
+    description: 'Silky microfoam precision, textured oat harmony & comforting lattes'
+  },
+  { 
+    id: 'cold-brew', 
+    name: 'Cold Brew & Infusions', 
+    nameAr: 'المقطرات الباردة والثلجية',
+    icon: Snowflake,
+    color: 'text-sky-400',
+    borderColor: 'border-sky-400/40',
+    description: 'Patient 24-hour slow drip over crystal ice & sparkling botanical infusions'
+  },
+  { 
+    id: 'levantine-signature', 
+    name: 'Levantine Signature', 
+    nameAr: 'التواقيع الشرقية الحرفية',
+    icon: Heart,
+    color: 'text-fayrouz-rose',
+    borderColor: 'border-fayrouz-rose/40',
+    description: 'Aleppo pistachio, Damascus rose, cardamom miel & ancestral craft'
+  },
+  { 
+    id: 'tea-botanical', 
+    name: 'Tea & Botanical', 
+    nameAr: 'الأعشاب البرية والشاي المختص',
+    icon: Compass,
+    color: 'text-fayrouz-cardamom',
+    borderColor: 'border-fayrouz-cardamom/40',
+    description: 'Wild mountain sage, floral tisanes & restorative loose leaf elixirs'
+  }
+]
 
 const CATEGORY_TABS = [
-  { id: 'all', name: 'All Drinks (25)', nameAr: 'كل المشروبات' },
-  { id: 'espresso-black', name: 'Espresso & Black', nameAr: 'القهوة النقية' },
-  { id: 'velvet-milk', name: 'Velvet & Milk', nameAr: 'مخمليات الحليب' },
-  { id: 'cold-brew', name: 'Cold Brew & Infusions', nameAr: 'المقطرات الباردة' },
-  { id: 'levantine-signature', name: 'Levantine Signature', nameAr: 'التواقيع الشرقية' },
-  { id: 'tea-botanical', name: 'Tea & Botanical', nameAr: 'الأعشاب البرية' }
+  { id: 'all', name: 'All Drinks (25)', nameAr: 'كل المشروبات', icon: Coffee },
+  ...CATEGORY_DEFINITIONS
 ]
 
 export default function InitialStateMenu({ onAdd }) {
@@ -27,13 +82,19 @@ export default function InitialStateMenu({ onAdd }) {
     triggerNfcSync()
   }
 
-  const filteredItems = rawMenuData.filter(item => {
-    const matchesTab = activeTab === 'all' || item.category === activeTab
-    const matchesSearch = !searchQuery || 
-      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.nameAr.includes(searchQuery)
-    return matchesTab && matchesSearch
-  })
+  // Determine categories to render
+  const categoriesToRender = CATEGORY_DEFINITIONS.filter(cat => 
+    activeTab === 'all' || activeTab === cat.id
+  ).map(cat => {
+    const items = rawMenuData.filter(item => {
+      const inCategory = item.category === cat.id
+      const matchesSearch = !searchQuery || 
+        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.nameAr.includes(searchQuery)
+      return inCategory && matchesSearch
+    })
+    return { ...cat, items }
+  }).filter(cat => cat.items.length > 0)
 
   return (
     <div className="flex-1 min-h-0 flex flex-col gap-6 overflow-y-auto pr-2 pb-8">
@@ -157,17 +218,67 @@ export default function InitialStateMenu({ onAdd }) {
         ))}
       </div>
 
-      {/* 2-Column Spacious Catalog Grid with Live Drink Visualizers */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-5">
-        {filteredItems.map((item) => (
-          <KioskItemCard
-            key={item.id}
-            item={item}
-            onAdd={() => setCustomizingItem(item)}
-            onCustomize={() => setCustomizingItem(item)}
-          />
-        ))}
-      </div>
+      {/* Categorized Specialty Catalog Sections */}
+      {categoriesToRender.length === 0 ? (
+        <div className="py-12 text-center flex flex-col items-center justify-center gap-2 rounded-2xl bg-fayrouz-surface/40 border border-fayrouz-border">
+          <Search className="w-6 h-6 text-fayrouz-muted" />
+          <p className="text-sm text-fayrouz-cream font-medium">No drinks found matching "{searchQuery}"</p>
+          <button 
+            type="button"
+            onClick={() => { setSearchQuery(''); setActiveTab('all'); }}
+            className="text-xs text-fayrouz-amber hover:underline mt-1 cursor-pointer"
+          >
+            Reset Filters
+          </button>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-8">
+          {categoriesToRender.map((cat) => {
+            const Icon = cat.icon
+            return (
+              <section key={cat.id} className="flex flex-col gap-3.5 pt-1">
+                {/* Category Section Header */}
+                <div className="flex items-center justify-between pb-2.5 border-b border-fayrouz-border/70">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className={`w-9 h-9 rounded-xl bg-fayrouz-surface border ${cat.borderColor} flex items-center justify-center ${cat.color} shadow-sm flex-shrink-0`}>
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-serif font-bold text-base text-fayrouz-cream">
+                          {cat.name}
+                        </h4>
+                        <span className="font-arabic text-xs text-fayrouz-amber font-normal">
+                          ({cat.nameAr})
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-fayrouz-muted leading-tight mt-0.5 truncate">
+                        {cat.description}
+                      </p>
+                    </div>
+                  </div>
+
+                  <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-full bg-fayrouz-surface border border-fayrouz-border text-fayrouz-gold flex-shrink-0">
+                    {cat.items.length} Drinks
+                  </span>
+                </div>
+
+                {/* 2-Column Spacious Catalog Grid for this Category */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-5">
+                  {cat.items.map((item) => (
+                    <KioskItemCard
+                      key={item.id}
+                      item={item}
+                      onAdd={() => setCustomizingItem(item)}
+                      onCustomize={() => setCustomizingItem(item)}
+                    />
+                  ))}
+                </div>
+              </section>
+            )
+          })}
+        </div>
+      )}
 
       {/* Drink Customization Modal */}
       <ItemCustomizerModal
