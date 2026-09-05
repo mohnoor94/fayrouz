@@ -17,6 +17,7 @@ import {
 } from './personalizationEngine.js'
 import { generateCoffeePersona } from './personaGenerator.js'
 import { resolveItemCraftSpecs } from './craftConstraints.js'
+import { computeCoffeeDialect, calculateDialectCompatibility, DIALECT_REGISTRY } from './coffeeDialects.js'
 
 let totalTests = 0
 let passedTests = 0
@@ -170,7 +171,7 @@ const areejPersona = generateCoffeePersona({
   temperature: 'iced'
 })
 
-assert(areejPersona.title.includes('Sweet Velvet') || areejPersona.title.includes('Microfoam'), `Areej persona reflects silky sweet profile (Title: "${areejPersona.title}")`)
+assert(areejPersona.title.includes('Velvet Pistachio Maverick') && areejPersona.dialectCode === 'ADSV', `Areej persona reflects ADSV Dialect (Title: "${areejPersona.title}", Code: "${areejPersona.dialectCode}")`)
 assert(areejPersona.maskedPhone.includes('••••'), `Areej phone number is masked with bullet characters (Masked: "${areejPersona.maskedPhone}")`)
 assert(areejPersona.passportNumber.startsWith('AMB-') || areejPersona.passportNumber.startsWith('FYZ-'), `Passport number is generated with brand prefix (${areejPersona.passportNumber})`)
 assert(areejPersona.flavorPillarBadges.length === 2, `Badges include both selected flavor pillars (${areejPersona.flavorPillarBadges.join(', ')})`)
@@ -233,6 +234,60 @@ assert(latteCraft.effectiveSize === 'large', 'Latte honors user Large (16 oz) pr
 assert(latteCraft.isSizeConstrained === false, 'Latte is NOT size constrained')
 assert(latteCraft.canBeSavedToPassport === true, 'Unconstrained Latte order is safe to save to passport')
 assert(latteCraft.finalPrice === 7.75, `Latte price includes $0.75 Large surcharge ($7.00 + $0.75 = $7.75, Actual: $${latteCraft.finalPrice})`)
+
+// -------------------------------------------------------------
+// Test 11: The 16 Dialects™ & Polyglot Engine Verification
+// -------------------------------------------------------------
+console.log('\n--- Test Suite 11: The 16 Dialects™ & Polyglot Engine Verification ---')
+
+// 1. Registry Completeness
+const totalDialects = Object.keys(DIALECT_REGISTRY).length
+assert(totalDialects === 17, `Dialect registry contains exactly 17 archetypes (16 Dialects + POLY, Actual: ${totalDialects})`)
+
+// 2. High-Altitude Sage (TLNR) Resolution
+const sageProfile = { roastPreference: 'light', tasteAffinities: ['floral'], temperature: 'hot' }
+const sageResult = computeCoffeeDialect(sageProfile)
+assert(sageResult.code === 'TLNR', `High-altitude profile resolves to TLNR (Actual: ${sageResult.code})`)
+assert(sageResult.dialect.title === 'The High-Altitude Sage', 'TLNR title matches The High-Altitude Sage')
+assert(sageResult.house.id === 'terroir', 'TLNR belongs to House of Terroir')
+assert(sageResult.dialect.soulmateDrinkId === 'panama-geisha-pourover', 'TLNR soulmate drink is Panama Geisha')
+
+// 3. Velvet Pistachio Maverick (ADSV) Resolution
+const maverickProfile = { roastPreference: 'medium', tasteAffinities: ['spiced', 'silky'], temperature: 'iced', preferredMilk: 'oat', sweetnessPreference: 'sweet' }
+const maverickResult = computeCoffeeDialect(maverickProfile)
+assert(maverickResult.code === 'ADSV', `Iced spiced sweet oat profile resolves to ADSV (Actual: ${maverickResult.code})`)
+assert(maverickResult.dialect.title === 'The Velvet Pistachio Maverick', 'ADSV title matches The Velvet Pistachio Maverick')
+assert(maverickResult.house.id === 'epicure', 'ADSV belongs to House of Epicure')
+
+// 4. Obsidian Monk (TDNR) Resolution
+const monkProfile = { roastPreference: 'dark', tasteAffinities: ['cacao'], temperature: 'hot', sweetnessPreference: 'unsweetened' }
+const monkResult = computeCoffeeDialect(monkProfile)
+assert(monkResult.code === 'TDNR', `Dark unsweetened black profile resolves to TDNR (Actual: ${monkResult.code})`)
+assert(monkResult.dialect.title === 'The Obsidian Monk', 'TDNR title matches The Obsidian Monk')
+
+// 5. Damascus Courtyard Dreamer (ALSR) Resolution
+const damascusProfile = { roastPreference: 'light', tasteAffinities: ['floral', 'spiced'], temperature: 'hot', preferredMilk: 'whole', sweetnessPreference: 'sweet' }
+const damascusResult = computeCoffeeDialect(damascusProfile)
+assert(damascusResult.code === 'ALSR', `Floral spiced hot milk profile resolves to ALSR (Actual: ${damascusResult.code})`)
+assert(damascusResult.dialect.title === 'The Damascus Courtyard Dreamer', 'ALSR title matches The Damascus Courtyard Dreamer')
+
+// 6. The Dialect Polyglot (POLY) Resolution
+const fluidProfile = { isPolyglot: true, temperature: 'any', sweetnessPreference: 'balanced', tasteAffinities: ['floral', 'cacao', 'spiced'] }
+const polyResult = computeCoffeeDialect(fluidProfile)
+assert(polyResult.code === 'POLY', `Fluid unconstrained profile resolves to POLY (Actual: ${polyResult.code})`)
+assert(polyResult.isPolyglot === true, 'Polyglot flag is strictly true')
+assert(polyResult.fluidityScore >= 80, `Polyglot fluidity score is high (Score: ${polyResult.fluidityScore}%)`)
+assert(polyResult.house.id === 'guild', 'Polyglot belongs to Master Roastery Guild')
+
+// 7. Relational Compatibility Scoring
+const twinMatch = calculateDialectCompatibility('TLNR', 'TLNR')
+assert(twinMatch.score === 99, `Identical codes yield 99% Twin Souls (Actual: ${twinMatch.score}%)`)
+
+const polyMatch = calculateDialectCompatibility('TLNR', 'POLY')
+assert(polyMatch.score === 96, `Polyglot yields 96% Cosmic Harmony (Actual: ${polyMatch.score}%)`)
+
+const oppositeMatch = calculateDialectCompatibility('TLNR', 'ADSV')
+assert(oppositeMatch.score === 55, `Polar opposites yield 55% contrast score (Actual: ${oppositeMatch.score}%)`)
 
 // -------------------------------------------------------------
 // Summary

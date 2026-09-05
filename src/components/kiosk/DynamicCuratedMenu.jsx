@@ -6,6 +6,7 @@ import { soundFx } from '../../utils/soundEffects'
 import KioskItemCard from './KioskItemCard'
 import DrinkArtwork from './DrinkArtwork'
 import ItemCustomizerModal from './ItemCustomizerModal'
+import CoffeeDialectDossierModal from './CoffeeDialectDossierModal'
 import { 
   Sparkles, 
   Search, 
@@ -13,15 +14,15 @@ import {
   ShieldCheck, 
   Heart, 
   Flame, 
-  Snowflake,
-  CheckCircle2,
-  Compass,
-  Repeat,
-  Star,
-  Clock,
-  Sliders,
-  Check,
-  Plus
+  Snowflake, 
+  CheckCircle2, 
+  Compass, 
+  Repeat, 
+  Star, 
+  Clock, 
+  Sliders, 
+  Check, 
+  Plus 
 } from 'lucide-react'
 
 const CATEGORY_TABS = [
@@ -39,6 +40,7 @@ export default function DynamicCuratedMenu({ onAdd }) {
   const [searchQuery, setSearchQuery] = useState('')
   const [customizingItem, setCustomizingItem] = useState(null)
   const [isUsualJustAdded, setIsUsualJustAdded] = useState(false)
+  const [isDossierOpen, setIsDossierOpen] = useState(false)
 
   const { curatedMatches, adventurousPick, categorizedMenu, stats } = personalizedMenu
   const persona = generateCoffeePersona(userProfile)
@@ -135,18 +137,38 @@ export default function DynamicCuratedMenu({ onAdd }) {
             </div>
           </div>
 
-          {/* Persona Card Pill */}
-          <div className="px-3.5 py-2 rounded-2xl bg-fayrouz-obsidian/90 border border-fayrouz-amber/40 shadow-inner flex flex-col items-start sm:items-end flex-shrink-0">
-            <span className="text-[9px] font-mono uppercase tracking-widest text-fayrouz-muted">
-              Certified Palate Persona
-            </span>
-            <div className="text-xs sm:text-sm font-serif font-bold text-fayrouz-gold">
-              {persona.title}
+          {/* The 16 Dialects™ Interactive Identity Emblem */}
+          <button
+            type="button"
+            onClick={() => { soundFx.playTap(); setIsDossierOpen(true); }}
+            className="px-4 py-2 rounded-2xl bg-gradient-to-br from-fayrouz-obsidian via-[#231711] to-fayrouz-obsidian border-2 border-fayrouz-gold/60 hover:border-fayrouz-gold shadow-amber-glow flex items-center gap-3 text-left transition-all hover:scale-[1.02] cursor-pointer group flex-shrink-0"
+            title="Click to explore your certified 16 Dialects™ full identity dossier"
+          >
+            {/* 4-Letter Acronym Emblem */}
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-fayrouz-amber/25 to-fayrouz-gold/10 border border-fayrouz-gold/80 flex flex-col items-center justify-center text-center p-0.5 shadow-inner">
+              <span className="text-xs font-mono font-black tracking-wider text-fayrouz-gold">
+                {persona.dialectCode || 'DIALECT'}
+              </span>
+              <span className="text-[8px] font-mono text-fayrouz-amber">
+                {persona.house?.symbol || '⟡'}
+              </span>
             </div>
-            <span className="font-arabic text-[11px] text-fayrouz-amber/80 font-normal">
-              {persona.titleAr}
-            </span>
-          </div>
+
+            <div className="flex flex-col items-start">
+              <div className="flex items-center gap-1.5 text-[9px] font-mono uppercase tracking-widest text-fayrouz-amber font-bold">
+                <span>The 16 Dialects™</span>
+                <span className="text-fayrouz-gold opacity-80 group-hover:opacity-100 transition-opacity">
+                  • View Dossier →
+                </span>
+              </div>
+              <div className="text-xs sm:text-sm font-serif font-bold text-fayrouz-gold group-hover:text-fayrouz-cream transition-colors">
+                {persona.title}
+              </div>
+              <span className="font-arabic text-[11px] text-fayrouz-amber/80 font-normal">
+                {persona.titleAr}
+              </span>
+            </div>
+          </button>
         </div>
 
         {/* Tier 2: Dedicated Taste Radar & Dietary Guardrails Ribbon */}
@@ -387,6 +409,21 @@ export default function DynamicCuratedMenu({ onAdd }) {
         isOpen={Boolean(customizingItem)}
         onClose={() => setCustomizingItem(null)}
         onConfirmAdd={(customized) => onAdd(customized)}
+      />
+
+      {/* =====================================================================
+          6. THE 16 DIALECTS™ LUXURY IDENTITY DOSSIER MODAL
+          ===================================================================== */}
+      <CoffeeDialectDossierModal
+        isOpen={isDossierOpen}
+        onClose={() => setIsDossierOpen(false)}
+        persona={persona}
+        onOrderDrink={(drinkId) => {
+          const matchedItem = rawMenuData.find(d => d.id === drinkId)
+          if (matchedItem) {
+            setCustomizingItem(matchedItem)
+          }
+        }}
       />
     </div>
   )

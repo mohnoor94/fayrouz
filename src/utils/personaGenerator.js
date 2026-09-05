@@ -8,6 +8,7 @@
 
 import { DIETARY_FLAGS, FLAVOR_PILLARS } from './personalizationEngine.js'
 import { BRAND_CONFIG } from '../constants/brandConfig.js'
+import { computeCoffeeDialect } from './coffeeDialects.js'
 
 export function generateCoffeePersona(profile = {}) {
   const dietary = Array.isArray(profile.dietary) ? profile.dietary : []
@@ -18,46 +19,19 @@ export function generateCoffeePersona(profile = {}) {
   const isNutFree = dietary.includes(DIETARY_FLAGS.NUT_FREE)
   const isLactoseFree = dietary.includes(DIETARY_FLAGS.LACTOSE_FREE)
 
-  // Determine primary flavor pillar
-  const primaryAffinity = affinities[0] || 'floral'
-  let baseTitle = ''
-  let baseTitleAr = ''
-  let descriptor = ''
+  // 1. Resolve The 16 Dialects Archetype & Enneagram House
+  const dialectResolution = computeCoffeeDialect(profile)
+  const { code: dialectCode, dialect, house, isPolyglot, fluidityScore } = dialectResolution
 
-  if (primaryAffinity === 'floral') {
-    baseTitle = roast === 'light' ? 'The Damascene Botanical Explorer' : 'The Rose & Jasmine Connoisseur'
-    baseTitleAr = roast === 'light' ? 'مستكشف الزهور الشامية' : 'متذوق الورد والياسمين'
-    descriptor = 'Drawn to micro-distilled Damascene rose, white jasmine blossoms, and fragrant botanical clarity.'
-  } else if (primaryAffinity === 'cacao') {
-    baseTitle = sweetness === 'unsweetened' ? 'The Single-Origin Obsidian Purist' : 'The Dark Mocha Alchemist'
-    baseTitleAr = sweetness === 'unsweetened' ? 'عاشق القهوة الصافية الداكنة' : 'خبير الكاكاو والموكا الحرفية'
-    descriptor = 'Craves single-origin 70% dark cocoa, roasted sesame tahini, and dense espresso crema.'
-  } else if (primaryAffinity === 'citrus') {
-    baseTitle = 'The Cascara & Terroir Wanderer'
-    baseTitleAr = 'مستكشف الحمضيات والكاسكارا'
-    descriptor = 'Celebrates sparkling blood orange, high-altitude Ethiopian bergamot, and coffee cherry infusions.'
-  } else if (primaryAffinity === 'spiced') {
-    baseTitle = 'The Heritage Cardamom Connoisseur'
-    baseTitleAr = 'خبير الهيل والتراث'
-    descriptor = 'Reveres crushed green cardamom, Medjool date caramel, and the eternal Levantine Ibrik ritual.'
-  } else if (primaryAffinity === 'silky') {
-    baseTitle = sweetness === 'sweet' ? 'The Sweet Velvet Seeker' : 'The Microfoam Artisan'
-    baseTitleAr = sweetness === 'sweet' ? 'عاشق المخملية والحلاوة' : 'عاشق المايكروفوم الحريري'
-    descriptor = 'Cherishes velvety micro-foamed oat milk, Spanish dulce de leche, and comforting malt warmth.'
-  } else {
-    baseTitle = 'The Levantine Connoisseur'
-    baseTitleAr = 'المتذوق المتناغم الأصيل'
-    descriptor = 'A harmonious balance of artisanal roasting, regional botanicals, and velvety textures.'
-  }
-
-  // Dietary prefix adjustment if vegan
-  let finalTitle = baseTitle
-  let finalTitleAr = baseTitleAr
+  let finalTitle = dialect.title
+  let finalTitleAr = dialect.titleAr
 
   if (isVegan) {
-    finalTitle = `The Plant-Based ${baseTitle.replace('The ', '')}`
-    finalTitleAr = `${baseTitleAr} (نباتي بالكامل)`
+    finalTitle = `The Plant-Based ${dialect.title.replace('The ', '')}`
+    finalTitleAr = `${dialect.titleAr} (نباتي)`
   }
+
+  const descriptor = dialect.tagline
 
   // Deterministic passport hash
   const nameHash = (profile.name || 'Guest')
@@ -108,6 +82,13 @@ export function generateCoffeePersona(profile = {}) {
     flavorPillarBadges,
     roast,
     sweetness,
-    badges
+    badges,
+    // The 16 Dialects™ Core Integration
+    dialectCode,
+    dialect,
+    house,
+    isPolyglot,
+    fluidityScore,
+    watermark: dialect.watermark
   }
 }
