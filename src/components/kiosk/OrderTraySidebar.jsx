@@ -74,8 +74,8 @@ export default function OrderTraySidebar({ onResetKiosk }) {
           </span>
         </div>
 
-        {/* Item List */}
-        <div className="flex flex-col gap-2 max-h-[330px] overflow-y-auto pr-1">
+        {/* Item List with complete, un-truncated order details */}
+        <div className="flex flex-col gap-2.5 max-h-[350px] overflow-y-auto pr-1">
           {orderTray.length === 0 ? (
             <div className="py-12 flex flex-col items-center justify-center text-center text-fayrouz-muted">
               <Coffee className="w-8 h-8 stroke-1 text-fayrouz-border mb-2" />
@@ -85,44 +85,126 @@ export default function OrderTraySidebar({ onResetKiosk }) {
           ) : (
             orderTray.map((item) => {
               const effectivePrice = item.effectivePrice ?? item.price
+              const cust = item.customizations || {}
+              const isLarge = cust.size === 'large'
+              const isIced = cust.temperature === 'iced' || (!cust.temperature && item.defaultTemperature === 'iced')
+              const isHot = cust.temperature === 'hot' || (!cust.temperature && item.defaultTemperature === 'hot')
+              const milk = cust.milk
+              const sweetness = cust.sweetness
+              const addOns = cust.addOns || []
+
               return (
                 <div 
                   key={item.id}
-                  className="p-2.5 rounded-xl bg-fayrouz-surface/70 border border-fayrouz-border/70 flex flex-col gap-1.5"
+                  className="p-3 rounded-2xl bg-fayrouz-surface/80 border border-fayrouz-border/80 flex flex-col gap-2 shadow-sm"
                 >
-                  <div className="flex items-center gap-2.5">
-                    {/* Small Drink Vessel Thumbnail */}
-                    <div className="w-10 h-10 rounded-lg bg-fayrouz-obsidian border border-fayrouz-border/70 flex items-center justify-center flex-shrink-0 p-0.5 overflow-hidden shadow-inner">
+                  <div className="flex items-start gap-2.5">
+                    {/* Drink Artwork Vessel Thumbnail */}
+                    <div className="w-11 h-11 rounded-xl bg-fayrouz-obsidian border border-fayrouz-border/70 flex items-center justify-center flex-shrink-0 p-0.5 overflow-hidden shadow-inner mt-0.5">
                       <DrinkArtwork item={item} size="sm" />
                     </div>
 
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-1">
-                        <span className="text-xs font-serif font-bold text-fayrouz-cream leading-tight truncate">
-                          {item.customizedName || item.name}
-                        </span>
-                        <span className="text-xs font-serif font-bold text-fayrouz-cream flex-shrink-0">
+                      {/* Full Drink Title & Price - Absolutely No Truncation */}
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex flex-col min-w-0">
+                          <span className="text-xs font-serif font-bold text-fayrouz-cream leading-snug break-words">
+                            {item.name}
+                          </span>
+                          {item.nameAr && (
+                            <span className="font-arabic text-[11px] text-fayrouz-amber/80 leading-tight">
+                              {item.nameAr}
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-xs font-serif font-bold text-fayrouz-gold flex-shrink-0 whitespace-nowrap">
                           ${(effectivePrice * item.quantity).toFixed(2)}
                         </span>
                       </div>
-                      {item.isAdapted && (
-                        <span className="text-[9px] text-fayrouz-cardamom font-medium block">
-                          Oat Milk (+$0.50)
+
+                      {/* Full Specifications Badges: Temperature, Size, Milk, Sweetness, Add-Ons */}
+                      <div className="flex flex-wrap items-center gap-1 mt-1.5">
+                        {/* Temperature */}
+                        {isIced && (
+                          <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-sky-950/60 border border-sky-400/40 text-sky-300">
+                            ❄️ Iced
+                          </span>
+                        )}
+                        {isHot && (
+                          <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-amber-950/60 border border-fayrouz-amber/40 text-fayrouz-amber">
+                            🔥 Hot
+                          </span>
+                        )}
+
+                        {/* Cup Size */}
+                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-fayrouz-obsidian border border-fayrouz-border text-fayrouz-foam/90">
+                          {isLarge ? '16 oz (Large)' : '12 oz (Reg)'}
                         </span>
-                      )}
+
+                        {/* Milk Choice */}
+                        {milk === 'oat' && (
+                          <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-fayrouz-cardamom/20 border border-fayrouz-cardamom/40 text-fayrouz-cardamom font-medium">
+                            🥛 Oat Milk (+ $0.50)
+                          </span>
+                        )}
+                        {milk === 'almond' && (
+                          <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-fayrouz-amber/20 border border-fayrouz-amber/40 text-fayrouz-gold font-medium">
+                            🥛 Almond Milk (+ $0.50)
+                          </span>
+                        )}
+                        {milk === 'whole' && (
+                          <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-fayrouz-obsidian border border-fayrouz-border text-fayrouz-muted">
+                            🥛 Whole Milk
+                          </span>
+                        )}
+                        {!milk && item.isAdapted && (
+                          <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-fayrouz-cardamom/20 border border-fayrouz-cardamom/40 text-fayrouz-cardamom font-medium">
+                            🥛 Oat Milk (Safe)
+                          </span>
+                        )}
+
+                        {/* Sweetness */}
+                        {sweetness && (
+                          <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-fayrouz-obsidian border border-fayrouz-border text-fayrouz-foam/80">
+                            🍯 {sweetness === '0' ? '0% Sweet' : sweetness === '25' ? '25% Subtle' : sweetness === '50' ? '50% Balanced' : '100% Sweet'}
+                          </span>
+                        )}
+
+                        {/* Craft Add-Ons */}
+                        {addOns.map((addon) => {
+                          const label = 
+                            addon === 'cardamom' ? '🌿 Cardamom' :
+                            addon === 'extra-shot' ? '⚡ Extra Shot (+ $1)' :
+                            addon === 'rosewater' ? '🌹 Rose Mist (+ $0.50)' :
+                            addon === 'tahini' ? '✨ Tahini (+ $0.50)' : addon
+                          return (
+                            <span key={addon} className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-fayrouz-obsidian border border-fayrouz-border text-fayrouz-amber">
+                              {label}
+                            </span>
+                          )
+                        })}
+
+                        {/* "Your Usual" Reorder Tag */}
+                        {item.customizedName?.includes('Usual') && (
+                          <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-fayrouz-gold/20 border border-fayrouz-gold/40 text-fayrouz-gold font-bold">
+                            ⭐ Usual
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
 
-                  {/* Quantity and removal */}
-                  <div className="flex items-center justify-between pt-1 border-t border-fayrouz-border/40">
+                  {/* Quantity adjustment & Unit Pricing */}
+                  <div className="flex items-center justify-between pt-2 border-t border-fayrouz-border/50 text-xs">
                     <span className="text-[10px] font-mono text-fayrouz-muted">
-                      ${effectivePrice.toFixed(2)} each
+                      ${effectivePrice.toFixed(2)} ea
                     </span>
 
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => removeFromOrderTray(item.id)}
-                        className="w-5 h-5 rounded-md bg-fayrouz-surface border border-fayrouz-border flex items-center justify-center text-fayrouz-muted hover:text-fayrouz-cream transition-colors"
+                        className="w-5 h-5 rounded-md bg-fayrouz-surface border border-fayrouz-border flex items-center justify-center text-fayrouz-muted hover:text-fayrouz-cream transition-colors cursor-pointer"
+                        title={item.quantity === 1 ? 'Remove from tray' : 'Decrease quantity'}
                       >
                         {item.quantity === 1 ? <Trash2 className="w-3 h-3 text-red-400" /> : <Minus className="w-3 h-3" />}
                       </button>
@@ -131,7 +213,8 @@ export default function OrderTraySidebar({ onResetKiosk }) {
                       </span>
                       <button
                         onClick={() => addToOrderTray(item)}
-                        className="w-5 h-5 rounded-md bg-fayrouz-surface border border-fayrouz-border flex items-center justify-center text-fayrouz-muted hover:text-fayrouz-cream transition-colors"
+                        className="w-5 h-5 rounded-md bg-fayrouz-surface border border-fayrouz-border flex items-center justify-center text-fayrouz-muted hover:text-fayrouz-cream transition-colors cursor-pointer"
+                        title="Increase quantity"
                       >
                         <Plus className="w-3 h-3" />
                       </button>

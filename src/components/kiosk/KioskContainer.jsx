@@ -149,9 +149,9 @@ export default function KioskContainer() {
           </header>
 
           {/* Main Workspace: Split into Menu (Left) and Order Tray (Right) */}
-          <div className="flex-1 flex overflow-hidden relative">
+          <div className="flex-1 flex overflow-hidden relative min-h-0">
             {/* Menu Viewport */}
-            <main className="flex-1 p-5 overflow-hidden flex flex-col">
+            <main className="flex-1 p-4 lg:p-5 overflow-hidden flex flex-col min-h-0 min-w-0">
               <AnimatePresence mode="wait">
                 {isNfcSynced ? (
                   <motion.div
@@ -160,7 +160,7 @@ export default function KioskContainer() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.99 }}
                     transition={{ duration: 0.25 }}
-                    className="h-full"
+                    className="flex-1 min-h-0 flex flex-col h-full"
                   >
                     <DynamicCuratedMenu onAdd={addToOrderTray} />
                   </motion.div>
@@ -171,7 +171,7 @@ export default function KioskContainer() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.99 }}
                     transition={{ duration: 0.25 }}
-                    className="h-full"
+                    className="flex-1 min-h-0 flex flex-col h-full"
                   >
                     <InitialStateMenu onAdd={addToOrderTray} />
                   </motion.div>

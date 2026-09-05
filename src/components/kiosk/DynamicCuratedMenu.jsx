@@ -71,16 +71,19 @@ export default function DynamicCuratedMenu({ onAdd }) {
   })
 
   return (
-    <div className="flex flex-col gap-6 h-full overflow-y-auto pr-2 pb-8">
+    <div className="flex-1 min-h-0 flex flex-col gap-6 overflow-y-auto pr-2 pb-8">
       {/* =====================================================================
           1. ELEGANT 2-TIER SPACIOUS WELCOME BOARD
           ===================================================================== */}
       <motion.div 
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-3xl p-5 sm:p-6 bg-gradient-to-br from-fayrouz-surface via-fayrouz-espresso to-[#221612] border border-fayrouz-amber/40 shadow-card-depth flex flex-col gap-4 relative overflow-hidden"
+        className="rounded-3xl p-5 sm:p-6 bg-gradient-to-br from-fayrouz-surface via-fayrouz-espresso to-[#221612] border border-fayrouz-amber/40 shadow-card-depth flex flex-col gap-4 relative"
       >
-        <div className="absolute top-0 right-0 w-80 h-80 bg-fayrouz-amber/12 rounded-full blur-3xl pointer-events-none" />
+        {/* Soft Ambient Radial Light inside dedicated clipped overlay */}
+        <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-fayrouz-amber/12 rounded-full blur-3xl pointer-events-none" />
+        </div>
 
         {/* Tier 1: Welcoming Greeting, Arabic Monogram & Coffee Persona */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10">
@@ -113,7 +116,7 @@ export default function DynamicCuratedMenu({ onAdd }) {
             <span className="text-[9px] font-mono uppercase tracking-widest text-fayrouz-muted">
               Certified Palate Persona
             </span>
-            <div className="text-xs sm:text-sm font-serif font-bold text-gold-gradient">
+            <div className="text-xs sm:text-sm font-serif font-bold text-fayrouz-gold">
               {persona.title}
             </div>
             <span className="font-arabic text-[11px] text-fayrouz-amber/80 font-normal">

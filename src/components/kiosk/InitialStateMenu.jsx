@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useProfile } from '../../context/ProfileContext'
 import { soundFx } from '../../utils/soundEffects'
+import { BRAND_CONFIG } from '../../constants/brandConfig'
 import KioskItemCard from './KioskItemCard'
 import ItemCustomizerModal from './ItemCustomizerModal'
 import { Radio, Sparkles, Coffee, Search, ArrowRight, Zap, ShieldCheck } from 'lucide-react'
@@ -35,53 +36,64 @@ export default function InitialStateMenu({ onAdd }) {
   })
 
   return (
-    <div className="flex flex-col gap-6 h-full overflow-y-auto pr-2 pb-8">
-      {/* High-Impact NFC Prompt Banner (Spacious, Zero-Overflow Layout) */}
+    <div className="flex-1 min-h-0 flex flex-col gap-6 overflow-y-auto pr-2 pb-8">
+      {/* High-Impact NFC Prompt Banner (Spacious, Zero-Overflow Layout, Guaranteed Unclipped) */}
       <motion.div
         whileHover={{ scale: 1.005 }}
         onClick={handleNfcTap}
-        className="rounded-3xl p-5 sm:p-6 bg-gradient-to-br from-fayrouz-espresso via-fayrouz-surface to-[#221610] border-2 border-fayrouz-amber/40 shadow-amber-glow relative overflow-hidden cursor-pointer flex flex-col gap-5 group"
+        className="rounded-3xl p-5 sm:p-6 bg-gradient-to-br from-fayrouz-surface via-fayrouz-espresso to-[#1e1510] border-2 border-fayrouz-amber/50 shadow-amber-glow relative cursor-pointer flex flex-col gap-4 group transition-all"
       >
-        {/* Soft Ambient Radial Lights */}
-        <div className="absolute top-0 right-0 w-80 h-80 bg-fayrouz-amber/12 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-1/3 w-64 h-64 bg-fayrouz-gold/8 rounded-full blur-3xl pointer-events-none" />
+        {/* Soft Ambient Radial Lights (Isolated in clipped background container to never clip content) */}
+        <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-fayrouz-amber/12 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-1/3 w-64 h-64 bg-fayrouz-gold/8 rounded-full blur-3xl pointer-events-none" />
+        </div>
 
-        {/* Top Section: Glowing NFC Beacon & Bold Unclipped Typography */}
+        {/* Top Header: NFC Beacon & High-Contrast Typography */}
         <div className="flex items-start gap-4 relative z-10">
           {/* Concentric Pulsing NFC Beacon */}
-          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-fayrouz-obsidian border-2 border-fayrouz-amber/70 flex items-center justify-center text-fayrouz-amber relative flex-shrink-0 shadow-[0_0_25px_rgba(212,163,115,0.35)] group-hover:scale-105 transition-transform">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-fayrouz-obsidian border-2 border-fayrouz-amber flex items-center justify-center text-fayrouz-amber relative flex-shrink-0 shadow-[0_0_25px_rgba(212,163,115,0.4)] group-hover:scale-105 transition-transform">
             <Radio className="w-7 h-7 sm:w-8 sm:h-8 animate-pulse text-fayrouz-amber" />
             <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-fayrouz-amber animate-ping" />
           </div>
 
-          <div className="flex-1 min-w-0">
-            <div className="flex flex-wrap items-center gap-2 mb-1">
-              <span className="text-[10px] font-mono uppercase tracking-widest text-fayrouz-amber font-bold flex items-center gap-1">
-                <Zap className="w-3 h-3 text-fayrouz-gold" />
+          <div className="flex-1 flex flex-col gap-1 min-w-0">
+            {/* Badges */}
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-[11px] font-mono uppercase tracking-widest text-fayrouz-gold font-bold flex items-center gap-1.5 bg-fayrouz-obsidian/80 px-2.5 py-0.5 rounded-md border border-fayrouz-amber/30">
+                <Zap className="w-3.5 h-3.5 text-fayrouz-gold" />
                 NFC Universal Passport Reader
               </span>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-fayrouz-amber/20 text-fayrouz-gold border border-fayrouz-gold/30">
-                Instant Recognition
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-fayrouz-cardamom/20 text-fayrouz-cardamom border border-fayrouz-cardamom/30 font-medium">
+                Instant Recognition Active
               </span>
             </div>
 
-            {/* Clean, unclipped headline */}
-            <h3 className="text-lg sm:text-xl md:text-2xl font-serif font-bold text-gold-gradient leading-snug">
-              Have a Fayrouz Passport? Tap Phone Here
+            {/* Clear, Solid, High-Contrast Headline (NO webkit gradient text fill to guarantee 100% visibility) */}
+            <h3 className="text-xl sm:text-2xl font-serif font-bold text-fayrouz-cream leading-snug">
+              Have a {BRAND_CONFIG.shortName} Passport? <span className="text-fayrouz-amber">Tap Phone Here</span>
             </h3>
 
-            <div className="font-arabic text-xs sm:text-sm text-fayrouz-amber/90 mt-0.5">
-              معك جواز فيروز؟ قرّب هاتفك هنا لتنهار القائمة إلى اختياراتك الثلاثة الآمنة
+            {/* Arabic Invitation */}
+            <div className="font-arabic text-sm text-fayrouz-amber font-normal">
+              معك جواز تذوق؟ قرّب هاتفك هنا لتنهار القائمة إلى اختياراتك الثلاثة الآمنة
             </div>
 
-            <p className="text-xs text-fayrouz-foam/80 mt-1 leading-relaxed max-w-2xl">
-              Collapse the 25-item catalog into your 3 personalized matches and protect your dietary guardrails.
+            {/* Explanatory Subtitle */}
+            <p className="text-xs sm:text-sm text-fayrouz-foam/85 leading-relaxed mt-0.5">
+              Instantly collapse the 25-item catalog into your 3 personalized matches and safeguard your dietary rules.
             </p>
           </div>
         </div>
 
-        {/* Bottom Action Bar: Dedicated breathing room for both primary & secondary actions */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3.5 border-t border-fayrouz-border/60 relative z-10">
+        {/* Action Row: Two 50/50 responsive grid buttons that fit smoothly on any kiosk screen */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-fayrouz-border/60 relative z-10">
+          <div className="py-3 px-4 rounded-2xl bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian font-serif font-bold text-xs sm:text-sm shadow-amber-glow flex items-center justify-center gap-2 group-hover:scale-[1.01] transition-transform">
+            <Radio className={`w-4 h-4 ${isSyncing ? 'animate-spin' : 'animate-pulse'}`} />
+            <span>{isSyncing ? 'Beaming Passport...' : 'Tap Phone (Simulate NFC Wave)'}</span>
+            <ArrowRight className="w-4 h-4" />
+          </div>
+
           <button
             type="button"
             onClick={(e) => {
@@ -89,17 +101,11 @@ export default function InitialStateMenu({ onAdd }) {
               soundFx.playTap()
               setIsKioskWizardOpen(true)
             }}
-            className="px-4 py-2.5 rounded-2xl bg-fayrouz-surface/90 hover:bg-fayrouz-surface border border-fayrouz-amber/50 hover:border-fayrouz-amber text-fayrouz-cream font-serif text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer"
+            className="py-3 px-4 rounded-2xl bg-fayrouz-surface/90 hover:bg-fayrouz-surface border border-fayrouz-amber/50 hover:border-fayrouz-amber text-fayrouz-cream font-serif text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer"
           >
             <Sparkles className="w-4 h-4 text-fayrouz-gold" />
             <span>New Guest? Create Taste Passport (30s)</span>
           </button>
-
-          <div className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-2xl bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian font-serif font-bold text-xs sm:text-sm shadow-amber-glow group-hover:scale-102 transition-transform">
-            <Radio className={`w-4 h-4 ${isSyncing ? 'animate-spin' : 'animate-pulse'}`} />
-            <span>{isSyncing ? 'Beaming Passport...' : 'Tap Phone (Simulate NFC)'}</span>
-            <ArrowRight className="w-4 h-4" />
-          </div>
         </div>
       </motion.div>
 
