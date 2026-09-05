@@ -1,12 +1,16 @@
 /**
- * Central Brand Configuration
+ * Coffeehouse Host Venue Configuration
  * 
- * Defines the coffee house identity across all screens, receipts, and passports.
- * Easily customized to any specialty cafe name.
+ * Defines the local specialty cafe venue where the kiosk and barista bar are stationed
+ * (e.g. Ambar, Turath, Qahwatna).
+ * 
+ * NOTE: The customer's digital pass is ALWAYS FayrouzPass™ (Prefix: 'FYZ') — it is a
+ * universal taste passport valid across ALL network roasters, not a venue-specific card.
+ * See AGENTS.md and docs/ECOSYSTEM.md for the full architecture.
  */
 
 export const BRAND_CONFIG = {
-  // Coffee House Identity
+  // Current Host Venue Identity
   id: 'ambar',
   name: 'AMBAR SPECIALTY ROASTERS',
   shortName: 'AMBAR',
@@ -16,7 +20,6 @@ export const BRAND_CONFIG = {
   established: '2024',
   tagline: 'Terroir, Heritage & Sensory Craft',
   taglineAr: 'الأصالة، الإرث، وفنون التذوق',
-  passportPrefix: 'AMB',
 
   // Supported Alternative Brand Options for Easy Switching
   availableBrands: [
