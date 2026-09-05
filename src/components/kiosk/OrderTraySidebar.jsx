@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useProfile } from '../../context/ProfileContext'
 import { calculateOrderTotals, generateOrderTicketNumber } from '../../utils/kioskHelpers'
 import { soundFx } from '../../utils/soundEffects'
+import DrinkArtwork from './DrinkArtwork'
 import { 
   ShoppingBag, 
   Plus, 
@@ -89,20 +90,27 @@ export default function OrderTraySidebar({ onResetKiosk }) {
                   key={item.id}
                   className="p-2.5 rounded-xl bg-fayrouz-surface/70 border border-fayrouz-border/70 flex flex-col gap-1.5"
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex flex-col">
-                      <span className="text-xs font-serif font-bold text-fayrouz-cream leading-tight">
-                        {item.name}
-                      </span>
+                  <div className="flex items-center gap-2.5">
+                    {/* Small Drink Vessel Thumbnail */}
+                    <div className="w-10 h-10 rounded-lg bg-fayrouz-obsidian border border-fayrouz-border/70 flex items-center justify-center flex-shrink-0 p-0.5 overflow-hidden shadow-inner">
+                      <DrinkArtwork item={item} size="sm" />
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-1">
+                        <span className="text-xs font-serif font-bold text-fayrouz-cream leading-tight truncate">
+                          {item.name}
+                        </span>
+                        <span className="text-xs font-serif font-bold text-fayrouz-cream flex-shrink-0">
+                          ${(effectivePrice * item.quantity).toFixed(2)}
+                        </span>
+                      </div>
                       {item.isAdapted && (
-                        <span className="text-[9px] text-fayrouz-cardamom font-medium">
+                        <span className="text-[9px] text-fayrouz-cardamom font-medium block">
                           Oat Milk (+$0.50)
                         </span>
                       )}
                     </div>
-                    <span className="text-xs font-serif font-bold text-fayrouz-cream">
-                      ${(effectivePrice * item.quantity).toFixed(2)}
-                    </span>
                   </div>
 
                   {/* Quantity and removal */}
