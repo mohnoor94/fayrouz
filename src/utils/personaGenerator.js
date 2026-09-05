@@ -48,10 +48,12 @@ export function generateCoffeePersona(profile = {}) {
     : rawPhone
 
   // Active Flavor Pillar Tags
-  const flavorPillarBadges = affinities.map(id => {
-    const pillar = FLAVOR_PILLARS.find(p => p.id === id)
-    return pillar ? `${pillar.icon} ${pillar.name}` : id
-  })
+  const flavorPillarBadges = affinities.length > 0
+    ? affinities.map(id => {
+        const pillar = FLAVOR_PILLARS.find(p => p.id === id)
+        return pillar ? `${pillar.icon} ${pillar.name}` : id
+      })
+    : ['☕ Classic Pure Coffee']
 
   // Badges
   const badges = []

@@ -134,39 +134,39 @@ export const FLAVOR_PILLARS = [
     name: 'Floral & Blossom',
     nameAr: 'زهري ووردي',
     icon: '🌸',
-    desc: 'Damascene Rose, Jasmine, Orange Blossom',
+    desc: 'Damascene Rose Water, Orange Blossom & Jasmine',
     keywords: ['Rose', 'Jasmine', 'Blossom', 'Neroli', 'Floral', 'Damascene']
   },
   {
     id: 'cacao',
-    name: 'Cacao & Earthy',
-    nameAr: 'كاكاو وأرضي',
+    name: 'Rich Cacao & Nutty',
+    nameAr: 'كاكاو داكن ومكسرات',
     icon: '🍫',
-    desc: 'Dark Cocoa, Sesame Tahini, Chios Mastic',
-    keywords: ['Cacao', 'Chocolate', 'Tahini', 'Mastic', 'Cocoa', 'Mocha']
+    desc: 'Dark Cocoa, Roasted Hazelnut & Chocolate Depth',
+    keywords: ['Cacao', 'Chocolate', 'Tahini', 'Mastic', 'Cocoa', 'Mocha', 'Nutty', 'Hazelnut']
   },
   {
     id: 'citrus',
-    name: 'Bright Citrus & Fruit',
-    nameAr: 'حمضيات وعصارية',
+    name: 'Bright Citrus & Berry',
+    nameAr: 'حمضيات وفواكه منعشة',
     icon: '🍊',
-    desc: 'Blood Orange, Cascara Cherry, Bergamot',
-    keywords: ['Bergamot', 'Lemon', 'Orange', 'Cascara', 'Peach', 'Apricot', 'Blackcurrant', 'Grapefruit']
+    desc: 'Blood Orange, Cascara Cherry & Crisp Fruit Notes',
+    keywords: ['Bergamot', 'Lemon', 'Orange', 'Cascara', 'Peach', 'Apricot', 'Blackcurrant', 'Grapefruit', 'Berry']
   },
   {
     id: 'spiced',
-    name: 'Spiced & Golden',
-    nameAr: 'توابل وهيل وتمر',
+    name: 'Warm Spiced & Cardamom',
+    nameAr: 'توابل، هيل وقرفة',
     icon: '🍯',
-    desc: 'Green Cardamom, Medjool Date, Ceylon Cinnamon',
+    desc: 'Green Cardamom, Ceylon Cinnamon & Touch of Honey',
     keywords: ['Cardamom', 'Date', 'Cinnamon', 'Turmeric', 'Ginger', 'Spiced']
   },
   {
     id: 'silky',
-    name: 'Silky Velvet & Malt',
-    nameAr: 'مخملي وحليبي',
+    name: 'Creamy Vanilla & Caramel',
+    nameAr: 'حليبي، فانيلا وكاراميل',
     icon: '🥛',
-    desc: 'Oat Microfoam, Dulce de Leche, Caramel',
+    desc: 'Velvety Microfoam, Smooth Vanilla & Warm Caramel',
     keywords: ['Oat', 'Crema', 'Caramel', 'Dulce de Leche', 'Vanilla', 'Malt', 'Foam', 'Milk']
   }
 ]
