@@ -12,8 +12,10 @@ import {
   evaluateItemSafety, 
   calculateMatchScore, 
   generatePersonalizedMenu,
-  DIETARY_FLAGS
+  DIETARY_FLAGS,
+  FLAVOR_PILLARS
 } from './personalizationEngine.js'
+import { generateCoffeePersona } from './personaGenerator.js'
 
 let totalTests = 0
 let passedTests = 0
@@ -112,7 +114,65 @@ assert(puristResult.adventurousPick.wildcardDelta >= 3 && puristResult.adventuro
   `Wildcard delta is between 3 and 5 (Actual delta: ${puristResult.adventurousPick.wildcardDelta})`)
 assert(typeof puristResult.adventurousPick.whyYouWillLoveThis === 'string' && puristResult.adventurousPick.whyYouWillLoveThis.length > 20, 
   'Wildcard includes a bespoke Levantine storytelling rationale')
-console.log(`  ℹ Sample Rationale for Purist: "${puristResult.adventurousPick.whyYouWillLoveThis}"`)
+
+// -------------------------------------------------------------
+// Test 7: Multi-Flavor Pillar Affinity Matching
+// -------------------------------------------------------------
+console.log('\n--- Test Suite 7: Multi-Flavor Pillar Affinity Matching ---')
+assert(Array.isArray(FLAVOR_PILLARS) && FLAVOR_PILLARS.length === 5, 'Defined exactly 5 Levantine Flavor Pillars')
+
+const floralCitrusProfile = {
+  name: 'Salma',
+  dietary: [DIETARY_FLAGS.VEGAN],
+  tasteAffinities: ['floral', 'citrus'],
+  roastPreference: 'light',
+  sweetnessPreference: 'subtle',
+  temperature: 'iced'
+}
+const floralCitrusResult = generatePersonalizedMenu(rawMenu, floralCitrusProfile)
+const topItem = floralCitrusResult.curatedMatches[0]
+assert(topItem.matchScore > 70, `Top curated match has high affinity match score (${topItem.matchScore}%)`)
+assert(
+  topItem.tastingNotes.some(note => ['Rose', 'Orange', 'Bergamot', 'Jasmine', 'Citrus', 'Cascara'].some(k => note.includes(k))),
+  `Top curated item matches floral or citrus flavor pillars (Item: ${topItem.name}, Notes: ${topItem.tastingNotes.join(', ')})`
+)
+
+// -------------------------------------------------------------
+// Test 8: Roast and Sweetness Scoring Verification
+// -------------------------------------------------------------
+console.log('\n--- Test Suite 8: Roast & Sweetness Scoring Verification ---')
+const darkItem = rawMenu.find(i => i.roastLevel === 'Medium-Dark')
+const lightItem = rawMenu.find(i => i.roastLevel === 'Light')
+
+const darkRoastProfile = { name: 'Tariq', dietary: [], roastPreference: 'dark', sweetnessPreference: 'unsweetened' }
+const lightRoastProfile = { name: 'Noor', dietary: [], roastPreference: 'light', sweetnessPreference: 'subtle' }
+
+const darkScoreForDark = calculateMatchScore(darkItem, darkRoastProfile)
+const lightScoreForDark = calculateMatchScore(lightItem, darkRoastProfile)
+assert(darkScoreForDark > lightScoreForDark, `Dark roast lover scores dark item higher than light item (${darkScoreForDark} vs ${lightScoreForDark})`)
+
+const lightScoreForLight = calculateMatchScore(lightItem, lightRoastProfile)
+const darkScoreForLight = calculateMatchScore(darkItem, lightRoastProfile)
+assert(lightScoreForLight > darkScoreForLight, `Light roast lover scores light item higher than dark item (${lightScoreForLight} vs ${darkScoreForLight})`)
+
+// -------------------------------------------------------------
+// Test 9: Persona Generation & Phone Masking
+// -------------------------------------------------------------
+console.log('\n--- Test Suite 9: Persona Generation & Phone Masking ---')
+const areejPersona = generateCoffeePersona({
+  name: 'Areej',
+  phone: '+961 3 456 789',
+  dietary: [DIETARY_FLAGS.LACTOSE_FREE],
+  tasteAffinities: ['silky', 'spiced'],
+  roastPreference: 'medium',
+  sweetnessPreference: 'sweet',
+  temperature: 'iced'
+})
+
+assert(areejPersona.title.includes('Sweet Velvet') || areejPersona.title.includes('Microfoam'), `Areej persona reflects silky sweet profile (Title: "${areejPersona.title}")`)
+assert(areejPersona.maskedPhone.includes('••••'), `Areej phone number is masked with bullet characters (Masked: "${areejPersona.maskedPhone}")`)
+assert(areejPersona.passportNumber.startsWith('FYZ-'), `Passport number is generated with FYZ prefix (${areejPersona.passportNumber})`)
+assert(areejPersona.flavorPillarBadges.length === 2, `Badges include both selected flavor pillars (${areejPersona.flavorPillarBadges.join(', ')})`)
 
 // -------------------------------------------------------------
 // Summary
@@ -127,3 +187,4 @@ if (passedTests === totalTests) {
   console.error('❌ Some tests failed.')
   process.exit(1)
 }
+

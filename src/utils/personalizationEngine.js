@@ -128,57 +128,147 @@ export function evaluateItemSafety(item, profile = {}) {
   }
 }
 
+export const FLAVOR_PILLARS = [
+  {
+    id: 'floral',
+    name: 'Floral & Blossom',
+    nameAr: 'زهري ووردي',
+    icon: '🌸',
+    desc: 'Damascene Rose, Jasmine, Orange Blossom',
+    keywords: ['Rose', 'Jasmine', 'Blossom', 'Neroli', 'Floral', 'Damascene']
+  },
+  {
+    id: 'cacao',
+    name: 'Cacao & Earthy',
+    nameAr: 'كاكاو وأرضي',
+    icon: '🍫',
+    desc: 'Dark Cocoa, Sesame Tahini, Chios Mastic',
+    keywords: ['Cacao', 'Chocolate', 'Tahini', 'Mastic', 'Cocoa', 'Mocha']
+  },
+  {
+    id: 'citrus',
+    name: 'Bright Citrus & Fruit',
+    nameAr: 'حمضيات وعصارية',
+    icon: '🍊',
+    desc: 'Blood Orange, Cascara Cherry, Bergamot',
+    keywords: ['Bergamot', 'Lemon', 'Orange', 'Cascara', 'Peach', 'Apricot', 'Blackcurrant', 'Grapefruit']
+  },
+  {
+    id: 'spiced',
+    name: 'Spiced & Golden',
+    nameAr: 'توابل وهيل وتمر',
+    icon: '🍯',
+    desc: 'Green Cardamom, Medjool Date, Ceylon Cinnamon',
+    keywords: ['Cardamom', 'Date', 'Cinnamon', 'Turmeric', 'Ginger', 'Spiced']
+  },
+  {
+    id: 'silky',
+    name: 'Silky Velvet & Malt',
+    nameAr: 'مخملي وحليبي',
+    icon: '🥛',
+    desc: 'Oat Microfoam, Dulce de Leche, Caramel',
+    keywords: ['Oat', 'Crema', 'Caramel', 'Dulce de Leche', 'Vanilla', 'Malt', 'Foam', 'Milk']
+  }
+]
+
 /**
  * Calculates mathematical relevance match percentage between an item and a user profile.
- * 
- * Formula:
- * - Palate Distance Penalty: Score_palate = 1 - (|item.profileScore - user.palateScore| / 9)
- * - Temperature Weight:
- *    - exact match = 1.0
- *    - adaptable to requested temperature = 0.90
- *    - temperature mismatch (cannot be served as requested) = 0.35
- * - Signature / Barista boost: +0.02 to +0.04
- * - Composite Match = clamp((0.70 * Score_palate + 0.30 * TempWeight + Boost) * 100, 45, 99)
+ * Incorporates:
+ * - Roast & sweetness alignment
+ * - Taste affinities (up to 3 flavor pillars) keyword intersection
+ * - Palate distance & temperature affinity
+ * - Artisan / Signature boosts
  * 
  * @param {Object} item - Evaluated MenuItem
- * @param {Object} profile - UserProfile ({ palateScore: number, temperature: string })
+ * @param {Object} profile - UserProfile
  * @returns {number} Match percentage (integer 45 to 99)
  */
 export function calculateMatchScore(item, profile = {}) {
-  const userScore = Number(profile.palateScore) || 5
-  const userTemp = profile.temperature || 'any'
+  let userScore = Number(profile.palateScore) || 5
 
-  // Palate Distance [0, 9]
-  const delta = Math.abs(item.profileScore - userScore)
+  // If roast & sweetness preferences are explicitly provided, refine userScore
+  if (profile.roastPreference && profile.sweetnessPreference) {
+    let base = 5
+    if (profile.roastPreference === 'light') base = profile.sweetnessPreference === 'unsweetened' ? 2 : 4
+    else if (profile.roastPreference === 'dark') base = profile.sweetnessPreference === 'unsweetened' ? 1 : 3
+    else base = profile.sweetnessPreference === 'sweet' ? 8 : (profile.sweetnessPreference === 'unsweetened' ? 3 : 5)
+    userScore = base
+  }
+
+  // 1. Palate Distance [0, 9]
+  const itemScore = item?.profileScore !== undefined ? item.profileScore : 5
+  const delta = Math.abs(itemScore - userScore)
   const palateScoreNormalized = 1.0 - (delta / 9)
 
-  // Temperature Affinity
+  // 2. Temperature Affinity
+  const userTemp = profile.temperature || 'any'
   let tempWeight = 1.0
   if (userTemp === 'iced') {
-    if (item.defaultTemperature === 'iced') {
-      tempWeight = 1.0
-    } else if (item.canBeIced) {
-      tempWeight = 0.90
-    } else {
-      tempWeight = 0.35 // strictly hot drink
-    }
+    if (item.defaultTemperature === 'iced') tempWeight = 1.0
+    else if (item.canBeIced) tempWeight = 0.90
+    else tempWeight = 0.35 // strictly hot drink
   } else if (userTemp === 'hot') {
-    if (item.defaultTemperature === 'hot') {
-      tempWeight = 1.0
-    } else if (item.canBeHot) {
-      tempWeight = 0.90
-    } else {
-      tempWeight = 0.35 // strictly cold drink
+    if (item.defaultTemperature === 'hot') tempWeight = 1.0
+    else if (item.canBeHot) tempWeight = 0.90
+    else tempWeight = 0.35 // strictly cold drink
+  }
+
+  // 3. Multi-Taste Affinities Overlap (The Flavor Pillars)
+  let tasteBoost = 0
+  const userAffinities = Array.isArray(profile.tasteAffinities) ? profile.tasteAffinities : []
+  if (userAffinities.length > 0) {
+    const itemSearchText = [
+      item.name,
+      item.description,
+      ...(item.tastingNotes || [])
+    ].join(' ').toLowerCase()
+
+    userAffinities.forEach(affId => {
+      const pillar = FLAVOR_PILLARS.find(p => p.id === affId)
+      if (pillar) {
+        const matches = pillar.keywords.some(kw => itemSearchText.includes(kw.toLowerCase()))
+        if (matches) {
+          tasteBoost += 0.08 // +8% per matching selected flavor pillar
+        }
+      }
+    })
+  }
+
+  // 4. Roast Preference Direct Alignment
+  let roastBoost = 0
+  if (profile.roastPreference) {
+    if (profile.roastPreference === 'light') {
+      if (item.roastLevel === 'Light') roastBoost += 0.08
+      else if (item.roastLevel === 'Dark' || item.roastLevel === 'Medium-Dark') roastBoost -= 0.06
+    } else if (profile.roastPreference === 'dark') {
+      if (item.roastLevel === 'Dark' || item.roastLevel === 'Medium-Dark') roastBoost += 0.08
+      else if (item.roastLevel === 'Light') roastBoost -= 0.06
+    } else if (profile.roastPreference === 'medium') {
+      if (item.roastLevel === 'Medium' || item.roastLevel === 'Medium-Light') roastBoost += 0.06
     }
   }
 
-  // Signature & Artisan Boost
+  // 5. Sweetness Preference Direct Alignment
+  let sweetBoost = 0
+  if (profile.sweetnessPreference) {
+    if (profile.sweetnessPreference === 'unsweetened') {
+      if (item.sweetness <= 2) sweetBoost += 0.08
+      else if (item.sweetness >= 4) sweetBoost -= 0.06
+    } else if (profile.sweetnessPreference === 'sweet') {
+      if (item.sweetness >= 4) sweetBoost += 0.08
+      else if (item.sweetness <= 2) sweetBoost -= 0.06
+    } else if (profile.sweetnessPreference === 'subtle') {
+      if (item.sweetness === 2 || item.sweetness === 3) sweetBoost += 0.06
+    }
+  }
+
+  // 6. Signature & Artisan Boost
   let boost = 0
   if (item.badge === 'Signature Pick') boost += 0.04
   if (item.badge === 'Barista Favorite') boost += 0.02
   if (item.badge === 'Single Origin') boost += 0.02
 
-  const composite = (0.70 * palateScoreNormalized + 0.30 * tempWeight + boost) * 100
+  const composite = (0.50 * palateScoreNormalized + 0.25 * tempWeight + tasteBoost + roastBoost + sweetBoost + boost) * 100
   return Math.min(99, Math.max(45, Math.round(composite)))
 }
 

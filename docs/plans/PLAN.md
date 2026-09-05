@@ -53,19 +53,35 @@
 
 ---
 
-### Phase 2: Sensory Onboarding Wizard (Mobile Simulator)
+### Phase 2: Sensory Onboarding Wizard & Multi-Dimensional Taste Passport
 - [x] Build `src/components/wizard/WizardContainer.jsx`:
-  - Realistic iPhone 16 Pro chassis with brushed titanium-obsidian bezel & glass reflection
+  - Dual-device design: Native mobile phone simulator chassis or centered modal overlay on tablet kiosk
   - Responsive adaptive layout (native fullscreen on mobile `<640px`)
   - Active Dynamic Island showing live cafe status (*"FAYROUZ • OPEN"*) & morphing into pulsing wave during NFC sync
   - Smooth 60fps bidirectional card-stack transitions with Framer Motion
-  - Visual 5-step progress indicator with glowing amber beads and back button
+  - Visual 6-step progress indicator with glowing amber beads and back button
 - [x] Build Web Audio API sound synthesis engine (`src/utils/soundEffects.js`) with mute toggle
-- [x] Step 1: **Identity & Levantine Hospitality** (`NameStep.jsx`)
-- [x] Step 2: **Dietary Guardrails** (`DietaryStep.jsx`)
-- [x] Step 3: **The Sensory Palate Slider** (`PalateStep.jsx`)
-- [x] Step 4: **Temperature Affinity** (`TemperatureStep.jsx`)
-- [x] Step 5: **The Generated Taste Passport Card** (`TasteProfileCard.jsx`)
+- [x] Step 1: **Identity & Customer Registration** (`NameStep.jsx`):
+  - Full name capture with cultural Arabic typography
+  - Mobile / WhatsApp phone registration with international country dial code selector (`+962`, `+971`, `+961`, `+966`, `+1`)
+  - 1-tap pitch demo presets (Tariq, Salma, Areej, Noor)
+- [x] Step 2: **Dietary Guardrails** (`DietaryStep.jsx`):
+  - Nut Allergy, Vegan, Lactose-Free, Gluten-Free options with visual badge tags
+- [x] Step 3: **Top Taste Affinities (Levantine Flavor Pillars)** (`FlavorPillarsStep.jsx`):
+  - 5 bespoke flavor pillars: *Damascene Rose & Blossom*, *Dark Cocoa & Tahini*, *Bright Citrus & Terroir*, *Spiced Cardamom & Dates*, *Silky Velvet & Microfoam*
+  - Up to 3 selections allowed (minimum 1 recommended)
+  - Helper note: *"You can always refine your full flavor radar at fayrouz.coffee/passport"*
+- [x] Step 4: **Roast & Sweetness Calibration** (`RoastSweetnessStep.jsx`):
+  - 3 Roast Levels: Light & Floral, Medium Balanced, Dark Intense
+  - 3 Sweetness Levels: 0% Unsweetened, Subtle Natural Touch, Rich & Indulgent Sweet
+- [x] Step 5: **Temperature Affinity** (`TemperatureStep.jsx`):
+  - Chilled & Iced vs Steaming Warmth vs All-Weather flexibility
+- [x] Step 6: **The Generated Taste Passport Card** (`TasteProfileCard.jsx`):
+  - Bespoke Levantine persona title, cultural Arabic moniker, unique ID (`FYZ-XXXX`)
+  - Masked customer phone display (`+962 79 •••• 1234`)
+  - Multi-flavor radar tags and safety protocol badges
+  - Dual-Device trigger: Mobile triggers NFC tap beam; Kiosk triggers *"Start Ordering with My Passport"* to unlock curated counter display
+- [x] Automated test suite expanded to 30 tests (`src/utils/personalizationEngine.test.js`) — 30/30 passed
 
 ---
 

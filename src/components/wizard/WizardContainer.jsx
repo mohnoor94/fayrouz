@@ -4,7 +4,8 @@ import { useProfile } from '../../context/ProfileContext'
 import { soundFx } from '../../utils/soundEffects'
 import NameStep from './NameStep'
 import DietaryStep from './DietaryStep'
-import PalateStep from './PalateStep'
+import FlavorPillarsStep from './FlavorPillarsStep'
+import RoastSweetnessStep from './RoastSweetnessStep'
 import TemperatureStep from './TemperatureStep'
 import TasteProfileCard from './TasteProfileCard'
 import { 
@@ -14,13 +15,14 @@ import {
   VolumeX, 
   Radio, 
   Sparkles,
-  ChevronLeft
+  X
 } from 'lucide-react'
 
 const STEP_TITLES = [
-  'Identity & Welcome',
+  'Identity & Mobile Pass',
   'Dietary Guardrails',
-  'Sensory Palate Dial',
+  'Top Taste Affinities',
+  'Roast & Sweetness',
   'Temperature Affinity',
   'Your Taste Passport'
 ]
@@ -52,13 +54,12 @@ const slideVariants = {
   })
 }
 
-export default function WizardContainer() {
+export default function WizardContainer({ isKiosk = false, onCloseKiosk = null }) {
   const { 
     wizardStep, 
     setWizardStep, 
     nextStep, 
     prevStep, 
-    isNfcSynced, 
     isSyncing 
   } = useProfile()
 
@@ -87,20 +88,20 @@ export default function WizardContainer() {
 
   return (
     <div className="flex flex-col items-center justify-center w-full py-2">
-      {/* iPhone 16 Pro Chassis Frame */}
-      <div className="w-full sm:max-w-[410px] sm:h-[800px] h-full rounded-[44px] bg-gradient-to-b from-[#2a2420] via-[#1a1411] to-[#0c0908] p-3 sm:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9),0_0_0_1px_rgba(212,163,115,0.25),inset_0_1px_1px_rgba(255,255,255,0.15)] flex flex-col relative border border-[#3d2c22]">
+      {/* Chassis Frame: Phone on Mobile Simulator, or sleek tablet card in kiosk mode */}
+      <div className={`w-full sm:max-w-[420px] sm:h-[820px] h-full rounded-[44px] bg-gradient-to-b from-[#2a2420] via-[#1a1411] to-[#0c0908] p-3 sm:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9),0_0_0_1px_rgba(212,163,115,0.25),inset_0_1px_1px_rgba(255,255,255,0.15)] flex flex-col relative border border-[#3d2c22] ${isKiosk ? 'sm:max-w-[460px] sm:h-[720px]' : ''}`}>
         
         {/* Screen Glass Inner Shell */}
         <div className="w-full h-full rounded-[38px] bg-fayrouz-obsidian flex flex-col overflow-hidden border border-fayrouz-border/50 relative shadow-inner">
           
           {/* Top Status Bar with Dynamic Island */}
           <div className="pt-2 px-6 flex items-center justify-between z-30 flex-shrink-0 select-none">
-            {/* Clock */}
+            {/* Left element */}
             <span className="text-[11px] font-mono font-medium text-fayrouz-foam/80">
               09:42
             </span>
 
-            {/* Dynamic Island Pill (Option A) */}
+            {/* Dynamic Island Pill */}
             <motion.div 
               layout
               className={`h-6 rounded-full bg-black border border-white/10 flex items-center justify-between px-3 gap-2 transition-all ${
@@ -128,7 +129,7 @@ export default function WizardContainer() {
               )}
             </motion.div>
 
-            {/* Right Status Icons */}
+            {/* Right Status Icons or Close Button if in Kiosk Modal */}
             <div className="flex items-center gap-2 text-fayrouz-foam/80">
               <button
                 type="button"
@@ -138,21 +139,34 @@ export default function WizardContainer() {
               >
                 {isMuted ? <VolumeX className="w-3.5 h-3.5 text-fayrouz-muted" /> : <Volume2 className="w-3.5 h-3.5 text-fayrouz-amber" />}
               </button>
-              <Wifi className="w-3 h-3" />
-              <Battery className="w-3.5 h-3.5" />
+
+              {isKiosk && onCloseKiosk ? (
+                <button
+                  type="button"
+                  onClick={onCloseKiosk}
+                  className="hover:text-fayrouz-cream text-fayrouz-muted transition-colors p-0.5"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              ) : (
+                <>
+                  <Wifi className="w-3 h-3" />
+                  <Battery className="w-3.5 h-3.5" />
+                </>
+              )}
             </div>
           </div>
 
-          {/* Step Progress Beads */}
+          {/* Step Progress Beads (6 Steps) */}
           <div className="px-6 pt-3 pb-1 z-20 flex-shrink-0">
             <div className="flex items-center justify-between text-[9px] font-mono text-fayrouz-muted uppercase tracking-wider mb-1.5">
               <span>{STEP_TITLES[wizardStep]}</span>
-              <span>Step 0{wizardStep + 1} / 05</span>
+              <span>Step 0{wizardStep + 1} / 06</span>
             </div>
 
-            {/* Segmented Progress Bar */}
-            <div className="grid grid-cols-5 gap-1.5 h-1 w-full">
-              {Array.from({ length: 5 }).map((_, i) => (
+            {/* Segmented Progress Bar (6 segments) */}
+            <div className="grid grid-cols-6 gap-1.5 h-1 w-full">
+              {Array.from({ length: 6 }).map((_, i) => (
                 <div
                   key={i}
                   className={`h-full rounded-full transition-all duration-300 ${
@@ -206,7 +220,7 @@ export default function WizardContainer() {
                   exit="exit"
                   className="w-full h-full"
                 >
-                  <PalateStep onNext={handleNext} onPrev={handlePrev} />
+                  <FlavorPillarsStep onNext={handleNext} onPrev={handlePrev} />
                 </motion.div>
               )}
 
@@ -220,7 +234,7 @@ export default function WizardContainer() {
                   exit="exit"
                   className="w-full h-full"
                 >
-                  <TemperatureStep onNext={handleNext} onPrev={handlePrev} />
+                  <RoastSweetnessStep onNext={handleNext} onPrev={handlePrev} />
                 </motion.div>
               )}
 
@@ -234,7 +248,25 @@ export default function WizardContainer() {
                   exit="exit"
                   className="w-full h-full"
                 >
-                  <TasteProfileCard onRestart={handleRestart} />
+                  <TemperatureStep onNext={handleNext} onPrev={handlePrev} />
+                </motion.div>
+              )}
+
+              {wizardStep === 5 && (
+                <motion.div
+                  key="step5"
+                  custom={direction}
+                  variants={slideVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  className="w-full h-full"
+                >
+                  <TasteProfileCard 
+                    onRestart={handleRestart} 
+                    isKiosk={isKiosk}
+                    onKioskComplete={onCloseKiosk}
+                  />
                 </motion.div>
               )}
             </AnimatePresence>

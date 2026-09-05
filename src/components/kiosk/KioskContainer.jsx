@@ -6,6 +6,7 @@ import InitialStateMenu from './InitialStateMenu'
 import DynamicCuratedMenu from './DynamicCuratedMenu'
 import OrderTraySidebar from './OrderTraySidebar'
 import NfcSyncOverlay from './NfcSyncOverlay'
+import WizardContainer from '../wizard/WizardContainer'
 import { 
   Coffee, 
   Radio, 
@@ -25,7 +26,9 @@ export default function KioskContainer() {
     resetNfcSync, 
     triggerNfcSync, 
     userProfile, 
-    addToOrderTray 
+    addToOrderTray,
+    isKioskWizardOpen,
+    setIsKioskWizardOpen
   } = useProfile()
 
   const [isAmbientPlaying, setIsAmbientPlaying] = useState(false)
@@ -120,14 +123,26 @@ export default function KioskContainer() {
                   </button>
                 </div>
               ) : (
-                <button
-                  type="button"
-                  onClick={() => { soundFx.playNfcBeam(); triggerNfcSync(); }}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian font-serif font-bold text-xs shadow-amber-glow cursor-pointer"
-                >
-                  <Radio className="w-3.5 h-3.5 animate-pulse" />
-                  <span>Tap Phone (Simulate NFC)</span>
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => { soundFx.playTap(); setIsKioskWizardOpen(true); }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-fayrouz-surface/70 hover:bg-fayrouz-surface border border-fayrouz-amber/40 text-fayrouz-gold text-xs font-serif transition-colors cursor-pointer"
+                    title="Create your Taste Passport directly on this kiosk"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-fayrouz-gold" />
+                    <span className="hidden sm:inline">New? Create Passport</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => { soundFx.playNfcBeam(); triggerNfcSync(); }}
+                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian font-serif font-bold text-xs shadow-amber-glow cursor-pointer"
+                  >
+                    <Radio className="w-3.5 h-3.5 animate-pulse" />
+                    <span>Tap Phone (Simulate NFC)</span>
+                  </button>
+                </div>
               )}
             </div>
           </header>
@@ -166,6 +181,30 @@ export default function KioskContainer() {
             {/* Persistent Right Order Tray (Option A) */}
             <OrderTraySidebar onResetKiosk={resetNfcSync} />
           </div>
+
+          {/* Kiosk Walk-in Onboarding Wizard Modal */}
+          <AnimatePresence>
+            {isKioskWizardOpen && (
+              <motion.div
+                key="kiosk-wizard-modal"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="absolute inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3"
+              >
+                <div className="w-full max-w-[480px] max-h-[96%] flex flex-col relative">
+                  <WizardContainer 
+                    isKiosk={true} 
+                    onCloseKiosk={() => {
+                      setIsKioskWizardOpen(false)
+                      triggerNfcSync()
+                    }} 
+                  />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Golden Ripple Wave Overlay during NFC Handshake */}
           <NfcSyncOverlay />

@@ -15,7 +15,7 @@ const CATEGORY_TABS = [
 ]
 
 export default function InitialStateMenu({ onAdd }) {
-  const { rawMenuData, triggerNfcSync, isSyncing, userProfile } = useProfile()
+  const { rawMenuData, triggerNfcSync, isSyncing, userProfile, setIsKioskWizardOpen } = useProfile()
   const [activeTab, setActiveTab] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -67,9 +67,24 @@ export default function InitialStateMenu({ onAdd }) {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian font-serif font-bold text-xs sm:text-sm shadow-amber-glow relative z-10 flex-shrink-0 group-hover:scale-105 transition-transform">
-          <span>{isSyncing ? 'Beaming...' : 'Tap to Sync Passport'}</span>
-          <ArrowRight className="w-4 h-4" />
+        <div className="flex flex-col sm:flex-row items-center gap-2 relative z-10 flex-shrink-0">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              soundFx.playTap()
+              setIsKioskWizardOpen(true)
+            }}
+            className="px-4 py-2.5 rounded-2xl bg-fayrouz-surface/90 hover:bg-fayrouz-surface border border-fayrouz-amber/50 text-fayrouz-cream font-serif text-xs flex items-center gap-1.5 transition-all shadow-sm"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-fayrouz-gold" />
+            <span>New Guest? Create Passport (30s)</span>
+          </button>
+
+          <div className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian font-serif font-bold text-xs sm:text-sm shadow-amber-glow group-hover:scale-105 transition-transform">
+            <span>{isSyncing ? 'Beaming...' : 'Tap to Sync Passport'}</span>
+            <ArrowRight className="w-4 h-4" />
+          </div>
         </div>
       </motion.div>
 

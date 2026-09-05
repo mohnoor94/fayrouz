@@ -15,7 +15,11 @@ export const DEMO_PRESETS = [
     description: 'Black, intense, unadulterated high-altitude extraction.',
     profile: {
       name: 'Tariq',
+      phone: '+962 79 010 0101',
       dietary: [],
+      tasteAffinities: ['cacao', 'spiced'],
+      roastPreference: 'dark',
+      sweetnessPreference: 'unsweetened',
       palateScore: 1,
       temperature: 'hot'
     }
@@ -28,7 +32,11 @@ export const DEMO_PRESETS = [
     description: 'Zero dairy, strict nut allergy guardrails, iced preference.',
     profile: {
       name: 'Salma',
+      phone: '+971 50 234 5678',
       dietary: [DIETARY_FLAGS.VEGAN, DIETARY_FLAGS.NUT_FREE],
+      tasteAffinities: ['floral', 'citrus'],
+      roastPreference: 'light',
+      sweetnessPreference: 'subtle',
       palateScore: 5,
       temperature: 'iced'
     }
@@ -41,7 +49,11 @@ export const DEMO_PRESETS = [
     description: 'Lactose-free, rich caramel and fragrant condensed sweetness.',
     profile: {
       name: 'Areej',
+      phone: '+961 3 456 789',
       dietary: [DIETARY_FLAGS.LACTOSE_FREE],
+      tasteAffinities: ['silky', 'spiced'],
+      roastPreference: 'medium',
+      sweetnessPreference: 'sweet',
       palateScore: 9,
       temperature: 'iced'
     }
@@ -54,7 +66,11 @@ export const DEMO_PRESETS = [
     description: 'Harmonious balance of aromatics, cardamom, and heritage.',
     profile: {
       name: 'Noor',
+      phone: '+1 415 555 2671',
       dietary: [],
+      tasteAffinities: ['floral', 'cacao', 'spiced'],
+      roastPreference: 'medium',
+      sweetnessPreference: 'subtle',
       palateScore: 5,
       temperature: 'any'
     }
@@ -63,7 +79,11 @@ export const DEMO_PRESETS = [
 
 const DEFAULT_PROFILE = {
   name: 'Layla',
+  phone: '+962 79 555 1234',
   dietary: [],
+  tasteAffinities: ['floral', 'spiced'],
+  roastPreference: 'medium',
+  sweetnessPreference: 'subtle',
   palateScore: 5,
   temperature: 'any'
 }
@@ -72,10 +92,11 @@ const ProfileContext = createContext(null)
 
 export function ProfileProvider({ children }) {
   const [userProfile, setUserProfile] = useState(DEFAULT_PROFILE)
-  const [wizardStep, setWizardStep] = useState(0) // 0 to 4
+  const [wizardStep, setWizardStep] = useState(0) // 0 to 5
   const [isProfileCompleted, setIsProfileCompleted] = useState(false)
   const [isNfcSynced, setIsNfcSynced] = useState(false)
   const [isSyncing, setIsSyncing] = useState(false)
+  const [isKioskWizardOpen, setIsKioskWizardOpen] = useState(false)
   const [activeDeviceView, setActiveDeviceView] = useState('split') // 'split' | 'mobile' | 'tablet'
   const [orderTray, setOrderTray] = useState([])
   const [activePresetId, setActivePresetId] = useState(null)
@@ -102,6 +123,32 @@ export function ProfileProvider({ children }) {
     setActivePresetId(null)
   }, [])
 
+  const toggleTasteAffinity = useCallback((affinityId) => {
+    setUserProfile(prev => {
+      const current = prev.tasteAffinities || []
+      const exists = current.includes(affinityId)
+      if (exists) {
+        return { ...prev, tasteAffinities: current.filter(id => id !== affinityId) }
+      }
+      // Maximum 3 favorites allowed
+      if (current.length >= 3) {
+        return prev // already reached 3
+      }
+      return { ...prev, tasteAffinities: [...current, affinityId] }
+    })
+    setActivePresetId(null)
+  }, [])
+
+  const setRoastPreference = useCallback((roast) => {
+    setUserProfile(prev => ({ ...prev, roastPreference: roast }))
+    setActivePresetId(null)
+  }, [])
+
+  const setSweetnessPreference = useCallback((sweetness) => {
+    setUserProfile(prev => ({ ...prev, sweetnessPreference: sweetness }))
+    setActivePresetId(null)
+  }, [])
+
   const setPalateScore = useCallback((score) => {
     setUserProfile(prev => ({ ...prev, palateScore: Math.max(1, Math.min(10, Number(score))) }))
     setActivePresetId(null)
@@ -113,7 +160,7 @@ export function ProfileProvider({ children }) {
   }, [])
 
   const nextStep = useCallback(() => {
-    setWizardStep(prev => Math.min(4, prev + 1))
+    setWizardStep(prev => Math.min(5, prev + 1))
   }, [])
 
   const prevStep = useCallback(() => {
@@ -122,7 +169,7 @@ export function ProfileProvider({ children }) {
 
   const completeProfile = useCallback(() => {
     setIsProfileCompleted(true)
-    setWizardStep(4)
+    setWizardStep(5)
   }, [])
 
   // Simulated NFC Handshake Beam
@@ -146,7 +193,7 @@ export function ProfileProvider({ children }) {
       setUserProfile(preset.profile)
       setActivePresetId(presetId)
       setIsProfileCompleted(true)
-      setWizardStep(4)
+      setWizardStep(5)
     }
   }, [])
 
@@ -156,6 +203,7 @@ export function ProfileProvider({ children }) {
     setIsProfileCompleted(false)
     setIsNfcSynced(false)
     setIsSyncing(false)
+    setIsKioskWizardOpen(false)
     setOrderTray([])
     setActivePresetId(null)
   }, [])
@@ -188,6 +236,7 @@ export function ProfileProvider({ children }) {
     isProfileCompleted,
     isNfcSynced,
     isSyncing,
+    isKioskWizardOpen,
     activeDeviceView,
     orderTray,
     activePresetId,
@@ -196,6 +245,9 @@ export function ProfileProvider({ children }) {
     // Setters & Actions
     updateProfile,
     toggleDietary,
+    toggleTasteAffinity,
+    setRoastPreference,
+    setSweetnessPreference,
     setPalateScore,
     setTemperature,
     setWizardStep,
@@ -204,6 +256,7 @@ export function ProfileProvider({ children }) {
     completeProfile,
     triggerNfcSync,
     resetNfcSync,
+    setIsKioskWizardOpen,
     setActiveDeviceView,
     addToOrderTray,
     removeFromOrderTray,
