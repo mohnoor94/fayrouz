@@ -169,15 +169,18 @@ export default function DynamicCuratedMenu({ onAdd }) {
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.25 }}
-          className="rounded-3xl p-5 bg-gradient-to-r from-[#241c16] via-[#1d1612] to-[#251b14] border-2 border-fayrouz-gold/50 shadow-[0_12px_35px_-10px_rgba(233,196,106,0.25)] relative overflow-hidden"
+          className="rounded-3xl p-5 sm:p-6 bg-gradient-to-br from-[#241c16] via-[#1d1612] to-[#251b14] border-2 border-fayrouz-gold/60 shadow-[0_12px_35px_-10px_rgba(233,196,106,0.3)] relative flex flex-col gap-4"
         >
-          <div className="absolute top-0 right-0 w-60 h-60 bg-fayrouz-gold/10 rounded-full blur-3xl pointer-events-none" />
+          {/* Isolated Background Glow Overlay */}
+          <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none">
+            <div className="absolute top-0 right-0 w-80 h-80 bg-fayrouz-gold/15 rounded-full blur-3xl pointer-events-none" />
+          </div>
 
-          {/* Top Label */}
-          <div className="flex items-center justify-between gap-2 mb-3 relative z-10">
-            <div className="flex items-center gap-2">
-              <span className="px-3 py-0.5 rounded-full text-[10px] font-mono uppercase font-bold bg-gradient-to-r from-fayrouz-amber to-fayrouz-gold text-fayrouz-obsidian flex items-center gap-1.5 shadow-sm">
-                <Star className="w-3 h-3 fill-current stroke-none" />
+          {/* Top Label Bar */}
+          <div className="flex flex-wrap items-center justify-between gap-2 relative z-10">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="px-3 py-1 rounded-full text-[11px] font-mono uppercase font-bold bg-gradient-to-r from-fayrouz-amber to-fayrouz-gold text-fayrouz-obsidian flex items-center gap-1.5 shadow-sm">
+                <Star className="w-3.5 h-3.5 fill-current stroke-none" />
                 Your Usual • طلبك المعتاد
               </span>
               <span className="text-xs font-mono text-fayrouz-gold font-bold">
@@ -186,54 +189,52 @@ export default function DynamicCuratedMenu({ onAdd }) {
             </div>
 
             <span className="text-[11px] font-mono text-fayrouz-muted flex items-center gap-1">
-              <Clock className="w-3 h-3 text-fayrouz-amber" />
+              <Clock className="w-3.5 h-3.5 text-fayrouz-amber" />
               Last ordered: {usualConfig.lastOrdered}
             </span>
           </div>
 
-          {/* Usual Drink Display Row */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10">
-            <div className="flex items-center gap-4">
-              {/* Drink Artwork */}
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-fayrouz-obsidian border-2 border-fayrouz-gold/40 flex items-center justify-center flex-shrink-0 p-1 shadow-inner">
-                <DrinkArtwork item={usualItem} size="md" />
-              </div>
-
-              <div>
-                <h4 className="text-lg sm:text-xl font-serif font-bold text-fayrouz-cream leading-tight">
-                  {usualItem.name}
-                </h4>
-                <div className="font-arabic text-sm text-fayrouz-amber mb-1">
-                  {usualItem.nameAr}
-                </div>
-                <div className="p-1.5 px-2.5 rounded-xl bg-fayrouz-obsidian/80 border border-fayrouz-border/80 text-[11px] text-fayrouz-foam/90 font-mono inline-flex items-center gap-1.5">
-                  <Repeat className="w-3 h-3 text-fayrouz-gold" />
-                  <span>{usualConfig.note}</span>
-                </div>
-              </div>
+          {/* Usual Drink Showcase */}
+          <div className="flex items-start gap-4 relative z-10 py-1">
+            {/* Drink Artwork */}
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-fayrouz-obsidian border-2 border-fayrouz-gold/50 flex items-center justify-center flex-shrink-0 p-1 shadow-inner">
+              <DrinkArtwork item={usualItem} size="md" />
             </div>
 
-            {/* Quick Action Buttons */}
-            <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-              <button
-                type="button"
-                onClick={() => setCustomizingItem(usualItem)}
-                className="px-4 py-2.5 rounded-2xl bg-fayrouz-surface/90 hover:bg-fayrouz-surface border border-fayrouz-border hover:border-fayrouz-amber/60 text-fayrouz-cream font-serif text-xs flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
-              >
-                <Sliders className="w-3.5 h-3.5 text-fayrouz-muted" />
-                <span>Customize</span>
-              </button>
-
-              <motion.button
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.94 }}
-                onClick={handleQuickOrderUsual}
-                className="px-6 py-2.5 rounded-2xl bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian font-serif font-bold text-xs sm:text-sm shadow-amber-glow flex items-center gap-2 cursor-pointer"
-              >
-                <Check className="w-4 h-4 stroke-[3]" />
-                <span>1-Tap Order My Usual (${(usualItem.effectivePrice ?? usualItem.price).toFixed(2)})</span>
-              </motion.button>
+            <div className="flex-1 min-w-0">
+              <h4 className="text-lg sm:text-xl font-serif font-bold text-fayrouz-cream leading-tight">
+                {usualItem.name}
+              </h4>
+              <div className="font-arabic text-sm text-fayrouz-amber mt-0.5">
+                {usualItem.nameAr}
+              </div>
+              <div className="mt-2 p-1.5 px-3 rounded-xl bg-fayrouz-obsidian/90 border border-fayrouz-border/80 text-[11px] text-fayrouz-foam font-mono inline-flex items-center gap-1.5 flex-wrap">
+                <Repeat className="w-3 h-3 text-fayrouz-gold flex-shrink-0" />
+                <span>{usualConfig.note}</span>
+              </div>
             </div>
+          </div>
+
+          {/* Bottom Action Row: Dedicated 50/50 responsive grid that never overflows */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-fayrouz-border/60 relative z-10">
+            <motion.button
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleQuickOrderUsual}
+              className="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian font-serif font-bold text-xs sm:text-sm shadow-amber-glow flex items-center justify-center gap-2 cursor-pointer transition-transform"
+            >
+              <Check className="w-4 h-4 stroke-[3]" />
+              <span>1-Tap Order Usual (${(usualItem.effectivePrice ?? usualItem.price).toFixed(2)})</span>
+            </motion.button>
+
+            <button
+              type="button"
+              onClick={() => setCustomizingItem(usualItem)}
+              className="w-full py-3 px-4 rounded-2xl bg-fayrouz-surface/90 hover:bg-fayrouz-surface border border-fayrouz-amber/50 hover:border-fayrouz-amber text-fayrouz-cream font-serif text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"
+            >
+              <Sliders className="w-3.5 h-3.5 text-fayrouz-gold" />
+              <span>Customize & Adjust Brew</span>
+            </button>
           </div>
         </motion.section>
       )}

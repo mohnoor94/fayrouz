@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useProfile } from '../../context/ProfileContext'
 import { soundFx } from '../../utils/soundEffects'
@@ -20,33 +20,93 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
 
   if (!isOpen || !item) return null
 
-  // Check dietary profile
   const isVegan = userProfile?.dietary?.includes('vegan')
   const isLactoseFree = userProfile?.dietary?.includes('lactose_free')
-  const defaultMilk = (isVegan || isLactoseFree) ? 'oat' : 'whole'
+  const isUsualItem = Boolean(userProfile?.usualDrink?.itemId && item && userProfile.usualDrink.itemId === item.id)
 
-  // Check temperature affinity
-  const initialTemp = useMemo(() => {
+  // 1. Preferred Size matching to Passport
+  const profileDefaultSize = useMemo(() => {
+    if (isUsualItem && userProfile?.usualDrink?.size) return userProfile.usualDrink.size
+    if (userProfile?.preferredSize) return userProfile.preferredSize
+    const note = userProfile?.usualDrink?.note?.toLowerCase() || ''
+    if (note.includes('16 oz') || note.includes('large')) return 'large'
+    return 'regular'
+  }, [userProfile, isUsualItem])
+
+  // 2. Preferred Temperature matching to Passport
+  const profileDefaultTemp = useMemo(() => {
+    if (!item) return 'hot'
     if (item.canBeIced && !item.canBeHot) return 'iced'
     if (item.canBeHot && !item.canBeIced) return 'hot'
+    if (isUsualItem && userProfile?.usualDrink?.temperature) return userProfile.usualDrink.temperature
+    const note = userProfile?.usualDrink?.note?.toLowerCase() || ''
+    if (isUsualItem && note.includes('iced')) return 'iced'
+    if (isUsualItem && note.includes('hot')) return 'hot'
     if (userProfile?.temperature === 'iced' && item.canBeIced) return 'iced'
     if (userProfile?.temperature === 'hot' && item.canBeHot) return 'hot'
     return item.defaultTemperature || 'hot'
-  }, [item, userProfile])
+  }, [item, userProfile, isUsualItem])
 
-  // Check sweetness preference
-  const initialSweetness = useMemo(() => {
+  // 3. Preferred Milk matching to Passport & Safeguards
+  const profileDefaultMilk = useMemo(() => {
+    if (isVegan || isLactoseFree) return 'oat'
+    if (isUsualItem && userProfile?.usualDrink?.milk) return userProfile.usualDrink.milk
+    if (userProfile?.preferredMilk) return userProfile.preferredMilk
+    const note = userProfile?.usualDrink?.note?.toLowerCase() || ''
+    if (note.includes('oat')) return 'oat'
+    if (note.includes('almond')) return 'almond'
+    return 'whole'
+  }, [userProfile, isVegan, isLactoseFree, isUsualItem])
+
+  // 4. Preferred Sweetness matching to Passport & Palate
+  const profileDefaultSweetness = useMemo(() => {
+    if (isUsualItem && userProfile?.usualDrink?.sweetness) return userProfile.usualDrink.sweetness
+    const note = userProfile?.usualDrink?.note?.toLowerCase() || ''
+    if (note.includes('0%') || note.includes('unsweetened')) return '0'
+    if (note.includes('100%') || note.includes('rich sweet')) return '100'
+    if (note.includes('25%') || note.includes('subtle')) return '25'
+    if (note.includes('50%') || note.includes('balanced')) return '50'
     if (userProfile?.sweetnessPreference === 'unsweetened') return '0'
     if (userProfile?.sweetnessPreference === 'sweet') return '100'
+    if (userProfile?.sweetnessPreference === 'balanced') return '50'
+    if (userProfile?.sweetnessPreference === 'subtle') return '25'
+    if (userProfile?.palateScore <= 2) return '0'
+    if (userProfile?.palateScore >= 8) return '100'
     return '25'
-  }, [userProfile])
+  }, [userProfile, isUsualItem])
 
-  // Customization State
-  const [temperature, setTemperature] = useState(initialTemp)
-  const [size, setSize] = useState('regular') // 'regular' | 'large'
-  const [milk, setMilk] = useState(defaultMilk)
-  const [sweetness, setSweetness] = useState(initialSweetness)
-  const [addOns, setAddOns] = useState([])
+  // 5. Preferred Add-Ons matching to Passport Pillars
+  const profileDefaultAddOns = useMemo(() => {
+    if (isUsualItem && userProfile?.usualDrink?.addOns) {
+      return userProfile.usualDrink.addOns
+    }
+    const list = []
+    const note = userProfile?.usualDrink?.note?.toLowerCase() || ''
+    const affinities = userProfile?.tasteAffinities || []
+    if (affinities.includes('spiced') || note.includes('cardamom')) list.push('cardamom')
+    if (note.includes('extra') || note.includes('ristretto') || note.includes('double')) list.push('extra-shot')
+    if (note.includes('rose')) list.push('rosewater')
+    if (note.includes('tahini')) list.push('tahini')
+    return [...new Set(list)]
+  }, [userProfile, isUsualItem])
+
+  // Dynamic Customization State
+  const [temperature, setTemperature] = useState(profileDefaultTemp)
+  const [size, setSize] = useState(profileDefaultSize)
+  const [milk, setMilk] = useState(profileDefaultMilk)
+  const [sweetness, setSweetness] = useState(profileDefaultSweetness)
+  const [addOns, setAddOns] = useState(profileDefaultAddOns)
+
+  // Re-synchronize EVERY time item or modal opens!
+  useEffect(() => {
+    if (isOpen && item) {
+      setTemperature(profileDefaultTemp)
+      setSize(profileDefaultSize)
+      setMilk(profileDefaultMilk)
+      setSweetness(profileDefaultSweetness)
+      setAddOns(profileDefaultAddOns)
+    }
+  }, [isOpen, item?.id, profileDefaultTemp, profileDefaultSize, profileDefaultMilk, profileDefaultSweetness, profileDefaultAddOns])
 
   const hasMilkOption = Boolean(item.containsDairy || item.dairyAlternative || item.category === 'velvet-milk')
 
@@ -144,12 +204,10 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
               <span className="text-xs font-mono uppercase text-fayrouz-muted tracking-wider">
                 Temperature Extraction
               </span>
-              {userProfile?.temperature && userProfile.temperature !== 'any' && (
-                <span className="text-[10px] font-mono text-fayrouz-gold flex items-center gap-1">
-                  <Sparkles className="w-2.5 h-2.5" />
-                  Passport: {userProfile.temperature === 'iced' ? 'Chilled' : 'Hot'}
-                </span>
-              )}
+              <span className="text-[10px] font-mono text-fayrouz-gold flex items-center gap-1 font-medium">
+                <Sparkles className="w-2.5 h-2.5" />
+                Passport Match: {temperature === 'iced' ? '❄️ Flash Iced' : '🔥 Steaming Hot'}
+              </span>
             </div>
 
             <div className="grid grid-cols-2 gap-2.5">
@@ -193,9 +251,15 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
 
           {/* 2. Cup Size Selection */}
           <div>
-            <span className="text-xs font-mono uppercase text-fayrouz-muted tracking-wider block mb-2">
-              Beverage Size
-            </span>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-mono uppercase text-fayrouz-muted tracking-wider">
+                Beverage Size
+              </span>
+              <span className="text-[10px] font-mono text-fayrouz-gold flex items-center gap-1 font-medium">
+                <Sparkles className="w-2.5 h-2.5" />
+                Passport Default: {size === 'large' ? 'Large (16 oz)' : 'Regular (12 oz)'}
+              </span>
+            </div>
             <div className="grid grid-cols-2 gap-2.5">
               <button
                 type="button"
@@ -232,10 +296,15 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
                 <span className="text-xs font-mono uppercase text-fayrouz-muted tracking-wider">
                   Milk & Plant Dairy
                 </span>
-                {(isVegan || isLactoseFree) && (
+                {(isVegan || isLactoseFree) ? (
                   <span className="text-[10px] font-mono text-fayrouz-cardamom flex items-center gap-1 font-bold">
                     <Leaf className="w-2.5 h-2.5" />
-                    Oat Auto-Swapped
+                    {isVegan ? 'Strict Vegan: Oat Auto-Swapped' : 'Lactose-Free: Oat Auto-Swapped'}
+                  </span>
+                ) : (
+                  <span className="text-[10px] font-mono text-fayrouz-gold flex items-center gap-1 font-medium">
+                    <Sparkles className="w-2.5 h-2.5" />
+                    Passport: {milk === 'oat' ? 'Oat Milk' : milk === 'almond' ? 'Almond Milk' : 'Whole Milk'}
                   </span>
                 )}
               </div>
@@ -289,8 +358,9 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
               <span className="text-xs font-mono uppercase text-fayrouz-muted tracking-wider">
                 Sweetness Touch
               </span>
-              <span className="text-[10px] font-mono text-fayrouz-gold">
-                Passport: {userProfile?.sweetnessPreference || 'Subtle'}
+              <span className="text-[10px] font-mono text-fayrouz-gold flex items-center gap-1 font-medium">
+                <Sparkles className="w-2.5 h-2.5" />
+                Palate Match: {sweetness === '0' ? '0% Pure' : sweetness === '25' ? '25% Subtle' : sweetness === '50' ? '50% Balanced' : '100% Rich'}
               </span>
             </div>
 
@@ -320,9 +390,21 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
 
           {/* 5. Levantine Craft Add-Ons */}
           <div>
-            <span className="text-xs font-mono uppercase text-fayrouz-muted tracking-wider block mb-2">
-              Levantine Craft Add-Ons
-            </span>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-mono uppercase text-fayrouz-muted tracking-wider block">
+                Levantine Craft Add-Ons
+              </span>
+              {addOns.length > 0 ? (
+                <span className="text-[10px] font-mono text-fayrouz-gold flex items-center gap-1 font-medium">
+                  <Sparkles className="w-2.5 h-2.5" />
+                  Passport Auto-Selected ({addOns.length})
+                </span>
+              ) : (
+                <span className="text-[10px] font-mono text-fayrouz-muted">
+                  Optional additions
+                </span>
+              )}
+            </div>
 
             <div className="grid grid-cols-2 gap-2">
               {[

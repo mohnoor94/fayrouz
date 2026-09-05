@@ -22,8 +22,15 @@ export const DEMO_PRESETS = [
       sweetnessPreference: 'unsweetened',
       palateScore: 1,
       temperature: 'hot',
+      preferredSize: 'regular',
+      preferredMilk: null,
       usualDrink: {
         itemId: 'sidama-double-espresso',
+        size: 'regular',
+        temperature: 'hot',
+        milk: null,
+        sweetness: '0',
+        addOns: [],
         orderCount: 18,
         lastOrdered: 'Yesterday, 9:15 AM',
         note: 'Double Ristretto • Hot • 0% Unsweetened'
@@ -45,11 +52,18 @@ export const DEMO_PRESETS = [
       sweetnessPreference: 'subtle',
       palateScore: 5,
       temperature: 'iced',
+      preferredSize: 'regular',
+      preferredMilk: 'oat',
       usualDrink: {
         itemId: 'damascus-rose-cortado',
+        size: 'regular',
+        temperature: 'iced',
+        milk: 'oat',
+        sweetness: '25',
+        addOns: ['rosewater'],
         orderCount: 14,
         lastOrdered: 'Today, 8:30 AM',
-        note: 'Oat Milk Swapped • Subtle Touch'
+        note: 'Flash Iced (12 oz) • Oat Milk Swapped • Rose Mist'
       }
     }
   },
@@ -68,11 +82,18 @@ export const DEMO_PRESETS = [
       sweetnessPreference: 'sweet',
       palateScore: 9,
       temperature: 'iced',
+      preferredSize: 'large',
+      preferredMilk: 'oat',
       usualDrink: {
         itemId: 'aleppo-pistachio-latte',
+        size: 'large',
+        temperature: 'iced',
+        milk: 'oat',
+        sweetness: '100',
+        addOns: ['cardamom'],
         orderCount: 19,
         lastOrdered: '2 days ago',
-        note: 'Flash Iced • Oat Milk • Rich Sweet'
+        note: 'Flash Iced (16 oz Large) • Oat Milk • Rich Sweet • Cardamom'
       }
     }
   },
@@ -91,11 +112,18 @@ export const DEMO_PRESETS = [
       sweetnessPreference: 'subtle',
       palateScore: 5,
       temperature: 'any',
+      preferredSize: 'large',
+      preferredMilk: 'oat',
       usualDrink: {
         itemId: 'classic-oat-flat-white',
+        size: 'large',
+        temperature: 'hot',
+        milk: 'oat',
+        sweetness: '25',
+        addOns: ['extra-shot'],
         orderCount: 22,
         lastOrdered: 'Yesterday, 10:00 AM',
-        note: 'Velvety Microfoam • Extra Hot'
+        note: 'Steaming Hot (16 oz Large) • Velvety Oat Microfoam • Extra Double Shot'
       }
     }
   }
@@ -110,11 +138,18 @@ const DEFAULT_PROFILE = {
   sweetnessPreference: 'subtle',
   palateScore: 5,
   temperature: 'any',
+  preferredSize: 'regular',
+  preferredMilk: 'whole',
   usualDrink: {
     itemId: 'damascus-rose-cortado',
+    size: 'regular',
+    temperature: 'hot',
+    milk: 'whole',
+    sweetness: '25',
+    addOns: ['cardamom'],
     orderCount: 9,
     lastOrdered: '3 days ago',
-    note: 'Hot • Subtle Touch'
+    note: 'Steaming Hot (12 oz Reg) • Subtle Touch • Green Cardamom'
   }
 }
 
