@@ -7,6 +7,7 @@ import KioskItemCard from './KioskItemCard'
 import DrinkArtwork from './DrinkArtwork'
 import ItemCustomizerModal from './ItemCustomizerModal'
 import CoffeeDialectDossierModal from './CoffeeDialectDossierModal'
+import DialectCalibrationQuizModal from './DialectCalibrationQuizModal'
 import { 
   Sparkles, 
   Search, 
@@ -41,6 +42,7 @@ export default function DynamicCuratedMenu({ onAdd }) {
   const [customizingItem, setCustomizingItem] = useState(null)
   const [isUsualJustAdded, setIsUsualJustAdded] = useState(false)
   const [isDossierOpen, setIsDossierOpen] = useState(false)
+  const [isQuizOpen, setIsQuizOpen] = useState(false)
 
   const { curatedMatches, adventurousPick, categorizedMenu, stats } = personalizedMenu
   const persona = generateCoffeePersona(userProfile)
@@ -112,22 +114,22 @@ export default function DynamicCuratedMenu({ onAdd }) {
         </div>
 
         {/* Tier 1: Welcoming Greeting, Arabic Monogram & Coffee Persona */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-fayrouz-obsidian border-2 border-fayrouz-amber/60 flex items-center justify-center text-fayrouz-amber shadow-amber-glow flex-shrink-0">
-              <Coffee className="w-7 h-7" />
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 relative z-10">
+          <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-fayrouz-obsidian border-2 border-fayrouz-amber/60 flex items-center justify-center text-fayrouz-amber shadow-amber-glow flex-shrink-0">
+              <Coffee className="w-6 h-6 sm:w-7 sm:h-7" />
             </div>
 
-            <div>
+            <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-0.5">
-                <span className="w-2 h-2 rounded-full bg-fayrouz-cardamom animate-pulse" />
-                <span className="text-[10px] font-mono uppercase tracking-wider text-fayrouz-amber font-bold">
+                <span className="w-2 h-2 rounded-full bg-fayrouz-cardamom animate-pulse flex-shrink-0" />
+                <span className="text-[10px] font-mono uppercase tracking-wider text-fayrouz-amber font-bold truncate">
                   Universal Passport Synchronized • {persona.passportNumber}
                 </span>
               </div>
 
               <div className="flex flex-wrap items-baseline gap-2">
-                <h3 className="text-xl sm:text-2xl font-serif font-bold text-fayrouz-cream">
+                <h3 className="text-xl sm:text-2xl font-serif font-bold text-fayrouz-cream break-words">
                   Welcome back, {userProfile.name}!
                 </h3>
                 <span className="font-arabic text-base sm:text-lg text-fayrouz-amber font-normal">
@@ -137,38 +139,51 @@ export default function DynamicCuratedMenu({ onAdd }) {
             </div>
           </div>
 
-          {/* The 16 Dialects™ Interactive Identity Emblem */}
-          <button
-            type="button"
-            onClick={() => { soundFx.playTap(); setIsDossierOpen(true); }}
-            className="px-4 py-2 rounded-2xl bg-gradient-to-br from-fayrouz-obsidian via-[#231711] to-fayrouz-obsidian border-2 border-fayrouz-gold/60 hover:border-fayrouz-gold shadow-amber-glow flex items-center gap-3 text-left transition-all hover:scale-[1.02] cursor-pointer group flex-shrink-0"
-            title="Click to explore your certified 16 Dialects™ full identity dossier"
-          >
-            {/* 4-Letter Acronym Emblem */}
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-fayrouz-amber/25 to-fayrouz-gold/10 border border-fayrouz-gold/80 flex flex-col items-center justify-center text-center p-0.5 shadow-inner">
-              <span className="text-xs font-mono font-black tracking-wider text-fayrouz-gold">
-                {persona.dialectCode || 'DIALECT'}
-              </span>
-              <span className="text-[8px] font-mono text-fayrouz-amber">
-                {persona.house?.symbol || '⟡'}
-              </span>
-            </div>
-
-            <div className="flex flex-col items-start">
-              <div className="flex items-center gap-1.5 text-[9px] font-mono uppercase tracking-widest text-fayrouz-amber font-bold">
-                <span>The 16 Dialects™</span>
-                <span className="text-fayrouz-gold opacity-80 group-hover:opacity-100 transition-opacity">
-                  • View Dossier →
+          {/* The 16 Dialects™ Interactive Identity Actions */}
+          <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto flex-shrink-0">
+            <button
+              type="button"
+              onClick={() => { soundFx.playTap(); setIsDossierOpen(true); }}
+              className="flex-1 sm:flex-initial px-3.5 sm:px-4 py-2 rounded-2xl bg-gradient-to-br from-fayrouz-obsidian via-[#231711] to-fayrouz-obsidian border-2 border-fayrouz-gold/60 hover:border-fayrouz-gold shadow-amber-glow flex items-center gap-3 text-left transition-all hover:scale-[1.02] cursor-pointer group max-w-full"
+              title="Click to explore your certified 16 Dialects™ full identity dossier"
+            >
+              {/* 4-Letter Acronym Emblem */}
+              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-fayrouz-amber/25 to-fayrouz-gold/10 border border-fayrouz-gold/80 flex flex-col items-center justify-center text-center p-0.5 shadow-inner flex-shrink-0">
+                <span className="text-xs font-mono font-black tracking-wider text-fayrouz-gold">
+                  {persona.dialectCode || 'DIALECT'}
+                </span>
+                <span className="text-[8px] font-mono text-fayrouz-amber">
+                  {persona.house?.symbol || '⟡'}
                 </span>
               </div>
-              <div className="text-xs sm:text-sm font-serif font-bold text-fayrouz-gold group-hover:text-fayrouz-cream transition-colors">
-                {persona.title}
+
+              <div className="flex flex-col items-start min-w-0">
+                <div className="flex items-center gap-1.5 text-[9px] font-mono uppercase tracking-widest text-fayrouz-amber font-bold truncate">
+                  <span>The 16 Dialects™</span>
+                  <span className="text-fayrouz-gold opacity-80 group-hover:opacity-100 transition-opacity">
+                    • View Dossier →
+                  </span>
+                </div>
+                <div className="text-xs sm:text-sm font-serif font-bold text-fayrouz-gold group-hover:text-fayrouz-cream transition-colors truncate">
+                  {persona.title}
+                </div>
+                <span className="font-arabic text-[11px] text-fayrouz-amber/80 font-normal truncate">
+                  {persona.titleAr}
+                </span>
               </div>
-              <span className="font-arabic text-[11px] text-fayrouz-amber/80 font-normal">
-                {persona.titleAr}
-              </span>
-            </div>
-          </button>
+            </button>
+
+            {/* Quick 30-Sec Palate Quiz Button */}
+            <button
+              type="button"
+              onClick={() => { soundFx.playTap(); setIsQuizOpen(true); }}
+              className="px-3.5 py-2.5 rounded-2xl bg-fayrouz-surface/90 hover:bg-fayrouz-surface border border-fayrouz-amber/40 hover:border-fayrouz-gold text-fayrouz-gold flex items-center gap-1.5 text-xs font-mono font-bold transition-all hover:scale-[1.02] cursor-pointer shadow-sm flex-shrink-0"
+              title="Calibrate or discover your coffee dialect in 30 seconds"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-fayrouz-gold" />
+              <span>Take Palate Quiz</span>
+            </button>
+          </div>
         </div>
 
         {/* Tier 2: Dedicated Taste Radar & Dietary Guardrails Ribbon */}
@@ -418,11 +433,27 @@ export default function DynamicCuratedMenu({ onAdd }) {
         isOpen={isDossierOpen}
         onClose={() => setIsDossierOpen(false)}
         persona={persona}
+        onOpenQuiz={() => {
+          setIsDossierOpen(false)
+          setIsQuizOpen(true)
+        }}
         onOrderDrink={(drinkId) => {
           const matchedItem = rawMenuData.find(d => d.id === drinkId)
           if (matchedItem) {
             setCustomizingItem(matchedItem)
           }
+        }}
+      />
+
+      {/* =====================================================================
+          7. THE 16 DIALECTS™ 30-SECOND SENSORY CALIBRATION QUIZ MODAL
+          ===================================================================== */}
+      <DialectCalibrationQuizModal
+        isOpen={isQuizOpen}
+        onClose={() => setIsQuizOpen(false)}
+        onComplete={(_code) => {
+          setIsQuizOpen(false)
+          setIsDossierOpen(true)
         }}
       />
     </div>

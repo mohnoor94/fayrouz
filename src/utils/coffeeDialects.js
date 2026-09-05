@@ -483,6 +483,31 @@ export const DIALECT_REGISTRY = {
  * @returns {Object} Full dialect resolution dossier with 4-letter code, house, and lore
  */
 export function computeCoffeeDialect(profile = {}) {
+  // 0. EXPLICIT CALIBRATED CODE OVERRIDE (e.g. from 4-Tap Calibration Quiz)
+  if (profile.dialectCode) {
+    if (profile.dialectCode === 'POLY') {
+      return {
+        code: 'POLY',
+        dialect: DIALECT_REGISTRY['POLY'],
+        house: HOUSES.guild,
+        isPolyglot: true,
+        fluidityScore: profile.fluidityScore || 94
+      }
+    }
+    if (DIALECT_REGISTRY[profile.dialectCode]) {
+      const code = profile.dialectCode
+      const dialect = DIALECT_REGISTRY[code]
+      const house = HOUSES[dialect.house] || HOUSES.terroir
+      return {
+        code,
+        dialect,
+        house,
+        isPolyglot: false,
+        fluidityScore: profile.fluidityScore || 45
+      }
+    }
+  }
+
   const affinities = Array.isArray(profile.tasteAffinities) ? profile.tasteAffinities : []
   const roast = profile.roastPreference || 'medium'
   const sweetness = profile.sweetnessPreference || 'subtle'

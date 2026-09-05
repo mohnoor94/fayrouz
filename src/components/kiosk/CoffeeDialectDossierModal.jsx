@@ -21,7 +21,8 @@ export default function CoffeeDialectDossierModal({
   isOpen, 
   onClose, 
   persona, 
-  onOrderDrink 
+  onOrderDrink,
+  onOpenQuiz
 }) {
   if (!isOpen || !persona || !persona.dialect) return null
 
@@ -38,6 +39,12 @@ export default function CoffeeDialectDossierModal({
     soundFx.playTap()
     onOrderDrink?.(dialect.growthDrinkId)
     onClose?.()
+  }
+
+  const handleOpenQuiz = () => {
+    soundFx.playTap()
+    onClose?.()
+    onOpenQuiz?.()
   }
 
   return (
@@ -89,20 +96,20 @@ export default function CoffeeDialectDossierModal({
           {/* Modal Scrollable Body */}
           <div className="flex-1 overflow-y-auto p-5 sm:p-6 flex flex-col gap-6 relative z-10 pr-2">
             {/* Archetype Hero Monogram */}
-            <div className="p-5 rounded-3xl bg-gradient-to-br from-fayrouz-obsidian via-[#211611] to-fayrouz-obsidian border border-fayrouz-gold/40 shadow-inner flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 relative overflow-hidden">
-              <div className="flex items-center gap-4 relative z-10">
+            <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-fayrouz-obsidian via-[#211611] to-fayrouz-obsidian border border-fayrouz-gold/40 shadow-inner flex flex-col md:flex-row items-start md:items-center justify-between gap-5 relative">
+              <div className="flex items-center gap-4 relative z-10 flex-1 min-w-0">
                 {/* 4-Letter Emblem */}
-                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-fayrouz-amber/20 to-fayrouz-gold/10 border-2 border-fayrouz-gold/80 flex flex-col items-center justify-center text-center p-1 shadow-amber-glow flex-shrink-0">
-                  <span className="text-lg font-mono font-black tracking-widest text-fayrouz-gold">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-fayrouz-amber/20 to-fayrouz-gold/10 border-2 border-fayrouz-gold/80 flex flex-col items-center justify-center text-center p-1 shadow-amber-glow flex-shrink-0">
+                  <span className="text-base sm:text-lg font-mono font-black tracking-widest text-fayrouz-gold">
                     {dialectCode}
                   </span>
-                  <span className="text-[9px] font-mono text-fayrouz-amber font-bold">
+                  <span className="text-[8px] sm:text-[9px] font-mono text-fayrouz-amber font-bold truncate">
                     {house?.symbol} {dialect.house?.toUpperCase()}
                   </span>
                 </div>
 
-                <div>
-                  <div className="flex items-center gap-2 mb-0.5">
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-1.5 mb-1">
                     <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-fayrouz-gold/15 border border-fayrouz-gold/30 text-fayrouz-gold font-bold">
                       {house?.name} • {house?.nameAr}
                     </span>
@@ -112,18 +119,33 @@ export default function CoffeeDialectDossierModal({
                       </span>
                     )}
                   </div>
-                  <h2 className="text-xl sm:text-2xl font-serif font-bold text-fayrouz-cream">
+                  <h2 className="text-xl sm:text-2xl font-serif font-bold text-fayrouz-cream break-words leading-tight">
                     {dialect.title}
                   </h2>
-                  <div className="font-arabic text-base text-fayrouz-amber">
+                  <div className="font-arabic text-sm sm:text-base text-fayrouz-amber break-words mt-0.5">
                     {dialect.titleAr}
                   </div>
                 </div>
               </div>
 
-              {/* Tagline Badge */}
-              <div className="text-right sm:max-w-xs text-xs font-sans text-fayrouz-foam/90 leading-relaxed border-t sm:border-t-0 sm:border-l border-fayrouz-border/50 pt-3 sm:pt-0 sm:pl-4">
-                "{dialect.tagline}"
+              {/* Tagline Badge & Re-Calibration Trigger */}
+              <div className="w-full md:w-auto md:max-w-xs text-left md:text-right border-t md:border-t-0 md:border-l border-fayrouz-border/50 pt-3 md:pt-0 md:pl-5 flex-shrink-0 flex flex-col gap-2">
+                <p className="text-xs font-sans text-fayrouz-foam/90 leading-relaxed italic break-words">
+                  "{dialect.tagline}"
+                </p>
+                {dialect.taglineAr && (
+                  <p className="font-arabic text-[11px] text-fayrouz-amber/80 leading-relaxed break-words">
+                    "{dialect.taglineAr}"
+                  </p>
+                )}
+                <button
+                  type="button"
+                  onClick={handleOpenQuiz}
+                  className="mt-1 inline-flex items-center justify-center md:justify-end gap-1.5 px-3 py-1.5 rounded-xl bg-fayrouz-gold/15 hover:bg-fayrouz-gold/25 border border-fayrouz-gold/40 text-[11px] font-mono font-bold text-fayrouz-gold transition-colors cursor-pointer w-full md:w-auto"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-fayrouz-gold" />
+                  <span>Calibrate / Retake Quiz</span>
+                </button>
               </div>
             </div>
 
@@ -272,25 +294,25 @@ export default function CoffeeDialectDossierModal({
             </div>
 
             {/* Coffee Astrology: Compatibility Match */}
-            <div className="p-4 rounded-2xl bg-fayrouz-surface/50 border border-fayrouz-border flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
+            <div className="p-4 rounded-2xl bg-fayrouz-surface/50 border border-fayrouz-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3 flex-1 min-w-0">
                 <div className="w-10 h-10 rounded-xl bg-fayrouz-amber/10 border border-fayrouz-amber/30 flex items-center justify-center text-fayrouz-gold flex-shrink-0">
                   <Users className="w-5 h-5" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <span className="text-[10px] font-mono uppercase text-fayrouz-muted tracking-wider block">
                     Best Coffee Date Compatibility (شريك المقهى المثالي)
                   </span>
-                  <div className="text-xs font-serif font-bold text-fayrouz-cream">
+                  <div className="text-xs font-serif font-bold text-fayrouz-cream break-words">
                     {dialect.bestMatchTitle} ({dialect.bestMatchCode})
                   </div>
-                  <p className="text-[10px] font-sans text-fayrouz-foam/80 mt-0.5">
+                  <p className="text-[10px] font-sans text-fayrouz-foam/80 mt-0.5 break-words">
                     {compatibility.dynamic}
                   </p>
                 </div>
               </div>
 
-              <div className="text-right flex-shrink-0">
+              <div className="text-left sm:text-right flex-shrink-0 border-t sm:border-t-0 pt-2 sm:pt-0 w-full sm:w-auto flex sm:flex-col justify-between sm:justify-center items-center sm:items-end">
                 <div className="text-lg font-serif font-bold text-fayrouz-gold">
                   {compatibility.score}%
                 </div>
@@ -302,10 +324,15 @@ export default function CoffeeDialectDossierModal({
           </div>
 
           {/* Modal Bottom Footer */}
-          <div className="p-4 border-t border-fayrouz-border/70 flex items-center justify-between relative z-10 flex-shrink-0">
-            <span className="text-[10px] font-mono text-fayrouz-muted">
-              Tap anywhere outside or press Close to resume ordering
-            </span>
+          <div className="p-4 border-t border-fayrouz-border/70 flex flex-wrap items-center justify-between gap-3 relative z-10 flex-shrink-0 bg-[#120d09]">
+            <button
+              type="button"
+              onClick={handleOpenQuiz}
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-fayrouz-amber/20 to-fayrouz-gold/20 hover:from-fayrouz-amber/30 hover:to-fayrouz-gold/30 border border-fayrouz-gold/50 text-xs font-serif font-bold text-fayrouz-gold flex items-center gap-2 cursor-pointer transition-colors"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-fayrouz-gold" />
+              <span>Retake Dialect Quiz (اختبار معايرة الذائقة)</span>
+            </button>
 
             <button
               type="button"

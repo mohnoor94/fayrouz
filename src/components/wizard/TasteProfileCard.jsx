@@ -101,18 +101,38 @@ export default function TasteProfileCard({ onRestart, isKiosk = false, onKioskCo
           </div>
         </div>
 
-        {/* Persona Title & Arabic Translation */}
-        <div className="flex flex-col gap-0.5 mb-2.5">
-          <div className="text-[10px] font-mono uppercase text-fayrouz-amber tracking-wider">
-            Coffee Persona Title
+        {/* The 16 Dialects™ Archetype Badge & Acronym */}
+        <div className="p-3 rounded-2xl bg-fayrouz-obsidian/85 border border-fayrouz-gold/40 mb-2.5 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-fayrouz-amber/25 to-fayrouz-gold/10 border border-fayrouz-gold/80 flex flex-col items-center justify-center text-center p-0.5 flex-shrink-0 shadow-inner">
+              <span className="text-[11px] font-mono font-black text-fayrouz-gold">
+                {persona.dialectCode || 'DIALECT'}
+              </span>
+              <span className="text-[7px] font-mono text-fayrouz-amber">
+                {persona.house?.symbol || '⟡'}
+              </span>
+            </div>
+            <div className="min-w-0">
+              <div className="text-[8px] font-mono uppercase tracking-widest text-fayrouz-amber font-bold truncate">
+                THE 16 DIALECTS™ • {persona.house?.name}
+              </div>
+              <div className="text-xs sm:text-sm font-serif font-bold text-fayrouz-cream truncate">
+                {persona.title}
+              </div>
+              <div className="font-arabic text-[10px] text-fayrouz-amber/90 truncate">
+                {persona.titleAr}
+              </div>
+            </div>
           </div>
-          <div className="text-lg font-serif font-bold text-fayrouz-cream leading-tight">
-            {persona.title}
-          </div>
-          <div className="font-arabic text-xs text-fayrouz-amber font-normal">
-            {persona.titleAr}
-          </div>
-          <div className="text-[10px] text-fayrouz-foam/80 mt-1 italic leading-relaxed line-clamp-2">
+
+          <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-fayrouz-gold/15 text-fayrouz-gold border border-fayrouz-gold/30 font-bold flex-shrink-0">
+            Certified
+          </span>
+        </div>
+
+        {/* Persona Tagline */}
+        <div className="mb-2.5 px-1">
+          <div className="text-[10px] text-fayrouz-foam/80 italic leading-relaxed line-clamp-2">
             "{persona.descriptor}"
           </div>
         </div>

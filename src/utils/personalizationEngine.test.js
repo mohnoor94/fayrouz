@@ -289,6 +289,17 @@ assert(polyMatch.score === 96, `Polyglot yields 96% Cosmic Harmony (Actual: ${po
 const oppositeMatch = calculateDialectCompatibility('TLNR', 'ADSV')
 assert(oppositeMatch.score === 55, `Polar opposites yield 55% contrast score (Actual: ${oppositeMatch.score}%)`)
 
+// 8. Explicit Calibrated Dialect Override (4-Tap Quiz)
+const calibratedProfile = { dialectCode: 'TLSV' }
+const calibratedResult = computeCoffeeDialect(calibratedProfile)
+assert(calibratedResult.code === 'TLSV', `Explicit calibrated code override succeeds (Actual: ${calibratedResult.code})`)
+assert(calibratedResult.dialect.title === 'The Sunlit Cloud', 'Calibrated title matches TLSV')
+
+const calibratedPolyProfile = { dialectCode: 'POLY' }
+const calibratedPolyResult = computeCoffeeDialect(calibratedPolyProfile)
+assert(calibratedPolyResult.code === 'POLY', `Explicit calibrated POLY override succeeds (Actual: ${calibratedPolyResult.code})`)
+assert(calibratedPolyResult.isPolyglot === true, 'Calibrated POLY is flagged as polyglot')
+
 // -------------------------------------------------------------
 // Summary
 // -------------------------------------------------------------

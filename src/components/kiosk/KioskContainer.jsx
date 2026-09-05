@@ -7,6 +7,7 @@ import DynamicCuratedMenu from './DynamicCuratedMenu'
 import OrderTraySidebar from './OrderTraySidebar'
 import NfcSyncOverlay from './NfcSyncOverlay'
 import WizardContainer from '../wizard/WizardContainer'
+import DialectCalibrationQuizModal from './DialectCalibrationQuizModal'
 import { BRAND_CONFIG } from '../../constants/brandConfig'
 import { 
   Coffee, 
@@ -29,10 +30,12 @@ export default function KioskContainer() {
     userProfile, 
     addToOrderTray,
     isKioskWizardOpen,
-    setIsKioskWizardOpen
+    setIsKioskWizardOpen,
+    completeProfile
   } = useProfile()
 
   const [isAmbientPlaying, setIsAmbientPlaying] = useState(false)
+  const [isDialectQuizOpen, setIsDialectQuizOpen] = useState(false)
 
   const handleToggleAmbient = () => {
     const isPlaying = soundFx.toggleAmbientCafe()
@@ -127,12 +130,22 @@ export default function KioskContainer() {
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
+                    onClick={() => { soundFx.playTap(); setIsDialectQuizOpen(true); }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-purple-900/40 to-fayrouz-surface hover:from-purple-900/60 border border-purple-500/50 text-purple-200 text-xs font-serif transition-all cursor-pointer shadow-sm"
+                    title="Discover your Coffee Dialect in 30 seconds"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-purple-300" />
+                    <span className="hidden sm:inline">30s Dialect Quiz</span>
+                  </button>
+
+                  <button
+                    type="button"
                     onClick={() => { soundFx.playTap(); setIsKioskWizardOpen(true); }}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-fayrouz-surface/70 hover:bg-fayrouz-surface border border-fayrouz-amber/40 text-fayrouz-gold text-xs font-serif transition-colors cursor-pointer"
                     title="Create your Taste Passport directly on this kiosk"
                   >
-                    <Sparkles className="w-3.5 h-3.5 text-fayrouz-gold" />
-                    <span className="hidden sm:inline">New? Create Passport</span>
+                    <Coffee className="w-3.5 h-3.5 text-fayrouz-gold" />
+                    <span className="hidden sm:inline">Create Passport</span>
                   </button>
 
                   <button
@@ -206,6 +219,17 @@ export default function KioskContainer() {
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* Quick 30-Second Dialect Calibration Quiz Modal */}
+          <DialectCalibrationQuizModal
+            isOpen={isDialectQuizOpen}
+            onClose={() => setIsDialectQuizOpen(false)}
+            onComplete={() => {
+              setIsDialectQuizOpen(false)
+              completeProfile()
+              triggerNfcSync()
+            }}
+          />
 
           {/* Golden Ripple Wave Overlay during NFC Handshake */}
           <NfcSyncOverlay />
