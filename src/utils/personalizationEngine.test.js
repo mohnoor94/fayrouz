@@ -85,7 +85,7 @@ const puristResult = generatePersonalizedMenu(rawMenu, puristProfile)
 assert(puristResult.curatedMatches[0].profileScore <= 2, `Purist (score 1) receives dark/bold coffee (Score: ${puristResult.curatedMatches[0].profileScore})`)
 assert(puristResult.curatedMatches[0].category === 'espresso-black' || puristResult.curatedMatches[0].category === 'levantine-signature', 'Purist match is from Espresso or Levantine category')
 
-const sweetProfile = { name: 'Karim', dietary: [], palateScore: 9, temperature: 'iced' }
+const sweetProfile = { name: 'Areej', dietary: [], palateScore: 9, temperature: 'iced' }
 const sweetResult = generatePersonalizedMenu(rawMenu, sweetProfile)
 assert(sweetResult.curatedMatches[0].profileScore >= 8, `Sweet palate (score 9) receives sweet/velvet drink (Score: ${sweetResult.curatedMatches[0].profileScore})`)
 

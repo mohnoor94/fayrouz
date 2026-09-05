@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ProfileProvider } from './context/ProfileContext'
+import WizardContainer from './components/wizard/WizardContainer'
 import EnginePlayground from './components/dev/EnginePlayground'
 import { 
   Coffee, 
@@ -13,6 +14,7 @@ import {
   ChevronRight,
   ShieldCheck,
   Heart,
+  Smartphone,
   Cpu,
   Layers
 } from 'lucide-react'
@@ -35,28 +37,28 @@ const PALETTE_SWATCHES = [
 ]
 
 function AppContent() {
-  const [activeTab, setActiveTab] = useState('phase1') // 'phase1' | 'phase0'
+  const [activeTab, setActiveTab] = useState('phase2') // 'phase2' | 'phase1' | 'phase0'
   const [tapped, setTapped] = useState(false)
   const [likes, setLikes] = useState(12)
 
   return (
-    <div className="min-h-screen bg-fayrouz-obsidian text-fayrouz-cream px-4 py-8 sm:px-8 sm:py-10 flex flex-col items-center">
+    <div className="min-h-screen bg-fayrouz-obsidian text-fayrouz-cream px-3 py-6 sm:px-8 sm:py-8 flex flex-col items-center">
       {/* Background ambient warm glow */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-fayrouz-amber/10 rounded-full blur-[140px]" />
         <div className="absolute -bottom-40 right-10 w-[500px] h-[400px] bg-fayrouz-rose/5 rounded-full blur-[120px]" />
       </div>
 
-      <div className="relative z-10 max-w-6xl w-full flex flex-col gap-8">
+      <div className="relative z-10 max-w-6xl w-full flex flex-col gap-6">
         {/* Universal Top Header */}
-        <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-fayrouz-border/70 pb-6">
+        <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-fayrouz-border/70 pb-5">
           <div>
             <div className="flex items-center gap-3 mb-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium tracking-wide bg-fayrouz-amber/15 text-fayrouz-amber border border-fayrouz-amber/30">
                 <Sparkles className="w-3.5 h-3.5" />
-                Phase 1 Active Engine
+                Phase 2 Active: Mobile Sensory Wizard
               </span>
-              <span className="text-xs text-fayrouz-muted font-mono">React 18 + Personalization Engine</span>
+              <span className="text-xs text-fayrouz-muted font-mono">React 18 + iPhone 16 Pro Chassis</span>
             </div>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-gold-gradient tracking-tight">
               Fayrouz <span className="font-arabic font-normal text-fayrouz-amber text-2xl sm:text-3xl">(فيروز)</span>
@@ -78,35 +80,60 @@ function AppContent() {
         </header>
 
         {/* Phase Navigation Tabs */}
-        <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-fayrouz-espresso/80 border border-fayrouz-border/80 w-fit">
+        <div className="flex flex-wrap items-center gap-2 p-1.5 rounded-2xl bg-fayrouz-espresso/80 border border-fayrouz-border/80 w-fit">
+          <button
+            onClick={() => setActiveTab('phase2')}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-medium transition-all ${
+              activeTab === 'phase2'
+                ? 'bg-fayrouz-surface text-fayrouz-amber border border-fayrouz-amber/40 shadow-amber-glow'
+                : 'text-fayrouz-muted hover:text-fayrouz-cream'
+            }`}
+          >
+            <Smartphone className="w-3.5 h-3.5" />
+            <span>Phase 2: Mobile Wizard Simulator</span>
+          </button>
+
           <button
             onClick={() => setActiveTab('phase1')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-medium transition-all ${
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-medium transition-all ${
               activeTab === 'phase1'
                 ? 'bg-fayrouz-surface text-fayrouz-amber border border-fayrouz-amber/40 shadow-amber-glow'
                 : 'text-fayrouz-muted hover:text-fayrouz-cream'
             }`}
           >
             <Cpu className="w-3.5 h-3.5" />
-            <span>Phase 1: Personalization Engine Testbench</span>
+            <span>Phase 1: Engine Testbench & Catalog</span>
           </button>
 
           <button
             onClick={() => setActiveTab('phase0')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-medium transition-all ${
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-medium transition-all ${
               activeTab === 'phase0'
                 ? 'bg-fayrouz-surface text-fayrouz-amber border border-fayrouz-amber/40 shadow-amber-glow'
                 : 'text-fayrouz-muted hover:text-fayrouz-cream'
             }`}
           >
             <Layers className="w-3.5 h-3.5" />
-            <span>Phase 0: Design Tokens & System Showcase</span>
+            <span>Phase 0: Design Tokens & System</span>
           </button>
         </div>
 
         {/* View Switcher */}
         <AnimatePresence mode="wait">
-          {activeTab === 'phase1' ? (
+          {activeTab === 'phase2' && (
+            <motion.div
+              key="phase2"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+              className="flex justify-center w-full"
+            >
+              <WizardContainer />
+            </motion.div>
+          )}
+
+          {activeTab === 'phase1' && (
             <motion.div
               key="phase1"
               initial={{ opacity: 0, y: 8 }}
@@ -116,7 +143,9 @@ function AppContent() {
             >
               <EnginePlayground />
             </motion.div>
-          ) : (
+          )}
+
+          {activeTab === 'phase0' && (
             <motion.div
               key="phase0"
               initial={{ opacity: 0, y: 8 }}
@@ -275,7 +304,7 @@ function AppContent() {
                   {/* Status Checklist Box */}
                   <div className="mt-4 pt-4 border-t border-fayrouz-border/60 flex flex-col gap-2">
                     <div className="text-xs font-mono uppercase tracking-wider text-fayrouz-muted">
-                      Phase 0 & 1 Verification Status
+                      Phase 0, 1 & 2 Verification Status
                     </div>
                     <div className="grid grid-cols-1 gap-1.5 text-xs text-fayrouz-foam/90">
                       <div className="flex items-center gap-2">
@@ -284,15 +313,15 @@ function AppContent() {
                       </div>
                       <div className="flex items-center gap-2">
                         <CheckCircle2 className="w-3.5 h-3.5 text-fayrouz-cardamom" />
-                        <span>Phase 1: 25 Specialty Menu Items Active</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-fayrouz-cardamom" />
                         <span>Phase 1: Personalization & Allergen Engine Live</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <CheckCircle2 className="w-3.5 h-3.5 text-fayrouz-cardamom" />
-                        <span>Phase 1: Adventurous Wildcard Algorithm Verified</span>
+                        <span>Phase 2: Sensory Wizard & iPhone 16 Pro Simulator</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-fayrouz-cardamom" />
+                        <span>Phase 2: Holographic Taste Passport & Web Audio</span>
                       </div>
                     </div>
                   </div>

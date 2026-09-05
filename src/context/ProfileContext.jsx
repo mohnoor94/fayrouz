@@ -35,12 +35,12 @@ export const DEMO_PRESETS = [
   },
   {
     id: 'sweet',
-    name: 'Karim',
-    nameAr: 'كريم',
+    name: 'Areej',
+    nameAr: 'أريج',
     title: 'The Sweet Velvet Seeker',
-    description: 'Lactose-free, rich caramel and condensed sweetness.',
+    description: 'Lactose-free, rich caramel and fragrant condensed sweetness.',
     profile: {
-      name: 'Karim',
+      name: 'Areej',
       dietary: [DIETARY_FLAGS.LACTOSE_FREE],
       palateScore: 9,
       temperature: 'iced'

@@ -11,7 +11,7 @@
 | :--- | :--- | :--- | :--- |
 | **Phase 0** | Project Scaffolding, Design System & Dependencies | `[x] Completed` | 100% |
 | **Phase 1** | Mock Data Layer & Personalization Logic Engine | `[x] Completed` | 100% |
-| **Phase 2** | Mobile Simulator: Sensory Onboarding Wizard | `[ ] Pending` | 0% |
+| **Phase 2** | Mobile Simulator: Sensory Onboarding Wizard | `[x] Completed` | 100% |
 | **Phase 3** | Tablet Simulator: The Magic Dynamic Menu & NFC Sync | `[ ] Pending` | 0% |
 | **Phase 4** | Dual-Device Frame, Morphing Transitions & Audio-Visual Warmth | `[ ] Pending` | 0% |
 | **Phase 5** | End-to-End QA, Edge Case Validation & Pitch Mode Polish | `[ ] Pending` | 0% |
@@ -38,75 +38,49 @@
   - `framer-motion`
   - `lucide-react`
   - `canvas-confetti` (for celebratory taste profile generation)
-- [x] Configure `tailwind.config.js` with bespoke Fayrouz palette:
-  - `fayrouz-obsidian`: `#0c0908` (Deep roasted backdrop)
-  - `fayrouz-espresso`: `#17110e` (Card and panel surface)
-  - `fayrouz-surface`: `#231a15` (Interactive item highlight)
-  - `fayrouz-amber`: `#d4a373` (Primary CTA & warm glow)
-  - `fayrouz-copper`: `#b87333` (Metallic badge and borders)
-  - `fayrouz-gold`: `#e9c46a` (Star picks and curated items)
-  - `fayrouz-cream`: `#fefae0` (Primary typography)
-  - `fayrouz-foam`: `#ede0d4` (Subtle secondary text)
-  - `fayrouz-cardamom`: `#6b8e23` (Vegan & botanical accents)
-  - `fayrouz-rose`: `#c86d63` (Adventurous pick accent)
+- [x] Configure `tailwind.config.js` with bespoke Fayrouz palette
 - [x] Configure typography (`Playfair Display`, `Inter`, `Amiri`) in `index.html` and `src/index.css`
 - [x] Establish global reusable UI utilities (glassmorphic panels, amber glow rings, custom scrollbars)
 
 ---
 
 ### Phase 1: Rich Data Layer & Filtering/Ranking Engine
-- [x] Create `src/data/menuData.json` (25 distinct specialty items spanning 5 categories):
-  - Categories: *Espresso & Black*, *Velvet & Milk*, *Cold Brew & Infusions*, *Levantine & Signature*, *Tea & Botanical*
-  - Detailed English and Arabic titles, roast profiles, tasting notes, allergens, and cultural stories
-- [x] Build `src/context/ProfileContext.jsx`:
-  - Central reactive state (`userProfile`, `wizardStep`, `personalizedMenu`, `orderTray`)
-  - 4 one-click investor pitch demo presets (*The Purist*, *The Plant-Based Nomad*, *The Sweet Indulgence*, *The Balanced Local*)
-  - Simulated NFC handshake trigger (`triggerNfcSync`)
-- [x] Build `src/utils/personalizationEngine.js`:
-  - **Option A Allergen Dimming**: Unsafe items remain visible in full catalog, dimmed (35% opacity) with warning badges
-  - **Plant Milk Auto-Substitution**: Auto-swaps dairy to Oat Milk with dynamic +$0.50 surcharge
-  - **Relevance Scoring Algorithm**: Palate distance penalty $\Delta = |P_{\text{item}} - P_{\text{user}}|$, temperature affinity weighting, and signature boosts
-  - **Curated Top Shelf**: Top 3 items strictly adhering to temperature and safety
-  - **Adventurous Wildcard ("Expand Your Palate")**: Deterministically selects safe items with $3 \le \Delta \le 5$ and generates bespoke Levantine storytelling rationales
+- [x] Create `src/data/menuData.json` (25 distinct specialty items spanning 5 categories)
+- [x] Build `src/context/ProfileContext.jsx` with central reactive state & 4 demo presets
+- [x] Build `src/utils/personalizationEngine.js` with allergen dimming, oat milk surcharge, relevance scoring, and adventurous wildcard
 - [x] Build automated test suite (`src/utils/personalizationEngine.test.js`) — 21/21 tests passed
-- [x] Build interactive testbench (`src/components/dev/EnginePlayground.jsx`) in `src/App.jsx`
+- [x] Build interactive testbench (`src/components/dev/EnginePlayground.jsx`)
 
 ---
 
-### Phase 2: Sensory Onboarding Wizard (Mobile Kiosk / Customer App)
-- [ ] Build `src/components/wizard/WizardContainer.jsx`:
-  - Realistic iPhone-style chassis with subtle rim reflection and dynamic island
-  - Smooth card-stack sliding transitions with Framer Motion
-  - Visual step progress with glowing amber beads and step numbers
-- [ ] Step 1: **Identity & Hospitality** (`NameStep.jsx`):
-  - Prompt: *"What should we call you when your coffee is ready?"*
-  - Arabic welcoming subtitle: *"صباح الخير.. أهلاً وسهلاً بك في فيروز"*
-  - Ambient floating coffee aroma particles
-- [ ] Step 2: **Dietary Guardrails** (`DietaryStep.jsx`):
-  - Prompt: *"Any strict rules we must honor?"*
-  - Multi-select tactile chips:
-    - 🥛 Lactose Intolerant (Auto-swaps to Oat Milk)
-    - 🌱 100% Vegan (Plant-based integrity)
-    - 🥜 Nut Allergy (Zero cross-contamination)
-    - ✨ No Restrictions (Free to roam)
-  - Clear visual toggle state, micro-haptic animations
-- [ ] Step 3: **The Sensory Palate Slider** (`PalateStep.jsx`):
-  - Prompt: *"How do you like your brew?"*
-  - Interactive slider (1 to 10):
-    - Left (1): *"Dark, Strong & Aromatic"* (Deep espresso crema visual, notes of dark chocolate & smoke)
-    - Center (5): *"Balanced & Nuanced"* (Pour-over bloom visual, floral & stone fruits)
-    - Right (10): *"Sweet, Milky & Comforting"* (Velvety caramel latte visual, vanilla & praline)
-  - Background color dynamically shifts as the slider moves
-- [ ] Step 4: **Temperature Affinity** (`TemperatureStep.jsx`):
-  - Prompt: *"Hot or Iced?"*
-  - Two interactive cards:
-    - ☕ **Warm & Steaming**: Subtle animated rising steam ribbons
-    - 🧊 **Cold & Crisp**: Floating ice cube refraction and condensation droplet effect
-- [ ] Step 5: **The Generated Taste Passport Card** (`TasteProfileCard.jsx`):
-  - Holographic-style luxury passport card with gold foil borders
-  - Summarizes: Name, Coffee Persona Title (e.g. *"The Velvet Seeker"*, *"The Single-Origin Purist"*), Palate Gauge, Dietary badges
-  - Confetti burst on reveal
-  - Primary Action: **"Step Up to the Counter"** (Pulse animation triggering the transition)
+### Phase 2: Sensory Onboarding Wizard (Mobile Simulator)
+- [x] Build `src/components/wizard/WizardContainer.jsx`:
+  - Realistic iPhone 16 Pro chassis with brushed titanium-obsidian bezel & glass reflection
+  - Responsive adaptive layout (native fullscreen on mobile `<640px`)
+  - Active Dynamic Island showing live cafe status (*"FAYROUZ • OPEN"*) & morphing into pulsing wave during NFC sync
+  - Smooth 60fps bidirectional card-stack transitions with Framer Motion
+  - Visual 5-step progress indicator with glowing amber beads and back button
+- [x] Build Web Audio API sound synthesis engine (`src/utils/soundEffects.js`) with mute toggle
+- [x] Step 1: **Identity & Levantine Hospitality** (`NameStep.jsx`):
+  - Cultural greeting: *"صباح الخير.. أهلاً وسهلاً بك في فيروز"*
+  - 4 quick-tap persona shortcuts (*Tariq*, *Salma*, *Areej*, *Noor*) for instant pitch demoing
+- [x] Step 2: **Dietary Guardrails** (`DietaryStep.jsx`):
+  - Multi-select tactile chips (Lactose-Free, Vegan, Nut Allergy, No Restrictions)
+  - Mutual exclusivity logic and real-time safety protocol reassurance banner
+- [x] Step 3: **The Sensory Palate Slider** (`PalateStep.jsx`):
+  - 1 to 10 tactile range slider spanning 3 sensory zones (Dark/Bold, Balanced/Floral, Sweet/Velvet)
+  - Real-time ambient background color temperature shifting
+  - Dynamic tasting notes pills lighting up based on slider position
+- [x] Step 4: **Temperature Affinity** (`TemperatureStep.jsx`):
+  - Animated rising steam ribbons for Warm & Steaming card
+  - Ice crystal refraction and frost shimmer for Cold & Crisp card
+  - "I love both equally" option
+- [x] Step 5: **The Generated Taste Passport Card** (`TasteProfileCard.jsx`):
+  - Holographic luxury passport card with gold/copper metallic rim and subtle angled sheen
+  - Confetti burst on reveal (`canvas-confetti`) with celebratory chord
+  - Persona title engine (`src/utils/personaGenerator.js`): English and Arabic titles (*"The Single-Origin Purist"*, *"The Sweet Alchemist"*)
+  - 10-segmented palate gauge, dietary badges, and unique passport number
+  - Pulsing primary action: **"Step Up to Counter & Tap (NFC)"** triggering simulated counter sync
 
 ---
 
