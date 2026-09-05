@@ -71,12 +71,12 @@ export default function InitialStateMenu({ onAdd }) {
 
             {/* Clear, Solid, High-Contrast Headline (NO webkit gradient text fill to guarantee 100% visibility) */}
             <h3 className="text-xl sm:text-2xl font-serif font-bold text-fayrouz-cream leading-snug">
-              Have a {BRAND_CONFIG.shortName} Passport? <span className="text-fayrouz-amber">Tap Phone Here</span>
+              Have a Universal Coffee Passport? <span className="text-fayrouz-amber">Tap Phone Here</span>
             </h3>
 
             {/* Arabic Invitation */}
             <div className="font-arabic text-sm text-fayrouz-amber font-normal">
-              معك جواز تذوق؟ قرّب هاتفك هنا لتنهار القائمة إلى اختياراتك الثلاثة الآمنة
+              معك جواز تذوق عالمي؟ قرّب هاتفك هنا لتنهار القائمة إلى اختياراتك الثلاثة الآمنة
             </div>
 
             {/* Explanatory Subtitle */}

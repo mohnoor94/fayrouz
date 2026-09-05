@@ -111,7 +111,7 @@ export default function FlavorPillarsStep({ onNext, onPrev }) {
             🌐 Expand & fine-tune your full 12-dimension flavor radar anytime at:
           </span>
           <span className="text-fayrouz-amber font-mono font-medium flex items-center gap-1 flex-shrink-0">
-            ambar.coffee/passport
+            fayrouz.coffee/passport
             <ExternalLink className="w-2.5 h-2.5" />
           </span>
         </div>

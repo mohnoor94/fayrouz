@@ -37,7 +37,7 @@ export function generateCoffeePersona(profile = {}) {
   const nameHash = (profile.name || 'Guest')
     .split('')
     .reduce((acc, char) => acc + char.charCodeAt(0), 1000) % 9000 + 1000
-  const prefix = BRAND_CONFIG?.passportPrefix || 'AMB'
+  const prefix = 'FYZ'
   const passportNumber = `${prefix}-${nameHash}`
 
   // Phone masking (e.g. +962 79 •••• 1234)
