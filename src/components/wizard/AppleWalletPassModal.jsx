@@ -11,10 +11,11 @@ import {
   ShieldCheck, 
   QrCode, 
   Smartphone,
-  Share2
+  Share2,
+  Globe
 } from 'lucide-react'
 
-export default function AppleWalletPassModal({ isOpen, onClose, userProfile, persona }) {
+export default function AppleWalletPassModal({ isOpen, onClose, userProfile, persona, walletType = 'apple' }) {
   if (!isOpen) return null
 
   return (
@@ -26,8 +27,8 @@ export default function AppleWalletPassModal({ isOpen, onClose, userProfile, per
         transition={{ type: 'spring', stiffness: 350, damping: 28 }}
         className="w-full max-w-sm flex flex-col items-center gap-4 relative"
       >
-        {/* Apple Wallet Hardware Pass Card */}
-        <div className="w-full rounded-[32px] bg-gradient-to-b from-[#1c1511] via-[#120d0a] to-[#0a0706] border-2 border-fayrouz-gold/60 p-5 shadow-[0_25px_60px_rgba(0,0,0,0.95),0_0_35px_rgba(212,163,115,0.3)] text-fayrouz-cream flex flex-col gap-4 relative overflow-hidden">
+        {/* Apple/Google Wallet Hardware Pass Card */}
+        <div className="w-full rounded-[32px] bg-gradient-to-b from-[#1c1511] via-[#120d0a] to-[#0a0706] border-2 border-fayrouz-gold/60 p-5 shadow-[0_25px_60px_rgba(0,0,0,0.95),0_0_35px_rgba(212,163,115,0.3)] text-fayrouz-cream flex flex-col gap-3.5 relative overflow-hidden">
           {/* Holographic Sheen */}
           <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-fayrouz-gold/20 via-fayrouz-amber/10 to-transparent rounded-full blur-2xl pointer-events-none" />
 
@@ -40,7 +41,7 @@ export default function AppleWalletPassModal({ isOpen, onClose, userProfile, per
             <X className="w-4 h-4" />
           </button>
 
-          {/* Pass Header */}
+          {/* Pass Header - Universal Fayrouz Identity Everywhere */}
           <div className="flex items-center justify-between border-b border-white/10 pb-3 pr-8">
             <div className="flex items-center gap-2.5">
               <div className="w-9 h-9 rounded-xl bg-fayrouz-surface border border-fayrouz-amber/40 flex items-center justify-center text-fayrouz-amber shadow-inner">
@@ -50,19 +51,33 @@ export default function AppleWalletPassModal({ isOpen, onClose, userProfile, per
                 <span className="text-[9px] font-mono uppercase tracking-widest text-fayrouz-gold font-bold block">
                   FAYROUZPASS™ NFC
                 </span>
-                <span className="text-xs font-serif font-bold text-fayrouz-cream">
-                  {BRAND_CONFIG.shortName} <span className="font-arabic text-fayrouz-amber">({BRAND_CONFIG.shortNameAr})</span>
-                </span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-serif font-bold text-fayrouz-cream">
+                    Universal Coffee Identity
+                  </span>
+                  <span className="font-arabic text-xs text-fayrouz-amber">
+                    (جواز القهوة الموحد)
+                  </span>
+                </div>
               </div>
             </div>
 
-            {/* Apple NFC Contactless Icon */}
+            {/* Apple / Google NFC Contactless Icon */}
             <div className="flex items-center gap-1 text-fayrouz-gold">
               <Radio className="w-4 h-4 animate-pulse" />
               <span className="text-[9px] font-mono uppercase tracking-widest font-bold">
-                VAS
+                {walletType === 'google' ? 'SMART TAP' : 'APPLE VAS'}
               </span>
             </div>
+          </div>
+
+          {/* Global Network Portability Banner */}
+          <div className="flex items-center justify-between px-3 py-1.5 rounded-xl bg-fayrouz-amber/10 border border-fayrouz-amber/25 text-[10px] font-mono">
+            <div className="flex items-center gap-1.5 text-fayrouz-gold font-bold">
+              <Globe className="w-3.5 h-3.5 text-fayrouz-gold flex-shrink-0" />
+              <span>FAYROUZ GLOBAL NETWORK</span>
+            </div>
+            <span className="text-fayrouz-foam/75">Valid Across All Roasters</span>
           </div>
 
           {/* Member Name & Dialect Card */}
@@ -121,21 +136,31 @@ export default function AppleWalletPassModal({ isOpen, onClose, userProfile, per
             </div>
 
             <div className="flex items-center justify-between w-full text-[10px] font-mono text-fayrouz-muted">
-              <span>NFC VAS • EXPRESS TAP</span>
+              <span>{walletType === 'google' ? 'GOOGLE WALLET • SMART TAP' : 'APPLE WALLET • EXPRESS TAP'}</span>
               <span className="font-bold text-fayrouz-gold">{persona.passportNumber}</span>
             </div>
+
+            <p className="text-[9px] font-mono text-center text-fayrouz-foam/60 leading-tight">
+              Accepted at {BRAND_CONFIG.shortName}, Turath, Qahwatna & all Fayrouz specialty partners worldwide
+            </p>
           </div>
         </div>
 
-        {/* Action Button: Added to Apple Wallet Confirmation */}
+        {/* Action Button: Added to Apple / Google Wallet Confirmation */}
         <div className="w-full flex flex-col gap-2">
           <div className="w-full py-3 rounded-2xl bg-black border border-white/20 text-white font-medium text-xs flex items-center justify-center gap-2 shadow-lg">
             <CheckCircle2 className="w-4 h-4 text-fayrouz-cardamom" />
-            <span>Added to Apple Wallet • Ready for Counter Tap</span>
+            <span>
+              {walletType === 'google'
+                ? 'Added to Google Wallet • Ready for Universal Counter Tap'
+                : 'Added to Apple Wallet • Ready for Universal Counter Tap'}
+            </span>
           </div>
 
           <p className="text-[11px] text-center text-fayrouz-foam/70">
-            Next visit: simply hold your locked iPhone or Apple Watch near the Fayrouz counter reader. No app required.
+            {walletType === 'google'
+              ? 'Next visit: Simply hold your Android phone near any Fayrouz kiosk or counter reader worldwide. Your custom craft profile syncs instantly.'
+              : 'Next visit: Simply hold your locked iPhone or Apple Watch near any Fayrouz kiosk or counter reader worldwide. No app required.'}
           </p>
         </div>
       </motion.div>

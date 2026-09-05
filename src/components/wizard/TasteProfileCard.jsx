@@ -30,6 +30,7 @@ export default function TasteProfileCard({ onRestart, isKiosk = false, onKioskCo
   } = useProfile()
   const [hasTriggeredConfetti, setHasTriggeredConfetti] = useState(false)
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false)
+  const [walletType, setWalletType] = useState('apple')
 
   const persona = generateCoffeePersona(userProfile)
 
@@ -207,7 +208,11 @@ export default function TasteProfileCard({ onRestart, isKiosk = false, onKioskCo
       <div className="flex items-center justify-center gap-2 pt-1">
         <button
           type="button"
-          onClick={() => { soundFx.playTap(); setIsWalletModalOpen(true); }}
+          onClick={() => { 
+            soundFx.playTap()
+            setWalletType('apple')
+            setIsWalletModalOpen(true)
+          }}
           className="flex-1 py-2 px-2.5 rounded-xl bg-black hover:bg-neutral-900 border border-white/20 text-white text-[11px] font-medium flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer"
         >
           <Smartphone className="w-3.5 h-3.5 text-white" />
@@ -216,7 +221,11 @@ export default function TasteProfileCard({ onRestart, isKiosk = false, onKioskCo
 
         <button
           type="button"
-          onClick={() => { soundFx.playTap(); setIsWalletModalOpen(true); }}
+          onClick={() => { 
+            soundFx.playTap()
+            setWalletType('google')
+            setIsWalletModalOpen(true)
+          }}
           className="flex-1 py-2 px-2.5 rounded-xl bg-[#1f1f1f] hover:bg-[#2b2b2b] border border-white/10 text-white text-[11px] font-medium flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer"
         >
           <Sparkles className="w-3.5 h-3.5 text-fayrouz-gold" />
@@ -275,12 +284,13 @@ export default function TasteProfileCard({ onRestart, isKiosk = false, onKioskCo
         </button>
       </div>
 
-      {/* Apple Wallet Pass Modal */}
+      {/* Apple / Google Wallet Pass Modal */}
       <AppleWalletPassModal
         isOpen={isWalletModalOpen}
         onClose={() => setIsWalletModalOpen(false)}
         userProfile={userProfile}
         persona={persona}
+        walletType={walletType}
       />
     </div>
   )
