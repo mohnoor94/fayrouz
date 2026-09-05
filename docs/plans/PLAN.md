@@ -10,7 +10,7 @@
 | Phase | Description | Status | Progress |
 | :--- | :--- | :--- | :--- |
 | **Phase 0** | Project Scaffolding, Design System & Dependencies | `[x] Completed` | 100% |
-| **Phase 1** | Mock Data Layer & Personalization Logic Engine | `[ ] Pending` | 0% |
+| **Phase 1** | Mock Data Layer & Personalization Logic Engine | `[x] Completed` | 100% |
 | **Phase 2** | Mobile Simulator: Sensory Onboarding Wizard | `[ ] Pending` | 0% |
 | **Phase 3** | Tablet Simulator: The Magic Dynamic Menu & NFC Sync | `[ ] Pending` | 0% |
 | **Phase 4** | Dual-Device Frame, Morphing Transitions & Audio-Visual Warmth | `[ ] Pending` | 0% |
@@ -55,38 +55,21 @@
 ---
 
 ### Phase 1: Rich Data Layer & Filtering/Ranking Engine
-- [ ] Create `src/data/menuData.json` (22+ distinct specialty items spanning 5 categories):
+- [x] Create `src/data/menuData.json` (25 distinct specialty items spanning 5 categories):
   - Categories: *Espresso & Black*, *Velvet & Milk*, *Cold Brew & Infusions*, *Levantine & Signature*, *Tea & Botanical*
-  - Attributes per item:
-    - `id`: unique slug
-    - `name`: English title (e.g., *"Cardamom Rose Cortado"*, *"Iced Spanish Latte"*)
-    - `nameAr`: Arabic title (e.g., *"كورتادو الورد والهيل"*, *"سبانيش لاتيه بارد"*)
-    - `description`: Sensual, specialty-grade flavor description
-    - `price`: USD format
-    - `category`: Category slug
-    - `containsDairy`: boolean
-    - `containsNuts`: boolean (e.g., Pistachio, Almond)
-    - `isVegan`: boolean
-    - `profileScore`: 1–10 (1 = Bold, Dark, Intense Acid/Roast; 10 = Sweet, Dessert, Creamy)
-    - `isIced`: boolean
-    - `canBeIced`: boolean
-    - `canBeHot`: boolean
-    - `dairyAlternative`: string (e.g., `"Oat Milk"`, `"Almond Milk"`, or `null`)
-    - `tastingNotes`: array of strings (e.g., `["Bergamot", "Jasmine", "Honey"]`)
-    - `badge`: optional (e.g., `"Barista Favorite"`, `"Seasonal Single Origin"`)
-- [ ] Build `src/context/ProfileContext.jsx`:
-  - Central state: `userProfile` (`name`, `dietary`: `[]`, `palateScore`: 5, `temperature`: `'hot'|'iced'|'any'`)
-  - Session state: `step` (0-4), `isProfileCompleted`, `isKioskSynced`, `activeDeviceView` (`'mobile'|'tablet'|'split'`)
-- [ ] Build `src/utils/personalizationEngine.js`:
-  - **Hard Filter Logic**:
-    - If `lactose-intolerant`: Exclude drinks where `containsDairy && !dairyAlternative`. If `dairyAlternative` exists, mutate title to append `"(Oat Milk)"` or show milk badge.
-    - If `vegan`: Exclude drinks with dairy or animal products unless plant-based substitutions exist.
-    - If `nut-allergy`: Exclude all drinks where `containsNuts === true`.
-  - **Relevance Scoring Algorithm**:
-    - Distance penalty: `Math.abs(item.profileScore - userPalateScore)`
-    - Temperature alignment: Bonus score if drink temperature matches `temperaturePref`
-    - Curated Selection (80/20 rule): Select top 4-5 highest scoring items
-    - **Adventurous Pick (The Wildcard)**: Select 1 item with high popularity/uniqueness that has a distance delta of 3-4 points from user score, flagged with a special "Expand Your Palate" badge.
+  - Detailed English and Arabic titles, roast profiles, tasting notes, allergens, and cultural stories
+- [x] Build `src/context/ProfileContext.jsx`:
+  - Central reactive state (`userProfile`, `wizardStep`, `personalizedMenu`, `orderTray`)
+  - 4 one-click investor pitch demo presets (*The Purist*, *The Plant-Based Nomad*, *The Sweet Indulgence*, *The Balanced Local*)
+  - Simulated NFC handshake trigger (`triggerNfcSync`)
+- [x] Build `src/utils/personalizationEngine.js`:
+  - **Option A Allergen Dimming**: Unsafe items remain visible in full catalog, dimmed (35% opacity) with warning badges
+  - **Plant Milk Auto-Substitution**: Auto-swaps dairy to Oat Milk with dynamic +$0.50 surcharge
+  - **Relevance Scoring Algorithm**: Palate distance penalty $\Delta = |P_{\text{item}} - P_{\text{user}}|$, temperature affinity weighting, and signature boosts
+  - **Curated Top Shelf**: Top 3 items strictly adhering to temperature and safety
+  - **Adventurous Wildcard ("Expand Your Palate")**: Deterministically selects safe items with $3 \le \Delta \le 5$ and generates bespoke Levantine storytelling rationales
+- [x] Build automated test suite (`src/utils/personalizationEngine.test.js`) — 21/21 tests passed
+- [x] Build interactive testbench (`src/components/dev/EnginePlayground.jsx`) in `src/App.jsx`
 
 ---
 
