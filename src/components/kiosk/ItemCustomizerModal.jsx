@@ -16,7 +16,7 @@ import {
 } from 'lucide-react'
 
 export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAdd }) {
-  const { userProfile } = useProfile()
+  const { userProfile, isNfcSynced, updateProfile } = useProfile()
 
   if (!isOpen || !item) return null
 
@@ -96,6 +96,7 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
   const [milk, setMilk] = useState(profileDefaultMilk)
   const [sweetness, setSweetness] = useState(profileDefaultSweetness)
   const [addOns, setAddOns] = useState(profileDefaultAddOns)
+  const [saveToPassport, setSaveToPassport] = useState(false)
 
   // Re-synchronize EVERY time item or modal opens!
   useEffect(() => {
@@ -105,10 +106,20 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
       setMilk(profileDefaultMilk)
       setSweetness(profileDefaultSweetness)
       setAddOns(profileDefaultAddOns)
+      setSaveToPassport(false)
     }
   }, [isOpen, item?.id, profileDefaultTemp, profileDefaultSize, profileDefaultMilk, profileDefaultSweetness, profileDefaultAddOns])
 
   const hasMilkOption = Boolean(item.containsDairy || item.dairyAlternative || item.category === 'velvet-milk')
+
+  // Detect if user made changes from their permanent passport defaults
+  const hasCustomized = Boolean(
+    size !== profileDefaultSize ||
+    temperature !== profileDefaultTemp ||
+    (hasMilkOption && milk !== profileDefaultMilk) ||
+    sweetness !== profileDefaultSweetness ||
+    JSON.stringify([...addOns].sort()) !== JSON.stringify([...profileDefaultAddOns].sort())
+  )
 
   // Calculate dynamic price
   const basePrice = item.effectivePrice ?? item.price
@@ -129,6 +140,22 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
 
   const handleConfirm = () => {
     soundFx.playTap()
+
+    // If user explicitly checked the permanent update option:
+    if (saveToPassport && isNfcSynced) {
+      const updates = {}
+      if (size !== profileDefaultSize) updates.preferredSize = size
+      if (temperature !== profileDefaultTemp) updates.temperature = temperature
+      if (hasMilkOption && milk !== profileDefaultMilk) updates.preferredMilk = milk
+      if (sweetness !== profileDefaultSweetness) {
+        updates.sweetnessPreference = 
+          sweetness === '0' ? 'unsweetened' :
+          sweetness === '100' ? 'sweet' :
+          sweetness === '50' ? 'balanced' : 'subtle'
+      }
+      updateProfile(updates)
+    }
+
     const customizedItem = {
       ...item,
       id: `${item.id}-${temperature}-${milk}-${size}-${addOns.join('-')}`,
@@ -184,6 +211,12 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
               <div className="font-arabic text-xs text-fayrouz-amber">
                 {item.nameAr}
               </div>
+              {isNfcSynced && (
+                <div className="flex items-center gap-1.5 mt-1 text-[10px] font-mono text-fayrouz-muted">
+                  <span className="w-1.5 h-1.5 rounded-full bg-fayrouz-amber animate-pulse" />
+                  <span>Single-Cup Customization • Leaves permanent passport unchanged</span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -204,10 +237,19 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
               <span className="text-xs font-mono uppercase text-fayrouz-muted tracking-wider">
                 Temperature Extraction
               </span>
-              <span className="text-[10px] font-mono text-fayrouz-gold flex items-center gap-1 font-medium">
-                <Sparkles className="w-2.5 h-2.5" />
-                Passport Match: {temperature === 'iced' ? '❄️ Flash Iced' : '🔥 Steaming Hot'}
-              </span>
+              {isNfcSynced && (
+                <span className={`text-[10px] font-mono flex items-center gap-1 font-medium ${
+                  temperature === profileDefaultTemp ? 'text-fayrouz-gold' : 'text-fayrouz-amber'
+                }`}>
+                  <Sparkles className="w-2.5 h-2.5 flex-shrink-0" />
+                  <span>Passport Choice: {profileDefaultTemp === 'iced' ? '❄️ Flash Iced' : '🔥 Steaming Hot'}</span>
+                  {temperature !== profileDefaultTemp && (
+                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-fayrouz-amber/15 text-fayrouz-amber border border-fayrouz-amber/30 ml-1 font-sans">
+                      One-time tweak
+                    </span>
+                  )}
+                </span>
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-2.5">
@@ -216,7 +258,7 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
                 type="button"
                 disabled={!item.canBeHot}
                 onClick={() => { soundFx.playTap(); setTemperature('hot'); }}
-                className={`p-3 rounded-2xl border text-xs font-serif font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                className={`p-3 rounded-2xl border text-xs font-serif font-bold flex flex-col items-center justify-center gap-1 transition-all cursor-pointer relative ${
                   !item.canBeHot
                     ? 'opacity-40 bg-fayrouz-surface/20 border-fayrouz-border cursor-not-allowed text-fayrouz-muted'
                     : temperature === 'hot'
@@ -224,9 +266,16 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
                       : 'bg-fayrouz-surface/60 border-fayrouz-border text-fayrouz-cream hover:bg-fayrouz-surface'
                 }`}
               >
-                <Flame className={`w-4 h-4 ${temperature === 'hot' ? 'text-fayrouz-ember' : 'text-fayrouz-muted'}`} />
-                <span>Steaming Hot</span>
-                {!item.canBeHot && <span className="text-[9px] font-mono opacity-70">(N/A)</span>}
+                <div className="flex items-center gap-1.5">
+                  <Flame className={`w-4 h-4 ${temperature === 'hot' ? 'text-fayrouz-ember' : 'text-fayrouz-muted'}`} />
+                  <span>Steaming Hot</span>
+                  {!item.canBeHot && <span className="text-[9px] font-mono opacity-70">(N/A)</span>}
+                </div>
+                {isNfcSynced && profileDefaultTemp === 'hot' && (
+                  <span className="text-[9px] font-mono text-fayrouz-gold/80 font-normal">
+                    ⭐ Passport Default
+                  </span>
+                )}
               </button>
 
               {/* Iced Option */}
@@ -234,7 +283,7 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
                 type="button"
                 disabled={!item.canBeIced}
                 onClick={() => { soundFx.playTap(); setTemperature('iced'); }}
-                className={`p-3 rounded-2xl border text-xs font-serif font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                className={`p-3 rounded-2xl border text-xs font-serif font-bold flex flex-col items-center justify-center gap-1 transition-all cursor-pointer relative ${
                   !item.canBeIced
                     ? 'opacity-40 bg-fayrouz-surface/20 border-fayrouz-border cursor-not-allowed text-fayrouz-muted'
                     : temperature === 'iced'
@@ -242,9 +291,16 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
                       : 'bg-fayrouz-surface/60 border-fayrouz-border text-fayrouz-cream hover:bg-fayrouz-surface'
                 }`}
               >
-                <Snowflake className={`w-4 h-4 ${temperature === 'iced' ? 'text-sky-400' : 'text-fayrouz-muted'}`} />
-                <span>Flash Iced</span>
-                {!item.canBeIced && <span className="text-[9px] font-mono opacity-70">(N/A)</span>}
+                <div className="flex items-center gap-1.5">
+                  <Snowflake className={`w-4 h-4 ${temperature === 'iced' ? 'text-sky-400' : 'text-fayrouz-muted'}`} />
+                  <span>Flash Iced</span>
+                  {!item.canBeIced && <span className="text-[9px] font-mono opacity-70">(N/A)</span>}
+                </div>
+                {isNfcSynced && profileDefaultTemp === 'iced' && (
+                  <span className="text-[9px] font-mono text-sky-300/80 font-normal">
+                    ⭐ Passport Default
+                  </span>
+                )}
               </button>
             </div>
           </div>
@@ -255,35 +311,58 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
               <span className="text-xs font-mono uppercase text-fayrouz-muted tracking-wider">
                 Beverage Size
               </span>
-              <span className="text-[10px] font-mono text-fayrouz-gold flex items-center gap-1 font-medium">
-                <Sparkles className="w-2.5 h-2.5" />
-                Passport Default: {size === 'large' ? 'Large (16 oz)' : 'Regular (12 oz)'}
-              </span>
+              {isNfcSynced && (
+                <span className={`text-[10px] font-mono flex items-center gap-1 font-medium ${
+                  size === profileDefaultSize ? 'text-fayrouz-gold' : 'text-fayrouz-amber'
+                }`}>
+                  <Sparkles className="w-2.5 h-2.5 flex-shrink-0" />
+                  <span>Passport Choice: {profileDefaultSize === 'large' ? 'Large (16 oz)' : 'Regular (12 oz)'}</span>
+                  {size !== profileDefaultSize && (
+                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-fayrouz-amber/15 text-fayrouz-amber border border-fayrouz-amber/30 ml-1 font-sans">
+                      One-time tweak
+                    </span>
+                  )}
+                </span>
+              )}
             </div>
             <div className="grid grid-cols-2 gap-2.5">
               <button
                 type="button"
                 onClick={() => { soundFx.playTap(); setSize('regular'); }}
-                className={`p-3 rounded-2xl border text-xs font-serif font-bold flex items-center justify-between px-4 transition-all cursor-pointer ${
+                className={`p-3 rounded-2xl border text-xs font-serif font-bold flex items-center justify-between px-4 transition-all cursor-pointer relative ${
                   size === 'regular'
                     ? 'bg-fayrouz-amber/20 border-fayrouz-amber text-fayrouz-gold shadow-amber-glow'
                     : 'bg-fayrouz-surface/60 border-fayrouz-border text-fayrouz-cream hover:bg-fayrouz-surface'
                 }`}
               >
-                <span>Regular (12 oz)</span>
+                <div className="flex flex-col items-start">
+                  <span>Regular (12 oz)</span>
+                  {isNfcSynced && profileDefaultSize === 'regular' && (
+                    <span className="text-[9px] font-mono text-fayrouz-gold/80 font-normal">
+                      ⭐ Passport Default
+                    </span>
+                  )}
+                </div>
                 <span className="text-[10px] font-mono text-fayrouz-muted">Standard</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => { soundFx.playTap(); setSize('large'); }}
-                className={`p-3 rounded-2xl border text-xs font-serif font-bold flex items-center justify-between px-4 transition-all cursor-pointer ${
+                className={`p-3 rounded-2xl border text-xs font-serif font-bold flex items-center justify-between px-4 transition-all cursor-pointer relative ${
                   size === 'large'
                     ? 'bg-fayrouz-amber/20 border-fayrouz-amber text-fayrouz-gold shadow-amber-glow'
                     : 'bg-fayrouz-surface/60 border-fayrouz-border text-fayrouz-cream hover:bg-fayrouz-surface'
                 }`}
               >
-                <span>Large (16 oz)</span>
+                <div className="flex flex-col items-start">
+                  <span>Large (16 oz)</span>
+                  {isNfcSynced && profileDefaultSize === 'large' && (
+                    <span className="text-[9px] font-mono text-fayrouz-gold/80 font-normal">
+                      ⭐ Passport Default
+                    </span>
+                  )}
+                </div>
                 <span className="text-[10px] font-mono text-fayrouz-amber font-bold">+ $0.75</span>
               </button>
             </div>
@@ -301,53 +380,50 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
                     <Leaf className="w-2.5 h-2.5" />
                     {isVegan ? 'Strict Vegan: Oat Auto-Swapped' : 'Lactose-Free: Oat Auto-Swapped'}
                   </span>
-                ) : (
-                  <span className="text-[10px] font-mono text-fayrouz-gold flex items-center gap-1 font-medium">
-                    <Sparkles className="w-2.5 h-2.5" />
-                    Passport: {milk === 'oat' ? 'Oat Milk' : milk === 'almond' ? 'Almond Milk' : 'Whole Milk'}
+                ) : isNfcSynced ? (
+                  <span className={`text-[10px] font-mono flex items-center gap-1 font-medium ${
+                    milk === profileDefaultMilk ? 'text-fayrouz-gold' : 'text-fayrouz-amber'
+                  }`}>
+                    <Sparkles className="w-2.5 h-2.5 flex-shrink-0" />
+                    <span>Passport Choice: {profileDefaultMilk === 'oat' ? 'Oat Milk' : profileDefaultMilk === 'almond' ? 'Almond Milk' : 'Whole Milk'}</span>
+                    {milk !== profileDefaultMilk && (
+                      <span className="text-[9px] px-1.5 py-0.2 rounded bg-fayrouz-amber/15 text-fayrouz-amber border border-fayrouz-amber/30 ml-1 font-sans">
+                        One-time tweak
+                      </span>
+                    )}
                   </span>
-                )}
+                ) : null}
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                <button
-                  type="button"
-                  onClick={() => { soundFx.playTap(); setMilk('whole'); }}
-                  className={`p-2.5 rounded-xl border text-xs font-serif font-medium flex flex-col items-center gap-0.5 transition-all cursor-pointer ${
-                    milk === 'whole'
-                      ? 'bg-fayrouz-amber/20 border-fayrouz-amber text-fayrouz-gold shadow-sm'
-                      : 'bg-fayrouz-surface/60 border-fayrouz-border text-fayrouz-cream hover:bg-fayrouz-surface'
-                  }`}
-                >
-                  <span>Whole Milk</span>
-                  <span className="text-[9px] font-mono text-fayrouz-muted">Default Dairy</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => { soundFx.playTap(); setMilk('oat'); }}
-                  className={`p-2.5 rounded-xl border text-xs font-serif font-medium flex flex-col items-center gap-0.5 transition-all cursor-pointer ${
-                    milk === 'oat'
-                      ? 'bg-fayrouz-cardamom/25 border-fayrouz-cardamom text-fayrouz-cardamom shadow-sm'
-                      : 'bg-fayrouz-surface/60 border-fayrouz-border text-fayrouz-cream hover:bg-fayrouz-surface'
-                  }`}
-                >
-                  <span>Oat Microfoam</span>
-                  <span className="text-[9px] font-mono text-fayrouz-gold">+ $0.50</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => { soundFx.playTap(); setMilk('almond'); }}
-                  className={`p-2.5 rounded-xl border text-xs font-serif font-medium flex flex-col items-center gap-0.5 transition-all cursor-pointer ${
-                    milk === 'almond'
-                      ? 'bg-fayrouz-amber/20 border-fayrouz-amber text-fayrouz-gold shadow-sm'
-                      : 'bg-fayrouz-surface/60 border-fayrouz-border text-fayrouz-cream hover:bg-fayrouz-surface'
-                  }`}
-                >
-                  <span>Almond Milk</span>
-                  <span className="text-[9px] font-mono text-fayrouz-gold">+ $0.50</span>
-                </button>
+                {[
+                  { id: 'whole', label: 'Whole Milk', sub: 'Default Dairy', price: 'Included', disabled: isVegan || isLactoseFree },
+                  { id: 'oat', label: 'Oat Microfoam', sub: 'Plant-Based', price: '+ $0.50', disabled: false },
+                  { id: 'almond', label: 'Almond Milk', sub: 'Nut-Based', price: '+ $0.50', disabled: userProfile?.dietary?.includes('nut_free') }
+                ].map(m => (
+                  <button
+                    key={m.id}
+                    type="button"
+                    disabled={m.disabled}
+                    onClick={() => { soundFx.playTap(); setMilk(m.id); }}
+                    className={`p-2.5 rounded-xl border text-xs font-serif font-medium flex flex-col items-center gap-0.5 transition-all cursor-pointer relative ${
+                      m.disabled
+                        ? 'opacity-35 bg-fayrouz-surface/20 border-fayrouz-border cursor-not-allowed text-fayrouz-muted'
+                        : milk === m.id
+                          ? 'bg-fayrouz-amber/20 border-fayrouz-amber text-fayrouz-gold shadow-sm'
+                          : 'bg-fayrouz-surface/60 border-fayrouz-border text-fayrouz-cream hover:bg-fayrouz-surface'
+                    }`}
+                  >
+                    <span className="font-bold">{m.label}</span>
+                    <span className="text-[9px] font-mono text-fayrouz-muted">{m.sub}</span>
+                    <span className="text-[9px] font-mono text-fayrouz-amber font-semibold">{m.price}</span>
+                    {isNfcSynced && profileDefaultMilk === m.id && (
+                      <span className="text-[8px] font-mono text-fayrouz-gold/90 font-medium mt-0.5">
+                        ⭐ Passport Default
+                      </span>
+                    )}
+                  </button>
+                ))}
               </div>
             </div>
           )}
@@ -358,10 +434,19 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
               <span className="text-xs font-mono uppercase text-fayrouz-muted tracking-wider">
                 Sweetness Touch
               </span>
-              <span className="text-[10px] font-mono text-fayrouz-gold flex items-center gap-1 font-medium">
-                <Sparkles className="w-2.5 h-2.5" />
-                Palate Match: {sweetness === '0' ? '0% Pure' : sweetness === '25' ? '25% Subtle' : sweetness === '50' ? '50% Balanced' : '100% Rich'}
-              </span>
+              {isNfcSynced && (
+                <span className={`text-[10px] font-mono flex items-center gap-1 font-medium ${
+                  sweetness === profileDefaultSweetness ? 'text-fayrouz-gold' : 'text-fayrouz-amber'
+                }`}>
+                  <Sparkles className="w-2.5 h-2.5 flex-shrink-0" />
+                  <span>Passport Choice: {profileDefaultSweetness === '0' ? '0% Pure' : profileDefaultSweetness === '25' ? '25% Subtle' : profileDefaultSweetness === '50' ? '50% Balanced' : '100% Rich'}</span>
+                  {sweetness !== profileDefaultSweetness && (
+                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-fayrouz-amber/15 text-fayrouz-amber border border-fayrouz-amber/30 ml-1 font-sans">
+                      One-time tweak
+                    </span>
+                  )}
+                </span>
+              )}
             </div>
 
             <div className="grid grid-cols-4 gap-2">
@@ -375,7 +460,7 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
                   key={sw.id}
                   type="button"
                   onClick={() => { soundFx.playTap(); setSweetness(sw.id); }}
-                  className={`py-2 px-1 rounded-xl border text-center transition-all cursor-pointer ${
+                  className={`py-2 px-1 rounded-xl border text-center transition-all cursor-pointer relative ${
                     sweetness === sw.id
                       ? 'bg-fayrouz-amber/25 border-fayrouz-amber text-fayrouz-gold shadow-sm'
                       : 'bg-fayrouz-surface/60 border-fayrouz-border text-fayrouz-cream hover:bg-fayrouz-surface'
@@ -383,6 +468,11 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
                 >
                   <div className="text-xs font-bold font-serif">{sw.label}</div>
                   <div className="text-[9px] font-mono text-fayrouz-muted truncate">{sw.sub}</div>
+                  {isNfcSynced && profileDefaultSweetness === sw.id && (
+                    <div className="text-[8px] font-mono text-fayrouz-gold/90 font-medium">
+                      ⭐ Default
+                    </div>
+                  )}
                 </button>
               ))}
             </div>
@@ -442,23 +532,47 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
         </div>
 
         {/* Modal Bottom Bar: Dynamic Price & Confirm */}
-        <div className="pt-4 border-t border-fayrouz-border/70 flex items-center justify-between gap-4 relative z-10 flex-shrink-0">
-          <div>
-            <span className="text-[10px] font-mono text-fayrouz-muted uppercase">Customized Total</span>
-            <div className="text-2xl font-serif font-bold text-fayrouz-gold">
-              ${finalPrice.toFixed(2)}
-            </div>
-          </div>
+        <div className="pt-3 border-t border-fayrouz-border/70 flex flex-col gap-2.5 relative z-10 flex-shrink-0">
+          {/* Subtle Permanent Passport Default Toggle (Only visible when user tweaked from passport) */}
+          {isNfcSynced && hasCustomized && (
+            <motion.label 
+              initial={{ opacity: 0, y: 2 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex items-center gap-2 text-xs text-fayrouz-foam/90 hover:text-fayrouz-cream cursor-pointer select-none bg-fayrouz-surface/60 border border-fayrouz-border/70 rounded-xl px-3 py-1.5 transition-colors w-fit"
+            >
+              <input
+                type="checkbox"
+                checked={saveToPassport}
+                onChange={(e) => {
+                  soundFx.playTap()
+                  setSaveToPassport(e.target.checked)
+                }}
+                className="w-3.5 h-3.5 rounded border-fayrouz-border bg-fayrouz-surface accent-fayrouz-amber cursor-pointer"
+              />
+              <span className="text-[11px] font-sans">
+                Remember as my new permanent Taste Passport default
+              </span>
+            </motion.label>
+          )}
 
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.96 }}
-            onClick={handleConfirm}
-            className="px-6 py-3 rounded-2xl font-serif font-bold text-xs sm:text-sm bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian shadow-amber-glow flex items-center gap-2 cursor-pointer"
-          >
-            <Plus className="w-4 h-4 stroke-[3]" />
-            <span>Add</span>
-          </motion.button>
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <span className="text-[10px] font-mono text-fayrouz-muted uppercase">Customized Total</span>
+              <div className="text-2xl font-serif font-bold text-fayrouz-gold">
+                ${finalPrice.toFixed(2)}
+              </div>
+            </div>
+
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.96 }}
+              onClick={handleConfirm}
+              className="px-6 py-3 rounded-2xl font-serif font-bold text-xs sm:text-sm bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian shadow-amber-glow flex items-center gap-2 cursor-pointer"
+            >
+              <Plus className="w-4 h-4 stroke-[3]" />
+              <span>{saveToPassport ? 'Save to Passport & Add' : 'Add'}</span>
+            </motion.button>
+          </div>
         </div>
       </motion.div>
     </motion.div>
