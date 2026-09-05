@@ -7,6 +7,7 @@ import DynamicCuratedMenu from './DynamicCuratedMenu'
 import OrderTraySidebar from './OrderTraySidebar'
 import NfcSyncOverlay from './NfcSyncOverlay'
 import WizardContainer from '../wizard/WizardContainer'
+import ReturningGuestLookupModal from './ReturningGuestLookupModal'
 import { BRAND_CONFIG } from '../../constants/brandConfig'
 import { 
   Coffee, 
@@ -18,7 +19,9 @@ import {
   Sparkles, 
   Clock, 
   Check, 
-  ShieldCheck 
+  ShieldCheck,
+  Phone,
+  UserCheck
 } from 'lucide-react'
 
 export default function KioskContainer() {
@@ -34,6 +37,7 @@ export default function KioskContainer() {
   } = useProfile()
 
   const [isAmbientPlaying, setIsAmbientPlaying] = useState(false)
+  const [isLookupModalOpen, setIsLookupModalOpen] = useState(false)
 
   const handleToggleAmbient = () => {
     const isPlaying = soundFx.toggleAmbientCafe()
@@ -128,6 +132,16 @@ export default function KioskContainer() {
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
+                    onClick={() => { soundFx.playTap(); setIsLookupModalOpen(true); }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-fayrouz-surface/80 hover:bg-fayrouz-surface border border-fayrouz-border hover:border-fayrouz-amber/50 text-fayrouz-cream text-xs font-serif transition-colors cursor-pointer"
+                    title="Returning Guest? Enter Phone # or FayrouzPass ID"
+                  >
+                    <Phone className="w-3.5 h-3.5 text-fayrouz-amber" />
+                    <span className="hidden sm:inline">Phone # / ID</span>
+                  </button>
+
+                  <button
+                    type="button"
                     onClick={() => { soundFx.playTap(); setIsKioskWizardOpen(true); }}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-fayrouz-surface/70 hover:bg-fayrouz-surface border border-fayrouz-amber/40 text-fayrouz-gold text-xs font-serif transition-colors cursor-pointer"
                     title="Create your Fayrouz Taste Passport directly on this kiosk"
@@ -194,6 +208,12 @@ export default function KioskContainer() {
 
           {/* Golden Ripple Wave Overlay during NFC Handshake */}
           <NfcSyncOverlay />
+
+          {/* Returning Guest Phone # / ID Recognition Modal */}
+          <ReturningGuestLookupModal
+            isOpen={isLookupModalOpen}
+            onClose={() => setIsLookupModalOpen(false)}
+          />
         </div>
       </div>
     </div>

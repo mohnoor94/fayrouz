@@ -255,6 +255,105 @@ class SoundEngine {
       return true
     }
   }
+
+  /**
+   * Warm steam wand hiss when viewing or customizing craft coffee
+   */
+  playSteamHiss() {
+    if (this.isMuted) return
+    try {
+      this.init()
+      if (!this.ctx) return
+
+      const bufferSize = Math.floor(this.ctx.sampleRate * 0.4)
+      const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate)
+      const data = buffer.getChannelData(0)
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1
+      }
+
+      const noise = this.ctx.createBufferSource()
+      noise.buffer = buffer
+
+      const filter = this.ctx.createBiquadFilter()
+      filter.type = 'bandpass'
+      filter.frequency.setValueAtTime(1400, this.ctx.currentTime)
+      filter.Q.setValueAtTime(2.5, this.ctx.currentTime)
+
+      const gain = this.ctx.createGain()
+      const now = this.ctx.currentTime
+      gain.gain.setValueAtTime(0.001, now)
+      gain.gain.linearRampToValueAtTime(0.045, now + 0.08)
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.38)
+
+      noise.connect(filter)
+      filter.connect(gain)
+      gain.connect(this.ctx.destination)
+
+      noise.start(now)
+      noise.stop(now + 0.4)
+    } catch (e) {}
+  }
+
+  /**
+   * Resonant brass barista service counter bell ("Ding!")
+   */
+  playBaristaBell() {
+    if (this.isMuted) return
+    try {
+      this.init()
+      if (!this.ctx) return
+
+      const now = this.ctx.currentTime
+      const frequencies = [1567.98, 3135.96, 4700] // G6, G7, high harmonic
+      const gains = [0.08, 0.04, 0.015]
+
+      frequencies.forEach((freq, idx) => {
+        const osc = this.ctx.createOscillator()
+        const gain = this.ctx.createGain()
+
+        osc.type = 'sine'
+        osc.frequency.setValueAtTime(freq, now)
+
+        gain.gain.setValueAtTime(gains[idx], now)
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.6)
+
+        osc.connect(gain)
+        gain.connect(this.ctx.destination)
+
+        osc.start(now)
+        osc.stop(now + 0.6)
+      })
+    } catch (e) {}
+  }
+
+  /**
+   * Energetic golden beam pulse sound when NFC particles stream across devices
+   */
+  playBeamPulse() {
+    if (this.isMuted) return
+    try {
+      this.init()
+      if (!this.ctx) return
+
+      const now = this.ctx.currentTime
+      const osc = this.ctx.createOscillator()
+      const gain = this.ctx.createGain()
+
+      osc.type = 'triangle'
+      osc.frequency.setValueAtTime(440, now)
+      osc.frequency.exponentialRampToValueAtTime(1760, now + 0.3)
+
+      gain.gain.setValueAtTime(0.05, now)
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3)
+
+      osc.connect(gain)
+      gain.connect(this.ctx.destination)
+
+      osc.start(now)
+      osc.stop(now + 0.3)
+    } catch (e) {}
+  }
 }
 
 export const soundFx = new SoundEngine()

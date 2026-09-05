@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ProfileProvider } from './context/ProfileContext'
+import { ProfileProvider, useProfile } from './context/ProfileContext'
+import PitchControlBar from './components/pitch/PitchControlBar'
+import DualDeviceCanvas from './components/pitch/DualDeviceCanvas'
+import PitchMetricsHud from './components/pitch/PitchMetricsHud'
 import KioskContainer from './components/kiosk/KioskContainer'
 import WizardContainer from './components/wizard/WizardContainer'
 import EnginePlayground from './components/dev/EnginePlayground'
@@ -19,7 +22,8 @@ import {
   Smartphone,
   Tablet,
   Cpu,
-  Layers
+  Layers,
+  SplitSquareVertical
 } from 'lucide-react'
 
 // Color swatches matrix to verify Tailwind tokens from Phase 0
@@ -40,147 +44,106 @@ const PALETTE_SWATCHES = [
 ]
 
 function AppContent() {
-  const [activeTab, setActiveTab] = useState('phase3') // 'phase3' | 'phase2' | 'phase1' | 'phase0'
+  const { activeDeviceView, setActiveDeviceView } = useProfile()
   const [tapped, setTapped] = useState(false)
   const [likes, setLikes] = useState(12)
 
   return (
-    <div className="min-h-screen bg-fayrouz-obsidian text-fayrouz-cream px-3 py-6 sm:px-8 sm:py-8 flex flex-col items-center">
+    <div className="min-h-screen bg-fayrouz-obsidian text-fayrouz-cream flex flex-col items-center relative selection:bg-fayrouz-amber/30 selection:text-fayrouz-gold pb-16">
       {/* Background ambient warm glow */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-fayrouz-amber/10 rounded-full blur-[140px]" />
-        <div className="absolute -bottom-40 right-10 w-[500px] h-[400px] bg-fayrouz-rose/5 rounded-full blur-[120px]" />
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[850px] h-[550px] bg-fayrouz-amber/10 rounded-full blur-[150px]" />
+        <div className="absolute top-1/2 right-10 w-[600px] h-[500px] bg-fayrouz-rose/5 rounded-full blur-[130px]" />
+        <div className="absolute -bottom-40 left-10 w-[500px] h-[400px] bg-fayrouz-gold/5 rounded-full blur-[140px]" />
       </div>
 
-      <div className="relative z-10 max-w-7xl w-full flex flex-col gap-6">
-        {/* Universal Top Header */}
-        <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-fayrouz-border/70 pb-5">
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium tracking-wide bg-fayrouz-amber/15 text-fayrouz-amber border border-fayrouz-amber/30">
-                <Sparkles className="w-3.5 h-3.5" />
-                Phase 3 Active: Dynamic Tablet Kiosk & NFC Sync
-              </span>
-              <span className="text-xs text-fayrouz-muted font-mono">React 18 + iPad Pro Landscape Chassis</span>
-            </div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-gold-gradient tracking-tight">
-              {BRAND_CONFIG.shortName} <span className="font-arabic font-normal text-fayrouz-amber text-2xl sm:text-3xl">({BRAND_CONFIG.shortNameAr})</span>
-            </h1>
-            <p className="text-sm sm:text-base text-fayrouz-foam/80 mt-1 max-w-xl">
-              {BRAND_CONFIG.name} • Powered by Fayrouz Taste Passport™ & Dynamic Kiosk Engine
-            </p>
-          </div>
+      {/* Top Floating Pitch Control Bar (Phase 4) */}
+      <PitchControlBar />
 
-          <div className="flex items-center gap-3">
-            <div className="text-right">
-              <div className="text-xs text-fayrouz-muted uppercase tracking-wider font-mono">Sensory Roastery</div>
-              <div className="font-arabic text-lg text-fayrouz-amber">قهوة الصباح وطقوس عنبر</div>
-            </div>
-            <div className="w-11 h-11 rounded-2xl glass-card flex items-center justify-center text-fayrouz-amber border-fayrouz-amber/30 shadow-amber-glow">
-              <Coffee className="w-5 h-5" />
-            </div>
-          </div>
-        </header>
-
-        {/* Phase Navigation Tabs */}
-        <div className="flex flex-wrap items-center gap-2 p-1.5 rounded-2xl bg-fayrouz-espresso/80 border border-fayrouz-border/80 w-fit">
-          <button
-            onClick={() => setActiveTab('phase3')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-medium transition-all ${
-              activeTab === 'phase3'
-                ? 'bg-fayrouz-surface text-fayrouz-amber border border-fayrouz-amber/40 shadow-amber-glow'
-                : 'text-fayrouz-muted hover:text-fayrouz-cream'
-            }`}
-          >
-            <Tablet className="w-3.5 h-3.5" />
-            <span>Phase 3: Tablet Kiosk Simulator</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('phase2')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-medium transition-all ${
-              activeTab === 'phase2'
-                ? 'bg-fayrouz-surface text-fayrouz-amber border border-fayrouz-amber/40 shadow-amber-glow'
-                : 'text-fayrouz-muted hover:text-fayrouz-cream'
-            }`}
-          >
-            <Smartphone className="w-3.5 h-3.5" />
-            <span>Phase 2: Mobile Wizard Simulator</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('phase1')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-medium transition-all ${
-              activeTab === 'phase1'
-                ? 'bg-fayrouz-surface text-fayrouz-amber border border-fayrouz-amber/40 shadow-amber-glow'
-                : 'text-fayrouz-muted hover:text-fayrouz-cream'
-            }`}
-          >
-            <Cpu className="w-3.5 h-3.5" />
-            <span>Phase 1: Engine Testbench & Catalog</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('phase0')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-medium transition-all ${
-              activeTab === 'phase0'
-                ? 'bg-fayrouz-surface text-fayrouz-amber border border-fayrouz-amber/40 shadow-amber-glow'
-                : 'text-fayrouz-muted hover:text-fayrouz-cream'
-            }`}
-          >
-            <Layers className="w-3.5 h-3.5" />
-            <span>Phase 0: Design Tokens & System</span>
-          </button>
-        </div>
-
-        {/* View Switcher */}
+      {/* Main Presentation Viewport */}
+      <main className="relative z-10 w-full flex flex-col items-center justify-start flex-1 px-2 sm:px-4 pt-3 pb-8">
         <AnimatePresence mode="wait">
-          {activeTab === 'phase3' && (
+          {/* Default Mode: Dual-Device Split-Screen Pitch */}
+          {activeDeviceView === 'split' && (
             <motion.div
-              key="phase3"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
-              className="flex justify-center w-full"
+              key="view-split"
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.25 }}
+              className="w-full flex justify-center"
             >
-              <KioskContainer />
+              <DualDeviceCanvas />
             </motion.div>
           )}
 
-          {activeTab === 'phase2' && (
+          {/* Mode 2: Mobile Phone Only */}
+          {activeDeviceView === 'mobile' && (
             <motion.div
-              key="phase2"
-              initial={{ opacity: 0, y: 8 }}
+              key="view-mobile"
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
-              className="flex justify-center w-full"
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.25 }}
+              className="flex flex-col items-center justify-center w-full py-4"
             >
+              <div className="text-center mb-4">
+                <span className="text-xs font-mono text-fayrouz-amber uppercase tracking-widest">
+                  Customer Experience Simulator
+                </span>
+                <h2 className="text-2xl font-serif font-bold text-fayrouz-cream">
+                  Sensory Onboarding & Taste Passport
+                </h2>
+              </div>
               <WizardContainer />
             </motion.div>
           )}
 
-          {activeTab === 'phase1' && (
+          {/* Mode 3: Tablet Kiosk Only */}
+          {activeDeviceView === 'tablet' && (
             <motion.div
-              key="phase1"
-              initial={{ opacity: 0, y: 8 }}
+              key="view-tablet"
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.25 }}
+              className="flex flex-col items-center justify-center w-full py-4"
+            >
+              <div className="text-center mb-4">
+                <span className="text-xs font-mono text-fayrouz-amber uppercase tracking-widest">
+                  Counter Roastery Kiosk Simulator
+                </span>
+                <h2 className="text-2xl font-serif font-bold text-fayrouz-cream">
+                  The Magic Dynamic Menu & Barista Tray
+                </h2>
+              </div>
+              <KioskContainer />
+            </motion.div>
+          )}
+
+          {/* Mode 4: Dev Engine Testbench */}
+          {activeDeviceView === 'playground' && (
+            <motion.div
+              key="view-playground"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.25 }}
+              className="w-full max-w-7xl py-4"
             >
               <EnginePlayground />
             </motion.div>
           )}
 
-          {activeTab === 'phase0' && (
+          {/* Mode 5: Phase 0 Design Tokens & System Swatches */}
+          {activeDeviceView === 'phase0' && (
             <motion.div
-              key="phase0"
-              initial={{ opacity: 0, y: 8 }}
+              key="view-phase0"
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
-              className="grid grid-cols-1 lg:grid-cols-12 gap-8"
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.25 }}
+              className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-7xl w-full py-6"
             >
               {/* Left Column: Interactive Micro-Interaction Testing (7 cols) */}
               <section className="lg:col-span-7 flex flex-col gap-6">
@@ -273,7 +236,7 @@ function AppContent() {
                   </div>
                 </motion.div>
 
-                {/* Typography & Arabic Calligraphy Showcase */}
+                {/* Typography Showcase */}
                 <div className="glass-card rounded-2xl p-5 border-fayrouz-border/80">
                   <h3 className="text-xs font-mono uppercase tracking-wider text-fayrouz-muted mb-3 flex items-center gap-1.5">
                     <Compass className="w-3.5 h-3.5 text-fayrouz-amber" />
@@ -332,7 +295,7 @@ function AppContent() {
                   {/* Status Checklist Box */}
                   <div className="mt-4 pt-4 border-t border-fayrouz-border/60 flex flex-col gap-2">
                     <div className="text-xs font-mono uppercase tracking-wider text-fayrouz-muted">
-                      Phase 0, 1, 2 & 3 Verification Status
+                      Phase Verification Status
                     </div>
                     <div className="grid grid-cols-1 gap-1.5 text-xs text-fayrouz-foam/90">
                       <div className="flex items-center gap-2">
@@ -349,7 +312,11 @@ function AppContent() {
                       </div>
                       <div className="flex items-center gap-2">
                         <CheckCircle2 className="w-3.5 h-3.5 text-fayrouz-cardamom" />
-                        <span>Phase 3: iPad Pro Kiosk Simulator & NFC Wave Sync</span>
+                        <span>Phase 3: iPad Pro Kiosk Simulator & Drink Artworks</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-fayrouz-cardamom" />
+                        <span>Phase 4: Dual-Device Split Pitch Mode & Live Telemetry HUD</span>
                       </div>
                     </div>
                   </div>
@@ -358,7 +325,32 @@ function AppContent() {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </main>
+
+      {/* Floating Cafe Owner Business Impact & Speed Telemetry HUD (Phase 4) */}
+      <PitchMetricsHud />
+
+      {/* Bottom Subtle Bar for Dev Navigation */}
+      <footer className="w-full max-w-7xl flex items-center justify-between px-6 py-2 border-t border-fayrouz-border/40 text-[11px] font-mono text-fayrouz-muted mt-auto">
+        <div className="flex items-center gap-2">
+          <span>{BRAND_CONFIG.name}</span>
+          <span>•</span>
+          <span className="font-arabic">{BRAND_CONFIG.taglineAr}</span>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setActiveDeviceView(activeDeviceView === 'phase0' ? 'split' : 'phase0')}
+            className="hover:text-fayrouz-amber transition-colors cursor-pointer flex items-center gap-1"
+          >
+            <Layers className="w-3 h-3" />
+            <span>{activeDeviceView === 'phase0' ? 'Return to Pitch' : 'Design Tokens'}</span>
+          </button>
+          <span>•</span>
+          <span>Phase 4 Pitch Ready</span>
+        </div>
+      </footer>
     </div>
   )
 }

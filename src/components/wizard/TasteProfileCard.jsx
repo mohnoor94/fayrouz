@@ -4,6 +4,7 @@ import confetti from 'canvas-confetti'
 import { useProfile } from '../../context/ProfileContext'
 import { generateCoffeePersona } from '../../utils/personaGenerator'
 import { soundFx } from '../../utils/soundEffects'
+import AppleWalletPassModal from './AppleWalletPassModal'
 import { 
   Sparkles, 
   Radio, 
@@ -19,6 +20,7 @@ import {
 export default function TasteProfileCard({ onRestart, isKiosk = false, onKioskComplete }) {
   const { userProfile, triggerNfcSync, isNfcSynced, isSyncing, completeProfile } = useProfile()
   const [hasTriggeredConfetti, setHasTriggeredConfetti] = useState(false)
+  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false)
 
   const persona = generateCoffeePersona(userProfile)
 
@@ -191,6 +193,27 @@ export default function TasteProfileCard({ onRestart, isKiosk = false, onKioskCo
           <span className="text-fayrouz-gold font-bold">FAYROUZPASS™ LINKED</span>
         </div>
       </motion.div>
+
+      {/* Apple Wallet & Google Wallet Pass Integration Strip */}
+      <div className="flex items-center justify-center gap-2 pt-1">
+        <button
+          type="button"
+          onClick={() => { soundFx.playTap(); setIsWalletModalOpen(true); }}
+          className="flex-1 py-2 px-2.5 rounded-xl bg-black hover:bg-neutral-900 border border-white/20 text-white text-[11px] font-medium flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer"
+        >
+          <Smartphone className="w-3.5 h-3.5 text-white" />
+          <span>Add to Apple Wallet</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => { soundFx.playTap(); setIsWalletModalOpen(true); }}
+          className="flex-1 py-2 px-2.5 rounded-xl bg-[#1f1f1f] hover:bg-[#2b2b2b] border border-white/10 text-white text-[11px] font-medium flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer"
+        >
+          <Sparkles className="w-3.5 h-3.5 text-fayrouz-gold" />
+          <span>Google Wallet</span>
+        </button>
+      </div>
     </div>
 
     {/* Pinned Primary Action Button */}
@@ -227,6 +250,14 @@ export default function TasteProfileCard({ onRestart, isKiosk = false, onKioskCo
           <span>Edit Taste Profile</span>
         </button>
       </div>
+
+      {/* Apple Wallet Pass Modal */}
+      <AppleWalletPassModal
+        isOpen={isWalletModalOpen}
+        onClose={() => setIsWalletModalOpen(false)}
+        userProfile={userProfile}
+        persona={persona}
+      />
     </div>
   )
 }
