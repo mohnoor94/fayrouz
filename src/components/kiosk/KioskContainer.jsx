@@ -7,7 +7,6 @@ import DynamicCuratedMenu from './DynamicCuratedMenu'
 import OrderTraySidebar from './OrderTraySidebar'
 import NfcSyncOverlay from './NfcSyncOverlay'
 import WizardContainer from '../wizard/WizardContainer'
-import DialectCalibrationQuizModal from './DialectCalibrationQuizModal'
 import { BRAND_CONFIG } from '../../constants/brandConfig'
 import { 
   Coffee, 
@@ -35,7 +34,6 @@ export default function KioskContainer() {
   } = useProfile()
 
   const [isAmbientPlaying, setIsAmbientPlaying] = useState(false)
-  const [isDialectQuizOpen, setIsDialectQuizOpen] = useState(false)
 
   const handleToggleAmbient = () => {
     const isPlaying = soundFx.toggleAmbientCafe()
@@ -130,22 +128,12 @@ export default function KioskContainer() {
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
-                    onClick={() => { soundFx.playTap(); setIsDialectQuizOpen(true); }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-purple-900/40 to-fayrouz-surface hover:from-purple-900/60 border border-purple-500/50 text-purple-200 text-xs font-serif transition-all cursor-pointer shadow-sm"
-                    title="Discover your Coffee Dialect in 30 seconds"
-                  >
-                    <Sparkles className="w-3.5 h-3.5 text-purple-300" />
-                    <span className="hidden sm:inline">30s Dialect Quiz</span>
-                  </button>
-
-                  <button
-                    type="button"
                     onClick={() => { soundFx.playTap(); setIsKioskWizardOpen(true); }}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-fayrouz-surface/70 hover:bg-fayrouz-surface border border-fayrouz-amber/40 text-fayrouz-gold text-xs font-serif transition-colors cursor-pointer"
                     title="Create your Taste Passport directly on this kiosk"
                   >
-                    <Coffee className="w-3.5 h-3.5 text-fayrouz-gold" />
-                    <span className="hidden sm:inline">Create Passport</span>
+                    <Sparkles className="w-3.5 h-3.5 text-fayrouz-gold" />
+                    <span className="hidden sm:inline">New? Create Passport</span>
                   </button>
 
                   <button
@@ -163,33 +151,17 @@ export default function KioskContainer() {
 
           {/* Main Workspace: Split into Menu (Left) and Order Tray (Right) */}
           <div className="flex-1 flex overflow-hidden relative min-h-0">
-            {/* Menu Viewport */}
+            {/* Menu Viewport: Zero-latency instant switch, eliminates all blank-screen hangs */}
             <main className="flex-1 p-4 lg:p-5 overflow-hidden flex flex-col min-h-0 min-w-0">
-              <AnimatePresence mode="wait">
-                {isNfcSynced ? (
-                  <motion.div
-                    key="personalized-menu"
-                    initial={{ opacity: 0, scale: 0.99 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.99 }}
-                    transition={{ duration: 0.25 }}
-                    className="flex-1 min-h-0 flex flex-col h-full"
-                  >
-                    <DynamicCuratedMenu onAdd={addToOrderTray} />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="neutral-menu"
-                    initial={{ opacity: 0, scale: 0.99 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.99 }}
-                    transition={{ duration: 0.25 }}
-                    className="flex-1 min-h-0 flex flex-col h-full"
-                  >
-                    <InitialStateMenu onAdd={addToOrderTray} />
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              {isNfcSynced ? (
+                <div key="personalized-menu" className="flex-1 min-h-0 flex flex-col h-full">
+                  <DynamicCuratedMenu onAdd={addToOrderTray} />
+                </div>
+              ) : (
+                <div key="neutral-menu" className="flex-1 min-h-0 flex flex-col h-full">
+                  <InitialStateMenu onAdd={addToOrderTray} />
+                </div>
+              )}
             </main>
 
             {/* Persistent Right Order Tray (Option A) */}
@@ -219,17 +191,6 @@ export default function KioskContainer() {
               </motion.div>
             )}
           </AnimatePresence>
-
-          {/* Quick 30-Second Dialect Calibration Quiz Modal */}
-          <DialectCalibrationQuizModal
-            isOpen={isDialectQuizOpen}
-            onClose={() => setIsDialectQuizOpen(false)}
-            onComplete={() => {
-              setIsDialectQuizOpen(false)
-              completeProfile()
-              triggerNfcSync()
-            }}
-          />
 
           {/* Golden Ripple Wave Overlay during NFC Handshake */}
           <NfcSyncOverlay />

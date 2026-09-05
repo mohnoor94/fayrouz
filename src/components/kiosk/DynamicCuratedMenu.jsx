@@ -7,7 +7,6 @@ import KioskItemCard from './KioskItemCard'
 import DrinkArtwork from './DrinkArtwork'
 import ItemCustomizerModal from './ItemCustomizerModal'
 import CoffeeDialectDossierModal from './CoffeeDialectDossierModal'
-import DialectCalibrationQuizModal from './DialectCalibrationQuizModal'
 import { 
   Sparkles, 
   Search, 
@@ -42,7 +41,6 @@ export default function DynamicCuratedMenu({ onAdd }) {
   const [customizingItem, setCustomizingItem] = useState(null)
   const [isUsualJustAdded, setIsUsualJustAdded] = useState(false)
   const [isDossierOpen, setIsDossierOpen] = useState(false)
-  const [isQuizOpen, setIsQuizOpen] = useState(false)
 
   const { curatedMatches, adventurousPick, categorizedMenu, stats } = personalizedMenu
   const persona = generateCoffeePersona(userProfile)
@@ -420,27 +418,11 @@ export default function DynamicCuratedMenu({ onAdd }) {
         isOpen={isDossierOpen}
         onClose={() => setIsDossierOpen(false)}
         persona={persona}
-        onOpenQuiz={() => {
-          setIsDossierOpen(false)
-          setIsQuizOpen(true)
-        }}
         onOrderDrink={(drinkId) => {
           const matchedItem = rawMenuData.find(d => d.id === drinkId)
           if (matchedItem) {
             setCustomizingItem(matchedItem)
           }
-        }}
-      />
-
-      {/* =====================================================================
-          7. THE 16 DIALECTS™ 30-SECOND SENSORY CALIBRATION QUIZ MODAL
-          ===================================================================== */}
-      <DialectCalibrationQuizModal
-        isOpen={isQuizOpen}
-        onClose={() => setIsQuizOpen(false)}
-        onComplete={(_code) => {
-          setIsQuizOpen(false)
-          setIsDossierOpen(true)
         }}
       />
     </div>

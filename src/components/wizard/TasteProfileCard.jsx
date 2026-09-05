@@ -131,11 +131,24 @@ export default function TasteProfileCard({ onRestart, isKiosk = false, onKioskCo
         </div>
 
         {/* Persona Tagline */}
-        <div className="mb-2.5 px-1">
-          <div className="text-[10px] text-fayrouz-foam/80 italic leading-relaxed line-clamp-2">
+        <div className="mb-2 px-1">
+          <div className="text-[11px] text-fayrouz-foam/85 italic leading-relaxed line-clamp-2">
             "{persona.descriptor}"
           </div>
         </div>
+
+        {/* Soulmate Drink Feature */}
+        {persona.dialect?.soulmateDrinkName && (
+          <div className="p-2.5 rounded-2xl bg-fayrouz-gold/10 border border-fayrouz-gold/30 mb-2 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5 text-[10px] font-mono text-fayrouz-amber font-semibold flex-shrink-0">
+              <Sparkles className="w-3.5 h-3.5 text-fayrouz-gold" />
+              <span>Soulmate Cup:</span>
+            </div>
+            <div className="text-xs font-serif font-bold text-fayrouz-gold truncate text-right">
+              {persona.dialect.soulmateDrinkName}
+            </div>
+          </div>
+        )}
 
         {/* Multi-Flavor Pillars Highlight */}
         <div className="p-2.5 rounded-2xl bg-fayrouz-obsidian/70 border border-fayrouz-border/80 mb-2.5 flex flex-col gap-1.5">

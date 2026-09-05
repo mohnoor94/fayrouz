@@ -249,6 +249,9 @@ export function ProfileProvider({ children }) {
   const resetNfcSync = useCallback(() => {
     setIsNfcSynced(false)
     setIsSyncing(false)
+    setOrderTray([])
+    setUserProfile(DEFAULT_PROFILE)
+    setActivePresetId(null)
   }, [])
 
   // Pitch demo preset loader

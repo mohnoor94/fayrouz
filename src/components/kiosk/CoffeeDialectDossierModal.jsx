@@ -21,8 +21,7 @@ export default function CoffeeDialectDossierModal({
   isOpen, 
   onClose, 
   persona, 
-  onOrderDrink,
-  onOpenQuiz
+  onOrderDrink
 }) {
   if (!isOpen || !persona || !persona.dialect) return null
 
@@ -39,12 +38,6 @@ export default function CoffeeDialectDossierModal({
     soundFx.playTap()
     onOrderDrink?.(dialect.growthDrinkId)
     onClose?.()
-  }
-
-  const handleOpenQuiz = () => {
-    soundFx.playTap()
-    onClose?.()
-    onOpenQuiz?.()
   }
 
   return (
@@ -138,14 +131,6 @@ export default function CoffeeDialectDossierModal({
                     "{dialect.taglineAr}"
                   </p>
                 )}
-                <button
-                  type="button"
-                  onClick={handleOpenQuiz}
-                  className="mt-1 inline-flex items-center justify-center md:justify-end gap-1.5 px-3 py-1.5 rounded-xl bg-fayrouz-gold/15 hover:bg-fayrouz-gold/25 border border-fayrouz-gold/40 text-[11px] font-mono font-bold text-fayrouz-gold transition-colors cursor-pointer w-full md:w-auto"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-fayrouz-gold" />
-                  <span>Calibrate / Retake Quiz</span>
-                </button>
               </div>
             </div>
 
@@ -325,14 +310,10 @@ export default function CoffeeDialectDossierModal({
 
           {/* Modal Bottom Footer */}
           <div className="p-4 border-t border-fayrouz-border/70 flex flex-wrap items-center justify-between gap-3 relative z-10 flex-shrink-0 bg-[#120d09]">
-            <button
-              type="button"
-              onClick={handleOpenQuiz}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-fayrouz-amber/20 to-fayrouz-gold/20 hover:from-fayrouz-amber/30 hover:to-fayrouz-gold/30 border border-fayrouz-gold/50 text-xs font-serif font-bold text-fayrouz-gold flex items-center gap-2 cursor-pointer transition-colors"
-            >
+            <div className="flex items-center gap-2 text-xs font-mono text-fayrouz-muted">
               <Sparkles className="w-3.5 h-3.5 text-fayrouz-gold" />
-              <span>Retake Dialect Quiz (اختبار معايرة الذائقة)</span>
-            </button>
+              <span>Calibrated via Universal Taste Passport • Ambar Codex</span>
+            </div>
 
             <button
               type="button"
