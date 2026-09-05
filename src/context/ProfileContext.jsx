@@ -250,8 +250,6 @@ export function ProfileProvider({ children }) {
     setIsNfcSynced(false)
     setIsSyncing(false)
     setOrderTray([])
-    setUserProfile(DEFAULT_PROFILE)
-    setActivePresetId(null)
   }, [])
 
   // Pitch demo preset loader

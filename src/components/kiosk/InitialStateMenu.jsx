@@ -72,7 +72,16 @@ const CATEGORY_TABS = [
 ]
 
 export default function InitialStateMenu({ onAdd }) {
-  const { rawMenuData, triggerNfcSync, isSyncing, userProfile, setIsKioskWizardOpen, completeProfile } = useProfile()
+  const { 
+    rawMenuData, 
+    triggerNfcSync, 
+    isSyncing, 
+    userProfile, 
+    setIsKioskWizardOpen, 
+    completeProfile,
+    demoPresets = [],
+    loadPreset
+  } = useProfile()
   const [activeTab, setActiveTab] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [customizingItem, setCustomizingItem] = useState(null)
@@ -171,6 +180,33 @@ export default function InitialStateMenu({ onAdd }) {
             <span>New Guest? Create Fayrouz Passport (30s)</span>
           </button>
         </div>
+
+        {/* Pitch Demo Personas: 1-Click Guest Simulation for Judges & Demonstrators */}
+        {demoPresets.length > 0 && (
+          <div className="flex flex-wrap items-center gap-2 pt-2.5 border-t border-fayrouz-border/40 relative z-10">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-fayrouz-muted flex items-center gap-1">
+              <span>Demo Quick Waves:</span>
+            </span>
+            {demoPresets.map((preset) => (
+              <button
+                key={preset.id}
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  soundFx.playNfcBeam()
+                  loadPreset(preset.id)
+                  triggerNfcSync()
+                }}
+                className="text-[11px] px-2.5 py-1 rounded-xl bg-fayrouz-surface/80 hover:bg-fayrouz-surface border border-fayrouz-amber/30 hover:border-fayrouz-amber text-fayrouz-cream flex items-center gap-1.5 transition-all cursor-pointer shadow-sm hover:scale-[1.02]"
+                title={`Simulate ${preset.name} (${preset.title}) tapping their FayrouzPass`}
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-fayrouz-amber animate-pulse" />
+                <span className="font-bold text-fayrouz-gold">{preset.name}</span>
+                <span className="text-[10px] text-fayrouz-muted">({preset.title.replace('The ', '')})</span>
+              </button>
+            ))}
+          </div>
+        )}
       </motion.div>
 
       {/* Baseline Menu Header */}
