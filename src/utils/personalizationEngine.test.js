@@ -16,6 +16,7 @@ import {
   FLAVOR_PILLARS
 } from './personalizationEngine.js'
 import { generateCoffeePersona } from './personaGenerator.js'
+import { resolveItemCraftSpecs } from './craftConstraints.js'
 
 let totalTests = 0
 let passedTests = 0
@@ -173,6 +174,65 @@ assert(areejPersona.title.includes('Sweet Velvet') || areejPersona.title.include
 assert(areejPersona.maskedPhone.includes('••••'), `Areej phone number is masked with bullet characters (Masked: "${areejPersona.maskedPhone}")`)
 assert(areejPersona.passportNumber.startsWith('AMB-') || areejPersona.passportNumber.startsWith('FYZ-'), `Passport number is generated with brand prefix (${areejPersona.passportNumber})`)
 assert(areejPersona.flavorPillarBadges.length === 2, `Badges include both selected flavor pillars (${areejPersona.flavorPillarBadges.join(', ')})`)
+
+// -------------------------------------------------------------
+// Test 10: Craft Constraints & Smart Fallbacks Engine
+// -------------------------------------------------------------
+console.log('\n--- Test Suite 10: Craft Constraints & Smart Fallbacks Verification ---')
+
+// 1. Damascus Rose Cortado with Large (16 oz) preference
+const cortado = rawMenu.find(i => i.id === 'damascus-rose-cortado')
+const largeProfile = { name: 'Noor', preferredSize: 'large', preferredMilk: 'oat', temperature: 'iced' }
+const cortadoCraft = resolveItemCraftSpecs(cortado, largeProfile)
+
+assert(cortadoCraft.isCraftFixedSize === true, 'Damascus Rose Cortado is flagged as craft-fixed size')
+assert(cortadoCraft.effectiveSize === '4.5 oz', `Cortado size is preserved as 4.5 oz instead of expanding to 16 oz (Actual: ${cortadoCraft.effectiveSize})`)
+assert(cortadoCraft.isSizeConstrained === true, 'Cortado flags isSizeConstrained when user prefers Large')
+assert(cortadoCraft.sizeConstraintReason.includes('1:1'), 'Cortado includes 1:1 craft ratio constraint reason')
+assert(cortadoCraft.canBeSavedToPassport === false, 'Cortado size constraint triggers passport shielding (cannot overwrite permanent profile)')
+assert(cortadoCraft.finalPrice === 6.25, `Cortado price includes oat milk (+$0.50) but NO large surcharge ($5.75 + $0.50 = $6.25, Actual: $${cortadoCraft.finalPrice})`)
+
+// 2. Traditional Rakwa with Iced preference
+const rakwa = rawMenu.find(i => i.id === 'traditional-rakwa')
+const icedUser = { name: 'Layla', temperature: 'iced', preferredSize: 'large' }
+const rakwaCraft = resolveItemCraftSpecs(rakwa, icedUser)
+
+assert(rakwaCraft.isHotOnly === true, 'Traditional Rakwa is recognized as Hot Only')
+assert(rakwaCraft.effectiveTemp === 'hot', 'Traditional Rakwa fallback sets effectiveTemp to hot')
+assert(rakwaCraft.isTempConstrained === true, 'Traditional Rakwa flags isTempConstrained when user prefers Iced')
+assert(rakwaCraft.isCraftFixedSize === true && rakwaCraft.effectiveSize === '3 oz', 'Traditional Rakwa fixed size is 3 oz')
+assert(rakwaCraft.canBeSavedToPassport === false, 'Rakwa hot constraint triggers passport shielding')
+
+// 3. Cascara Sparkling Blood Orange Tonic with Hot preference
+const cascara = rawMenu.find(i => i.id === 'cascara-sparkling-tonic')
+const hotUser = { name: 'Tariq', temperature: 'hot' }
+const cascaraCraft = resolveItemCraftSpecs(cascara, hotUser)
+
+assert(cascaraCraft.isIcedOnly === true, 'Cascara Tonic is recognized as Chilled/Iced Only')
+assert(cascaraCraft.effectiveTemp === 'iced', 'Cascara Tonic fallback sets effectiveTemp to iced')
+assert(cascaraCraft.isTempConstrained === true, 'Cascara Tonic flags isTempConstrained when user prefers Hot')
+assert(cascaraCraft.tempConstraintReason.includes('effervescence') || cascaraCraft.tempConstraintReason.includes('tonic'), 'Cascara includes effervescence constraint rationale')
+
+// 4. Panama Boquete Geisha Pour-Over (Pure Black) with Milk preference
+const geisha = rawMenu.find(i => i.id === 'panama-geisha-pourover')
+const milkUser = { name: 'Areej', preferredMilk: 'oat' }
+const geishaCraft = resolveItemCraftSpecs(geisha, milkUser)
+
+assert(geishaCraft.hasMilkOption === false, 'Panama Geisha pour-over does not offer milk options')
+assert(geishaCraft.effectiveMilk === null, 'Panama Geisha effectiveMilk is null (served pure black)')
+assert(geishaCraft.isMilkConstrained === true, 'Panama Geisha flags isMilkConstrained when user prefers milk')
+assert(geishaCraft.canBeSavedToPassport === false, 'Geisha pure black constraint triggers passport shielding')
+
+// 5. Standard Volume Aleppo Pistachio Latte with Large preference (Unconstrained)
+const latte = rawMenu.find(i => i.id === 'aleppo-pistachio-latte')
+const unconstrainedProfile = { name: 'Noor', preferredSize: 'large', temperature: 'hot', preferredMilk: 'whole' }
+const latteCraft = resolveItemCraftSpecs(latte, unconstrainedProfile)
+
+assert(latteCraft.isCraftFixedSize === false, 'Aleppo Pistachio Latte supports standard volume sizes')
+assert(latteCraft.effectiveSize === 'large', 'Latte honors user Large (16 oz) preference')
+assert(latteCraft.isSizeConstrained === false, 'Latte is NOT size constrained')
+assert(latteCraft.canBeSavedToPassport === true, 'Unconstrained Latte order is safe to save to passport')
+assert(latteCraft.finalPrice === 7.75, `Latte price includes $0.75 Large surcharge ($7.00 + $0.75 = $7.75, Actual: $${latteCraft.finalPrice})`)
 
 // -------------------------------------------------------------
 // Summary

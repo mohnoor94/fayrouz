@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useProfile } from '../../context/ProfileContext'
 import { soundFx } from '../../utils/soundEffects'
+import { resolveItemCraftSpecs } from '../../utils/craftConstraints'
 import DrinkArtwork from './DrinkArtwork'
 import { 
   X, 
@@ -12,7 +13,8 @@ import {
   Sparkles, 
   Coffee, 
   ShieldCheck,
-  Leaf
+  Leaf,
+  Info
 } from 'lucide-react'
 
 export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAdd }) {
@@ -24,71 +26,15 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
   const isLactoseFree = userProfile?.dietary?.includes('lactose_free')
   const isUsualItem = Boolean(userProfile?.usualDrink?.itemId && item && userProfile.usualDrink.itemId === item.id)
 
-  // 1. Preferred Size matching to Passport
-  const profileDefaultSize = useMemo(() => {
-    if (isUsualItem && userProfile?.usualDrink?.size) return userProfile.usualDrink.size
-    if (userProfile?.preferredSize) return userProfile.preferredSize
-    const note = userProfile?.usualDrink?.note?.toLowerCase() || ''
-    if (note.includes('16 oz') || note.includes('large')) return 'large'
-    return 'regular'
-  }, [userProfile, isUsualItem])
+  // 1. Resolve craft specifications & recipe boundaries for this item
+  const craftSpecs = useMemo(() => resolveItemCraftSpecs(item, userProfile), [item, userProfile])
 
-  // 2. Preferred Temperature matching to Passport
-  const profileDefaultTemp = useMemo(() => {
-    if (!item) return 'hot'
-    if (item.canBeIced && !item.canBeHot) return 'iced'
-    if (item.canBeHot && !item.canBeIced) return 'hot'
-    if (isUsualItem && userProfile?.usualDrink?.temperature) return userProfile.usualDrink.temperature
-    const note = userProfile?.usualDrink?.note?.toLowerCase() || ''
-    if (isUsualItem && note.includes('iced')) return 'iced'
-    if (isUsualItem && note.includes('hot')) return 'hot'
-    if (userProfile?.temperature === 'iced' && item.canBeIced) return 'iced'
-    if (userProfile?.temperature === 'hot' && item.canBeHot) return 'hot'
-    return item.defaultTemperature || 'hot'
-  }, [item, userProfile, isUsualItem])
-
-  // 3. Preferred Milk matching to Passport & Safeguards
-  const profileDefaultMilk = useMemo(() => {
-    if (isVegan || isLactoseFree) return 'oat'
-    if (isUsualItem && userProfile?.usualDrink?.milk) return userProfile.usualDrink.milk
-    if (userProfile?.preferredMilk) return userProfile.preferredMilk
-    const note = userProfile?.usualDrink?.note?.toLowerCase() || ''
-    if (note.includes('oat')) return 'oat'
-    if (note.includes('almond')) return 'almond'
-    return 'whole'
-  }, [userProfile, isVegan, isLactoseFree, isUsualItem])
-
-  // 4. Preferred Sweetness matching to Passport & Palate
-  const profileDefaultSweetness = useMemo(() => {
-    if (isUsualItem && userProfile?.usualDrink?.sweetness) return userProfile.usualDrink.sweetness
-    const note = userProfile?.usualDrink?.note?.toLowerCase() || ''
-    if (note.includes('0%') || note.includes('unsweetened')) return '0'
-    if (note.includes('100%') || note.includes('rich sweet')) return '100'
-    if (note.includes('25%') || note.includes('subtle')) return '25'
-    if (note.includes('50%') || note.includes('balanced')) return '50'
-    if (userProfile?.sweetnessPreference === 'unsweetened') return '0'
-    if (userProfile?.sweetnessPreference === 'sweet') return '100'
-    if (userProfile?.sweetnessPreference === 'balanced') return '50'
-    if (userProfile?.sweetnessPreference === 'subtle') return '25'
-    if (userProfile?.palateScore <= 2) return '0'
-    if (userProfile?.palateScore >= 8) return '100'
-    return '25'
-  }, [userProfile, isUsualItem])
-
-  // 5. Preferred Add-Ons matching to Passport Pillars
-  const profileDefaultAddOns = useMemo(() => {
-    if (isUsualItem && userProfile?.usualDrink?.addOns) {
-      return userProfile.usualDrink.addOns
-    }
-    const list = []
-    const note = userProfile?.usualDrink?.note?.toLowerCase() || ''
-    const affinities = userProfile?.tasteAffinities || []
-    if (affinities.includes('spiced') || note.includes('cardamom')) list.push('cardamom')
-    if (note.includes('extra') || note.includes('ristretto') || note.includes('double')) list.push('extra-shot')
-    if (note.includes('rose')) list.push('rosewater')
-    if (note.includes('tahini')) list.push('tahini')
-    return [...new Set(list)]
-  }, [userProfile, isUsualItem])
+  // Profile-adapted default values
+  const profileDefaultSize = craftSpecs.effectiveSize
+  const profileDefaultTemp = craftSpecs.effectiveTemp
+  const profileDefaultMilk = craftSpecs.effectiveMilk || 'whole'
+  const profileDefaultSweetness = craftSpecs.effectiveSweetness
+  const profileDefaultAddOns = craftSpecs.effectiveAddOns
 
   // Dynamic Customization State
   const [temperature, setTemperature] = useState(profileDefaultTemp)
@@ -110,22 +56,22 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
     }
   }, [isOpen, item?.id, profileDefaultTemp, profileDefaultSize, profileDefaultMilk, profileDefaultSweetness, profileDefaultAddOns])
 
-  const hasMilkOption = Boolean(item.containsDairy || item.dairyAlternative || item.category === 'velvet-milk')
+  const hasMilkOption = craftSpecs.hasMilkOption
 
-  // Detect if user made changes from their permanent passport defaults
-  const hasCustomized = Boolean(
-    size !== profileDefaultSize ||
-    temperature !== profileDefaultTemp ||
-    (hasMilkOption && milk !== profileDefaultMilk) ||
-    sweetness !== profileDefaultSweetness ||
-    JSON.stringify([...addOns].sort()) !== JSON.stringify([...profileDefaultAddOns].sort())
-  )
+  // Determine which fields represent voluntary, unconstrained user customizations
+  const canSaveSize = !craftSpecs.isCraftFixedSize && size !== (userProfile?.preferredSize || 'regular') && (size === 'regular' || size === 'large')
+  const canSaveTemp = !craftSpecs.isHotOnly && !craftSpecs.isIcedOnly && temperature !== (userProfile?.temperature === 'iced' ? 'iced' : 'hot')
+  const canSaveMilk = hasMilkOption && !isVegan && !isLactoseFree && milk !== (userProfile?.preferredMilk || 'whole')
+  const canSaveSweetness = sweetness !== profileDefaultSweetness
+
+  // Shielding: Only show "Remember as my new permanent Taste Passport default" if user made a voluntary change on an unconstrained option
+  const hasVoluntaryCustomization = canSaveSize || canSaveTemp || canSaveMilk || canSaveSweetness
 
   // Calculate dynamic price
   const basePrice = item.effectivePrice ?? item.price
   let finalPrice = basePrice
 
-  if (size === 'large') finalPrice += 0.75
+  if (!craftSpecs.isCraftFixedSize && size === 'large') finalPrice += 0.75
   if (hasMilkOption && (milk === 'oat' || milk === 'almond')) finalPrice += 0.50
   if (addOns.includes('extra-shot')) finalPrice += 1.00
   if (addOns.includes('rosewater')) finalPrice += 0.50
@@ -142,24 +88,35 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
     soundFx.playTap()
 
     // If user explicitly checked the permanent update option:
-    if (saveToPassport && isNfcSynced) {
+    if (saveToPassport && isNfcSynced && hasVoluntaryCustomization) {
       const updates = {}
-      if (size !== profileDefaultSize) updates.preferredSize = size
-      if (temperature !== profileDefaultTemp) updates.temperature = temperature
-      if (hasMilkOption && milk !== profileDefaultMilk) updates.preferredMilk = milk
-      if (sweetness !== profileDefaultSweetness) {
+      if (canSaveSize) updates.preferredSize = size
+      if (canSaveTemp) updates.temperature = temperature
+      if (canSaveMilk) updates.preferredMilk = milk
+      if (canSaveSweetness) {
         updates.sweetnessPreference = 
           sweetness === '0' ? 'unsweetened' :
           sweetness === '100' ? 'sweet' :
           sweetness === '50' ? 'balanced' : 'subtle'
       }
-      updateProfile(updates)
+      if (Object.keys(updates).length > 0) {
+        updateProfile(updates)
+      }
     }
+
+    const sizeDisplayName = craftSpecs.isCraftFixedSize 
+      ? (item.fixedServingLabel || `${item.fixedServingSize} Craft Ratio`) 
+      : (size === 'large' ? 'Large' : 'Regular')
+    const milkDisplayName = hasMilkOption 
+      ? (milk === 'oat' ? 'Oat Milk' : milk === 'almond' ? 'Almond Milk' : 'Whole Milk') 
+      : null
+    const tempDisplayName = temperature === 'iced' ? 'Iced' : 'Hot'
+    const nameSpecs = [tempDisplayName, sizeDisplayName, milkDisplayName].filter(Boolean).join(', ')
 
     const customizedItem = {
       ...item,
-      id: `${item.id}-${temperature}-${milk}-${size}-${addOns.join('-')}`,
-      customizedName: `${item.name} (${temperature === 'iced' ? 'Iced' : 'Hot'}, ${size === 'large' ? 'Large' : 'Regular'}${hasMilkOption ? `, ${milk === 'oat' ? 'Oat Milk' : milk === 'almond' ? 'Almond Milk' : 'Whole Milk'}` : ''})`,
+      id: `${item.id}-${temperature}-${hasMilkOption ? milk : 'nomilk'}-${size}-${addOns.join('-')}`,
+      customizedName: `${item.name} (${nameSpecs})`,
       effectivePrice: finalPrice,
       customizations: {
         temperature,
@@ -214,7 +171,11 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
               {isNfcSynced && (
                 <div className="flex items-center gap-1.5 mt-1 text-[10px] font-mono text-fayrouz-muted">
                   <span className="w-1.5 h-1.5 rounded-full bg-fayrouz-amber animate-pulse" />
-                  <span>Single-Cup Customization • Leaves permanent passport unchanged</span>
+                  <span>
+                    {craftSpecs.isSizeConstrained || craftSpecs.isTempConstrained || craftSpecs.isMilkConstrained
+                      ? '⚡ Specialty Craft Adapted • Leaves permanent passport unchanged'
+                      : 'Single-Cup Customization • Leaves permanent passport unchanged'}
+                  </span>
                 </div>
               )}
             </div>
@@ -239,14 +200,26 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
               </span>
               {isNfcSynced && (
                 <span className={`text-[10px] font-mono flex items-center gap-1 font-medium ${
-                  temperature === profileDefaultTemp ? 'text-fayrouz-gold' : 'text-fayrouz-amber'
+                  craftSpecs.isTempConstrained
+                    ? 'text-fayrouz-amber'
+                    : temperature === profileDefaultTemp 
+                      ? 'text-fayrouz-gold' 
+                      : 'text-fayrouz-amber'
                 }`}>
                   <Sparkles className="w-2.5 h-2.5 flex-shrink-0" />
-                  <span>Passport Choice: {profileDefaultTemp === 'iced' ? '❄️ Flash Iced' : '🔥 Steaming Hot'}</span>
-                  {temperature !== profileDefaultTemp && (
-                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-fayrouz-amber/15 text-fayrouz-amber border border-fayrouz-amber/30 ml-1 font-sans">
-                      One-time tweak
+                  {craftSpecs.isTempConstrained ? (
+                    <span>
+                      Passport: {userProfile?.temperature === 'iced' ? '❄️ Flash Iced' : '🔥 Steaming Hot'} • Adapted to {craftSpecs.effectiveTemp === 'iced' ? 'Chilled Only' : 'Hot Only'}
                     </span>
+                  ) : (
+                    <>
+                      <span>Passport Choice: {profileDefaultTemp === 'iced' ? '❄️ Flash Iced' : '🔥 Steaming Hot'}</span>
+                      {temperature !== profileDefaultTemp && (
+                        <span className="text-[9px] px-1.5 py-0.2 rounded bg-fayrouz-amber/15 text-fayrouz-amber border border-fayrouz-amber/30 ml-1 font-sans">
+                          One-time tweak
+                        </span>
+                      )}
+                    </>
                   )}
                 </span>
               )}
@@ -269,9 +242,10 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
                 <div className="flex items-center gap-1.5">
                   <Flame className={`w-4 h-4 ${temperature === 'hot' ? 'text-fayrouz-ember' : 'text-fayrouz-muted'}`} />
                   <span>Steaming Hot</span>
-                  {!item.canBeHot && <span className="text-[9px] font-mono opacity-70">(N/A)</span>}
+                  {!item.canBeHot && <span className="text-[9px] font-mono opacity-70">(Craft Chilled Only)</span>}
+                  {item.canBeHot && !item.canBeIced && <span className="text-[9px] font-mono text-fayrouz-amber/80">(Craft Only)</span>}
                 </div>
-                {isNfcSynced && profileDefaultTemp === 'hot' && (
+                {isNfcSynced && profileDefaultTemp === 'hot' && !craftSpecs.isTempConstrained && (
                   <span className="text-[9px] font-mono text-fayrouz-gold/80 font-normal">
                     ⭐ Passport Default
                   </span>
@@ -294,15 +268,24 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
                 <div className="flex items-center gap-1.5">
                   <Snowflake className={`w-4 h-4 ${temperature === 'iced' ? 'text-sky-400' : 'text-fayrouz-muted'}`} />
                   <span>Flash Iced</span>
-                  {!item.canBeIced && <span className="text-[9px] font-mono opacity-70">(N/A)</span>}
+                  {!item.canBeIced && <span className="text-[9px] font-mono opacity-70">(Craft Hot Only)</span>}
+                  {!item.canBeHot && item.canBeIced && <span className="text-[9px] font-mono text-sky-300/80">(Craft Only)</span>}
                 </div>
-                {isNfcSynced && profileDefaultTemp === 'iced' && (
+                {isNfcSynced && profileDefaultTemp === 'iced' && !craftSpecs.isTempConstrained && (
                   <span className="text-[9px] font-mono text-sky-300/80 font-normal">
                     ⭐ Passport Default
                   </span>
                 )}
               </button>
             </div>
+
+            {/* Transparent Educational Microcopy for Temperature Constraints */}
+            {item.tempConstraintReason && (craftSpecs.isHotOnly || craftSpecs.isIcedOnly) && (
+              <div className="flex items-start gap-2 mt-2 px-3 py-2 rounded-xl bg-fayrouz-surface/60 border border-fayrouz-border/80 text-[11px] font-sans text-fayrouz-foam/90">
+                <Info className="w-3.5 h-3.5 text-fayrouz-amber flex-shrink-0 mt-0.5" />
+                <span>{item.tempConstraintReason}</span>
+              </div>
+            )}
           </div>
 
           {/* 2. Cup Size Selection */}
@@ -312,64 +295,104 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
                 Beverage Size
               </span>
               {isNfcSynced && (
-                <span className={`text-[10px] font-mono flex items-center gap-1 font-medium ${
-                  size === profileDefaultSize ? 'text-fayrouz-gold' : 'text-fayrouz-amber'
-                }`}>
-                  <Sparkles className="w-2.5 h-2.5 flex-shrink-0" />
-                  <span>Passport Choice: {profileDefaultSize === 'large' ? 'Large (16 oz)' : 'Regular (12 oz)'}</span>
-                  {size !== profileDefaultSize && (
-                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-fayrouz-amber/15 text-fayrouz-amber border border-fayrouz-amber/30 ml-1 font-sans">
-                      One-time tweak
-                    </span>
-                  )}
-                </span>
+                craftSpecs.isCraftFixedSize ? (
+                  <span className={`text-[10px] font-mono flex items-center gap-1 font-medium ${
+                    craftSpecs.isSizeConstrained ? 'text-fayrouz-amber' : 'text-fayrouz-gold'
+                  }`}>
+                    <Sparkles className="w-2.5 h-2.5 flex-shrink-0" />
+                    {craftSpecs.isSizeConstrained ? (
+                      <span>Passport Choice: Large (16 oz) • Adapted to craft ratio</span>
+                    ) : (
+                      <span>Specialty Craft Serving</span>
+                    )}
+                  </span>
+                ) : (
+                  <span className={`text-[10px] font-mono flex items-center gap-1 font-medium ${
+                    size === profileDefaultSize ? 'text-fayrouz-gold' : 'text-fayrouz-amber'
+                  }`}>
+                    <Sparkles className="w-2.5 h-2.5 flex-shrink-0" />
+                    <span>Passport Choice: {profileDefaultSize === 'large' ? 'Large (16 oz)' : 'Regular (12 oz)'}</span>
+                    {size !== profileDefaultSize && (
+                      <span className="text-[9px] px-1.5 py-0.2 rounded bg-fayrouz-amber/15 text-fayrouz-amber border border-fayrouz-amber/30 ml-1 font-sans">
+                        One-time tweak
+                      </span>
+                    )}
+                  </span>
+                )
               )}
             </div>
-            <div className="grid grid-cols-2 gap-2.5">
-              <button
-                type="button"
-                onClick={() => { soundFx.playTap(); setSize('regular'); }}
-                className={`p-3 rounded-2xl border text-xs font-serif font-bold flex items-center justify-between px-4 transition-all cursor-pointer relative ${
-                  size === 'regular'
-                    ? 'bg-fayrouz-amber/20 border-fayrouz-amber text-fayrouz-gold shadow-amber-glow'
-                    : 'bg-fayrouz-surface/60 border-fayrouz-border text-fayrouz-cream hover:bg-fayrouz-surface'
-                }`}
-              >
-                <div className="flex flex-col items-start">
-                  <span>Regular (12 oz)</span>
-                  {isNfcSynced && profileDefaultSize === 'regular' && (
-                    <span className="text-[9px] font-mono text-fayrouz-gold/80 font-normal">
-                      ⭐ Passport Default
-                    </span>
-                  )}
-                </div>
-                <span className="text-[10px] font-mono text-fayrouz-muted">Standard</span>
-              </button>
 
-              <button
-                type="button"
-                onClick={() => { soundFx.playTap(); setSize('large'); }}
-                className={`p-3 rounded-2xl border text-xs font-serif font-bold flex items-center justify-between px-4 transition-all cursor-pointer relative ${
-                  size === 'large'
-                    ? 'bg-fayrouz-amber/20 border-fayrouz-amber text-fayrouz-gold shadow-amber-glow'
-                    : 'bg-fayrouz-surface/60 border-fayrouz-border text-fayrouz-cream hover:bg-fayrouz-surface'
-                }`}
-              >
-                <div className="flex flex-col items-start">
-                  <span>Large (16 oz)</span>
-                  {isNfcSynced && profileDefaultSize === 'large' && (
-                    <span className="text-[9px] font-mono text-fayrouz-gold/80 font-normal">
-                      ⭐ Passport Default
-                    </span>
-                  )}
+            {craftSpecs.isCraftFixedSize ? (
+              <div className="p-3.5 rounded-2xl border border-fayrouz-amber/40 bg-gradient-to-r from-fayrouz-surface/90 via-[#261c16] to-fayrouz-surface/90 flex flex-col gap-2 shadow-inner">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-lg bg-fayrouz-amber/15 border border-fayrouz-amber/30 flex items-center justify-center text-fayrouz-gold">
+                      <Coffee className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-serif font-bold text-fayrouz-cream">
+                        {item.fixedServingLabel || `${item.fixedServingSize} (Craft Ratio)`}
+                      </div>
+                      <div className="text-[10px] font-mono text-fayrouz-amber">
+                        Fixed Specialty Single Serving
+                      </div>
+                    </div>
+                  </div>
+                  <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-fayrouz-amber/20 border border-fayrouz-amber/40 text-fayrouz-gold font-bold">
+                    Craft Standard
+                  </span>
                 </div>
-                <span className="text-[10px] font-mono text-fayrouz-amber font-bold">+ $0.75</span>
-              </button>
-            </div>
+                <p className="text-[11px] font-sans text-fayrouz-foam/85 leading-relaxed border-t border-fayrouz-border/50 pt-2">
+                  {item.sizeConstraintReason || 'Crafted in a dedicated single-serving ratio to maintain sensory balance and espresso concentration.'}
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => { soundFx.playTap(); setSize('regular'); }}
+                  className={`p-3 rounded-2xl border text-xs font-serif font-bold flex items-center justify-between px-4 transition-all cursor-pointer relative ${
+                    size === 'regular'
+                      ? 'bg-fayrouz-amber/20 border-fayrouz-amber text-fayrouz-gold shadow-amber-glow'
+                      : 'bg-fayrouz-surface/60 border-fayrouz-border text-fayrouz-cream hover:bg-fayrouz-surface'
+                  }`}
+                >
+                  <div className="flex flex-col items-start">
+                    <span>Regular (12 oz)</span>
+                    {isNfcSynced && profileDefaultSize === 'regular' && (
+                      <span className="text-[9px] font-mono text-fayrouz-gold/80 font-normal">
+                        ⭐ Passport Default
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-[10px] font-mono text-fayrouz-muted">Standard</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => { soundFx.playTap(); setSize('large'); }}
+                  className={`p-3 rounded-2xl border text-xs font-serif font-bold flex items-center justify-between px-4 transition-all cursor-pointer relative ${
+                    size === 'large'
+                      ? 'bg-fayrouz-amber/20 border-fayrouz-amber text-fayrouz-gold shadow-amber-glow'
+                      : 'bg-fayrouz-surface/60 border-fayrouz-border text-fayrouz-cream hover:bg-fayrouz-surface'
+                  }`}
+                >
+                  <div className="flex flex-col items-start">
+                    <span>Large (16 oz)</span>
+                    {isNfcSynced && profileDefaultSize === 'large' && (
+                      <span className="text-[9px] font-mono text-fayrouz-gold/80 font-normal">
+                        ⭐ Passport Default
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-[10px] font-mono text-fayrouz-amber font-bold">+ $0.75</span>
+                </button>
+              </div>
+            )}
           </div>
 
           {/* 3. Milk Choice (If Drink Contains Milk or Supports It) */}
-          {hasMilkOption && (
+          {hasMilkOption ? (
             <div>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-mono uppercase text-fayrouz-muted tracking-wider">
@@ -426,6 +449,33 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
                 ))}
               </div>
             </div>
+          ) : (
+            craftSpecs.isMilkConstrained && (
+              <div className="p-3 rounded-2xl border border-fayrouz-border/70 bg-fayrouz-surface/40 flex items-start gap-2.5">
+                <div className="w-6 h-6 rounded-lg bg-fayrouz-amber/10 border border-fayrouz-amber/20 flex items-center justify-center text-fayrouz-gold flex-shrink-0 mt-0.5">
+                  <Coffee className="w-3.5 h-3.5" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-serif font-bold text-fayrouz-cream">
+                      Served Pure Black
+                    </span>
+                    <span className="text-[9px] font-mono text-fayrouz-amber font-bold">
+                      Terroir Standard
+                    </span>
+                  </div>
+                  <p className="text-[10px] font-sans text-fayrouz-muted mt-0.5 leading-snug">
+                    {craftSpecs.milkConstraintReason || 'Served pure black without dairy to preserve single-origin terroir and natural floral notes.'}
+                  </p>
+                  {isNfcSynced && (userProfile?.preferredMilk || userProfile?.usualDrink?.milk) && (
+                    <div className="text-[9px] font-mono text-fayrouz-gold/80 mt-1 flex items-center gap-1">
+                      <Sparkles className="w-2.5 h-2.5" />
+                      <span>Passport: {userProfile?.preferredMilk === 'oat' ? 'Oat Milk' : userProfile?.preferredMilk === 'almond' ? 'Almond Milk' : 'Whole Milk'} held for this cup</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )
           )}
 
           {/* 4. Sweetness Level */}
@@ -533,8 +583,8 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
 
         {/* Modal Bottom Bar: Dynamic Price & Confirm */}
         <div className="pt-3 border-t border-fayrouz-border/70 flex flex-col gap-2.5 relative z-10 flex-shrink-0">
-          {/* Subtle Permanent Passport Default Toggle (Only visible when user tweaked from passport) */}
-          {isNfcSynced && hasCustomized && (
+          {/* Subtle Permanent Passport Default Toggle (Shielded: only visible when user made voluntary unconstrained tweaks) */}
+          {isNfcSynced && hasVoluntaryCustomization && (
             <motion.label 
               initial={{ opacity: 0, y: 2 }}
               animate={{ opacity: 1, y: 0 }}
@@ -550,7 +600,7 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
                 className="w-3.5 h-3.5 rounded border-fayrouz-border bg-fayrouz-surface accent-fayrouz-amber cursor-pointer"
               />
               <span className="text-[11px] font-sans">
-                Remember as my new permanent Taste Passport default
+                Remember changes as my new permanent Taste Passport defaults
               </span>
             </motion.label>
           )}

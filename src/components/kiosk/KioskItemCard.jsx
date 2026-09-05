@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { soundFx } from '../../utils/soundEffects'
 import { useProfile } from '../../context/ProfileContext'
+import { resolveItemCraftSpecs } from '../../utils/craftConstraints'
 import DrinkArtwork from './DrinkArtwork'
 import { 
   Plus, 
@@ -10,10 +11,11 @@ import {
   Check, 
   Compass, 
   Flame, 
-  Snowflake,
+  Snowflake, 
   ShieldAlert,
   ArrowUpRight,
-  Sliders
+  Sliders,
+  Info
 } from 'lucide-react'
 
 export default function KioskItemCard({ 
@@ -31,55 +33,44 @@ export default function KioskItemCard({
   const isAdapted = Boolean(item.isAdapted)
   const basePrice = item.effectivePrice ?? item.price
 
-  // Passport Spec computation when isNfcSynced is active
-  const isVegan = userProfile?.dietary?.includes('vegan')
-  const isLactoseFree = userProfile?.dietary?.includes('lactose_free')
-  const hasMilkOption = Boolean(item.containsDairy || item.dairyAlternative || item.category === 'velvet-milk')
-
-  const passportTemp = (userProfile?.temperature === 'iced' && item.canBeIced) 
-    ? 'iced' 
-    : (!item.canBeHot && item.canBeIced) ? 'iced' : 'hot'
-
-  const passportSize = userProfile?.preferredSize || userProfile?.usualDrink?.size || 'regular'
-
-  const passportMilk = hasMilkOption 
-    ? ((isVegan || isLactoseFree) ? 'oat' : (userProfile?.preferredMilk || 'whole'))
-    : null
-
-  const passportSweetness = userProfile?.sweetnessPreference === 'unsweetened' ? '0' :
-    userProfile?.sweetnessPreference === 'sweet' ? '100' :
-    userProfile?.sweetnessPreference === 'balanced' ? '50' : '25'
-
-  const passportAddOns = userProfile?.tasteAffinities?.includes('spiced') ? ['cardamom'] : []
-
-  // Dynamic calculated price with passport options
-  let calculatedPrice = basePrice
-  if (passportSize === 'large') calculatedPrice += 0.75
-  if (passportMilk === 'oat' || passportMilk === 'almond') calculatedPrice += 0.50
-
-  const specParts = [
-    passportSize === 'large' ? '16 oz (Large)' : '12 oz (Reg)',
-    passportTemp === 'iced' ? '❄️ Iced' : '🔥 Hot',
-    passportMilk ? (passportMilk === 'oat' ? '🥛 Oat' : passportMilk === 'almond' ? '🥛 Almond' : '🥛 Whole') : null
-  ].filter(Boolean)
-
-  const passportSpecLabel = specParts.join(' • ')
+  // Resolve craft constraints and smart fallbacks
+  const craftSpecs = resolveItemCraftSpecs(item, userProfile)
+  const {
+    effectiveSize,
+    sizeLabel,
+    effectiveTemp,
+    tempLabel,
+    effectiveMilk,
+    effectiveSweetness,
+    effectiveAddOns,
+    finalPrice: calculatedPrice,
+    specPreviewLabel: passportSpecLabel,
+    isCraftFixedSize,
+    isSizeConstrained,
+    isTempConstrained
+  } = craftSpecs
 
   const handleFastAdd = (e) => {
     e?.stopPropagation()
     if (isUnsafe) return
     soundFx.playCelebration()
+
+    const sizeName = isCraftFixedSize ? sizeLabel : (effectiveSize === 'large' ? 'Large' : 'Regular')
+    const milkName = effectiveMilk === 'oat' ? 'Oat Milk' : effectiveMilk === 'almond' ? 'Almond Milk' : effectiveMilk === 'whole' ? 'Whole Milk' : ''
+    const tempName = effectiveTemp === 'iced' ? 'Iced' : 'Hot'
+    const nameSpecs = [tempName, sizeName, milkName].filter(Boolean).join(', ')
+
     const customizedItem = {
       ...item,
-      id: `${item.id}-${passportTemp}-${passportMilk}-${passportSize}-${passportAddOns.join('-')}`,
-      customizedName: `${item.name} (${passportTemp === 'iced' ? 'Iced' : 'Hot'}, ${passportSize === 'large' ? 'Large' : 'Regular'}${passportMilk ? `, ${passportMilk === 'oat' ? 'Oat Milk' : passportMilk === 'almond' ? 'Almond Milk' : 'Whole Milk'}` : ''})`,
+      id: `${item.id}-${effectiveTemp}-${effectiveMilk || 'nomilk'}-${effectiveSize}-${effectiveAddOns.join('-')}`,
+      customizedName: `${item.name} (${nameSpecs})`,
       effectivePrice: calculatedPrice,
       customizations: {
-        temperature: passportTemp,
-        size: passportSize,
-        milk: passportMilk,
-        sweetness: passportSweetness,
-        addOns: passportAddOns
+        temperature: effectiveTemp,
+        size: effectiveSize,
+        milk: effectiveMilk,
+        sweetness: effectiveSweetness,
+        addOns: effectiveAddOns
       }
     }
     addToOrderTray(customizedItem)
