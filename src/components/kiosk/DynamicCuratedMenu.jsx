@@ -139,51 +139,38 @@ export default function DynamicCuratedMenu({ onAdd }) {
             </div>
           </div>
 
-          {/* The 16 Dialects™ Interactive Identity Actions */}
-          <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto flex-shrink-0">
-            <button
-              type="button"
-              onClick={() => { soundFx.playTap(); setIsDossierOpen(true); }}
-              className="flex-1 sm:flex-initial px-3.5 sm:px-4 py-2 rounded-2xl bg-gradient-to-br from-fayrouz-obsidian via-[#231711] to-fayrouz-obsidian border-2 border-fayrouz-gold/60 hover:border-fayrouz-gold shadow-amber-glow flex items-center gap-3 text-left transition-all hover:scale-[1.02] cursor-pointer group max-w-full"
-              title="Click to explore your certified 16 Dialects™ full identity dossier"
-            >
-              {/* 4-Letter Acronym Emblem */}
-              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-fayrouz-amber/25 to-fayrouz-gold/10 border border-fayrouz-gold/80 flex flex-col items-center justify-center text-center p-0.5 shadow-inner flex-shrink-0">
-                <span className="text-xs font-mono font-black tracking-wider text-fayrouz-gold">
-                  {persona.dialectCode || 'DIALECT'}
-                </span>
-                <span className="text-[8px] font-mono text-fayrouz-amber">
-                  {persona.house?.symbol || '⟡'}
+          {/* The 16 Dialects™ Interactive Identity Card */}
+          <button
+            type="button"
+            onClick={() => { soundFx.playTap(); setIsDossierOpen(true); }}
+            className="w-full lg:w-auto px-4 py-2.5 rounded-2xl bg-gradient-to-br from-fayrouz-obsidian via-[#231711] to-fayrouz-obsidian border-2 border-fayrouz-gold/60 hover:border-fayrouz-gold shadow-amber-glow flex items-center gap-3 text-left transition-all hover:scale-[1.01] cursor-pointer group max-w-full flex-shrink-0"
+            title="Click to explore your certified 16 Dialects™ full identity dossier"
+          >
+            {/* 4-Letter Acronym Emblem */}
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-fayrouz-amber/25 to-fayrouz-gold/10 border border-fayrouz-gold/80 flex flex-col items-center justify-center text-center p-0.5 shadow-inner flex-shrink-0">
+              <span className="text-xs font-mono font-black tracking-wider text-fayrouz-gold">
+                {persona.dialectCode || 'DIALECT'}
+              </span>
+              <span className="text-[8px] font-mono text-fayrouz-amber">
+                {persona.house?.symbol || '⟡'}
+              </span>
+            </div>
+
+            <div className="flex flex-col items-start min-w-0">
+              <div className="flex items-center gap-1.5 text-[9px] font-mono uppercase tracking-widest text-fayrouz-amber font-bold truncate">
+                <span>The 16 Dialects™</span>
+                <span className="text-fayrouz-gold opacity-80 group-hover:opacity-100 transition-opacity">
+                  • View Dossier →
                 </span>
               </div>
-
-              <div className="flex flex-col items-start min-w-0">
-                <div className="flex items-center gap-1.5 text-[9px] font-mono uppercase tracking-widest text-fayrouz-amber font-bold truncate">
-                  <span>The 16 Dialects™</span>
-                  <span className="text-fayrouz-gold opacity-80 group-hover:opacity-100 transition-opacity">
-                    • View Dossier →
-                  </span>
-                </div>
-                <div className="text-xs sm:text-sm font-serif font-bold text-fayrouz-gold group-hover:text-fayrouz-cream transition-colors truncate">
-                  {persona.title}
-                </div>
-                <span className="font-arabic text-[11px] text-fayrouz-amber/80 font-normal truncate">
-                  {persona.titleAr}
-                </span>
+              <div className="text-xs sm:text-sm font-serif font-bold text-fayrouz-gold group-hover:text-fayrouz-cream transition-colors truncate">
+                {persona.title}
               </div>
-            </button>
-
-            {/* Quick 30-Sec Palate Quiz Button */}
-            <button
-              type="button"
-              onClick={() => { soundFx.playTap(); setIsQuizOpen(true); }}
-              className="px-3.5 py-2.5 rounded-2xl bg-fayrouz-surface/90 hover:bg-fayrouz-surface border border-fayrouz-amber/40 hover:border-fayrouz-gold text-fayrouz-gold flex items-center gap-1.5 text-xs font-mono font-bold transition-all hover:scale-[1.02] cursor-pointer shadow-sm flex-shrink-0"
-              title="Calibrate or discover your coffee dialect in 30 seconds"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-fayrouz-gold" />
-              <span>Take Palate Quiz</span>
-            </button>
-          </div>
+              <span className="font-arabic text-[11px] text-fayrouz-amber/80 font-normal truncate">
+                {persona.titleAr}
+              </span>
+            </div>
+          </button>
         </div>
 
         {/* Tier 2: Dedicated Taste Radar & Dietary Guardrails Ribbon */}

@@ -135,7 +135,7 @@ export default function DialectCalibrationQuizModal({
   onClose,
   onComplete
 }) {
-  const { updateProfile } = useProfile()
+  const { userProfile, updateProfile } = useProfile()
   const [currentStep, setCurrentStep] = useState(0) // 0 to 3
   const [selectedAxes, setSelectedAxes] = useState({
     0: 'T',
@@ -176,10 +176,15 @@ export default function DialectCalibrationQuizModal({
       colors: ['#a855f7', '#d4a373', '#e9c46a', '#ffffff']
     })
 
+    // Polyglot: omnivorous all-weather preferences
     updateProfile({
       dialectCode: 'POLY',
       isPolyglot: true,
-      fluidityScore: 96
+      fluidityScore: 96,
+      temperature: 'any',
+      sweetnessPreference: 'subtle',
+      roastPreference: 'medium',
+      tasteAffinities: ['floral', 'cacao', 'spiced']
     })
 
     onComplete?.('POLY')
@@ -196,9 +201,34 @@ export default function DialectCalibrationQuizModal({
       colors: ['#d4a373', '#e9c46a', '#b87333', '#fefae0']
     })
 
+    // Concrete Customization Mapping:
+    // Axis 1: Philosophy — Terroir (T: Unsweetened, single-origin) vs Alchemy (A: Subtle sweet, spiced Levant)
+    const isTerroir = selectedAxes[0] === 'T'
+    const sweetnessPreference = isTerroir ? 'unsweetened' : 'subtle'
+    const affinities = isTerroir ? ['floral', 'citrus'] : ['spiced', 'silky']
+
+    // Axis 2: Frequency — Luminous (L: Light roast, bright acid) vs Deep (D: Dark roast, bold cacao)
+    const isLuminous = selectedAxes[1] === 'L'
+    const roastPreference = isLuminous ? 'light' : 'dark'
+    const palateScore = isLuminous ? 3 : 7
+
+    // Axis 3: Texture — Naked (N: 0 milk, pure black) vs Silk (S: Oat microfoam, velvety latte)
+    const isNaked = selectedAxes[2] === 'N'
+    const preferredMilk = isNaked ? null : (userProfile?.preferredMilk || 'oat')
+
+    // Axis 4: Rhythm — Ritual (R: Steaming hot ceremonial) vs Velocity (V: Chilled flash-iced)
+    const isRitual = selectedAxes[3] === 'R'
+    const temperature = isRitual ? 'hot' : 'iced'
+
     updateProfile({
       dialectCode: finalCode,
-      isPolyglot: false
+      isPolyglot: false,
+      sweetnessPreference,
+      roastPreference,
+      palateScore,
+      preferredMilk,
+      temperature,
+      tasteAffinities: affinities
     })
 
     onComplete?.(finalCode)

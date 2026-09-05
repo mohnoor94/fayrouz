@@ -5,6 +5,7 @@ import { soundFx } from '../../utils/soundEffects'
 import { BRAND_CONFIG } from '../../constants/brandConfig'
 import KioskItemCard from './KioskItemCard'
 import ItemCustomizerModal from './ItemCustomizerModal'
+import DialectCalibrationQuizModal from './DialectCalibrationQuizModal'
 import { Radio, Sparkles, Coffee, Search, ArrowRight, Zap, ShieldCheck } from 'lucide-react'
 
 const CATEGORY_TABS = [
@@ -17,10 +18,11 @@ const CATEGORY_TABS = [
 ]
 
 export default function InitialStateMenu({ onAdd }) {
-  const { rawMenuData, triggerNfcSync, isSyncing, userProfile, setIsKioskWizardOpen } = useProfile()
+  const { rawMenuData, triggerNfcSync, isSyncing, userProfile, setIsKioskWizardOpen, completeProfile } = useProfile()
   const [activeTab, setActiveTab] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [customizingItem, setCustomizingItem] = useState(null)
+  const [isDialectQuizOpen, setIsDialectQuizOpen] = useState(false)
 
   const handleNfcTap = () => {
     soundFx.playNfcBeam()
@@ -86,13 +88,26 @@ export default function InitialStateMenu({ onAdd }) {
           </div>
         </div>
 
-        {/* Action Row: Two 50/50 responsive grid buttons that fit smoothly on any kiosk screen */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-fayrouz-border/60 relative z-10">
-          <div className="py-3 px-4 rounded-2xl bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian font-serif font-bold text-xs sm:text-sm shadow-amber-glow flex items-center justify-center gap-2 group-hover:scale-[1.01] transition-transform">
-            <Radio className={`w-4 h-4 ${isSyncing ? 'animate-spin' : 'animate-pulse'}`} />
-            <span>{isSyncing ? 'Beaming Passport...' : 'Tap Phone (Simulate NFC Wave)'}</span>
-            <ArrowRight className="w-4 h-4" />
+        {/* Action Row: 3 intuitive paths for unsigned walk-in guests */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-3 border-t border-fayrouz-border/60 relative z-10">
+          <div className="py-2.5 px-3 rounded-2xl bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian font-serif font-bold text-xs shadow-amber-glow flex items-center justify-center gap-1.5 group-hover:scale-[1.01] transition-transform cursor-pointer">
+            <Radio className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : 'animate-pulse'}`} />
+            <span className="truncate">{isSyncing ? 'Beaming...' : 'Tap Phone (NFC Wave)'}</span>
           </div>
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              soundFx.playTap()
+              setIsDialectQuizOpen(true)
+            }}
+            className="py-2.5 px-3 rounded-2xl bg-gradient-to-r from-purple-950/70 via-[#1c121f] to-fayrouz-surface border-2 border-purple-500/60 hover:border-purple-400 text-purple-200 font-serif font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-amber-glow cursor-pointer hover:scale-[1.01]"
+            title="Calibrate your palate in 30 seconds without creating an account"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-purple-300 flex-shrink-0 animate-pulse" />
+            <span className="truncate">Take 30s Palate Quiz</span>
+          </button>
 
           <button
             type="button"
@@ -101,10 +116,11 @@ export default function InitialStateMenu({ onAdd }) {
               soundFx.playTap()
               setIsKioskWizardOpen(true)
             }}
-            className="py-3 px-4 rounded-2xl bg-fayrouz-surface/90 hover:bg-fayrouz-surface border border-fayrouz-amber/50 hover:border-fayrouz-amber text-fayrouz-cream font-serif text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer"
+            className="py-2.5 px-3 rounded-2xl bg-fayrouz-surface/90 hover:bg-fayrouz-surface border border-fayrouz-amber/50 hover:border-fayrouz-amber text-fayrouz-cream font-serif text-xs flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer"
+            title="Create your complete taste passport with dietary rules"
           >
-            <Sparkles className="w-4 h-4 text-fayrouz-gold" />
-            <span>New Guest? Create Taste Passport (30s)</span>
+            <Coffee className="w-3.5 h-3.5 text-fayrouz-gold flex-shrink-0" />
+            <span className="truncate">Create Full Passport</span>
           </button>
         </div>
       </motion.div>
@@ -172,6 +188,17 @@ export default function InitialStateMenu({ onAdd }) {
         isOpen={Boolean(customizingItem)}
         onClose={() => setCustomizingItem(null)}
         onConfirmAdd={(customized) => onAdd(customized)}
+      />
+
+      {/* 30-Second Dialect Calibration Quiz Modal for Unsigned Guests */}
+      <DialectCalibrationQuizModal
+        isOpen={isDialectQuizOpen}
+        onClose={() => setIsDialectQuizOpen(false)}
+        onComplete={() => {
+          setIsDialectQuizOpen(false)
+          completeProfile()
+          triggerNfcSync()
+        }}
       />
     </div>
   )
