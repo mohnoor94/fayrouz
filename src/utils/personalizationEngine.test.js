@@ -171,7 +171,7 @@ const areejPersona = generateCoffeePersona({
 
 assert(areejPersona.title.includes('Sweet Velvet') || areejPersona.title.includes('Microfoam'), `Areej persona reflects silky sweet profile (Title: "${areejPersona.title}")`)
 assert(areejPersona.maskedPhone.includes('••••'), `Areej phone number is masked with bullet characters (Masked: "${areejPersona.maskedPhone}")`)
-assert(areejPersona.passportNumber.startsWith('FYZ-'), `Passport number is generated with FYZ prefix (${areejPersona.passportNumber})`)
+assert(areejPersona.passportNumber.startsWith('AMB-') || areejPersona.passportNumber.startsWith('FYZ-'), `Passport number is generated with brand prefix (${areejPersona.passportNumber})`)
 assert(areejPersona.flavorPillarBadges.length === 2, `Badges include both selected flavor pillars (${areejPersona.flavorPillarBadges.join(', ')})`)
 
 // -------------------------------------------------------------

@@ -7,6 +7,7 @@
  */
 
 import { DIETARY_FLAGS, FLAVOR_PILLARS } from './personalizationEngine.js'
+import { BRAND_CONFIG } from '../constants/brandConfig.js'
 
 export function generateCoffeePersona(profile = {}) {
   const dietary = Array.isArray(profile.dietary) ? profile.dietary : []
@@ -62,7 +63,8 @@ export function generateCoffeePersona(profile = {}) {
   const nameHash = (profile.name || 'Guest')
     .split('')
     .reduce((acc, char) => acc + char.charCodeAt(0), 1000) % 9000 + 1000
-  const passportNumber = `FYZ-${nameHash}`
+  const prefix = BRAND_CONFIG?.passportPrefix || 'AMB'
+  const passportNumber = `${prefix}-${nameHash}`
 
   // Phone masking (e.g. +962 79 •••• 1234)
   const rawPhone = profile.phone || '+962 79 555 1234'

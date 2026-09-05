@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useProfile } from '../../context/ProfileContext'
 import { calculateOrderTotals, generateOrderTicketNumber } from '../../utils/kioskHelpers'
 import { soundFx } from '../../utils/soundEffects'
+import { BRAND_CONFIG } from '../../constants/brandConfig'
 import DrinkArtwork from './DrinkArtwork'
 import { 
   ShoppingBag, 
@@ -282,14 +283,14 @@ export default function OrderTraySidebar({ onResetKiosk }) {
               </div>
 
               <div className="flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-fayrouz-amber/20 text-fayrouz-gold border border-fayrouz-gold/30 text-xs font-mono font-bold mb-2">
-                <span>ORDER {ticketNumber}</span>
+                <span>{BRAND_CONFIG.shortName} • ORDER {ticketNumber}</span>
               </div>
 
-              <h3 className="text-2xl font-serif font-bold text-gold-gradient">
+              <h3 className="text-2xl font-serif font-bold text-fayrouz-cream">
                 Order Sent to Barista Noor!
               </h3>
               <span className="font-arabic text-sm text-fayrouz-amber mt-0.5">
-                طلبك قيد التحضير بعناية فائقة
+                طلبك قيد التحضير في {BRAND_CONFIG.nameAr}
               </span>
 
               <p className="text-xs text-fayrouz-foam/80 mt-2 max-w-xs">

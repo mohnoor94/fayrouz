@@ -4,6 +4,7 @@ import { ProfileProvider } from './context/ProfileContext'
 import KioskContainer from './components/kiosk/KioskContainer'
 import WizardContainer from './components/wizard/WizardContainer'
 import EnginePlayground from './components/dev/EnginePlayground'
+import { BRAND_CONFIG } from './constants/brandConfig'
 import { 
   Coffee, 
   Sparkles, 
@@ -63,17 +64,17 @@ function AppContent() {
               <span className="text-xs text-fayrouz-muted font-mono">React 18 + iPad Pro Landscape Chassis</span>
             </div>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-gold-gradient tracking-tight">
-              Fayrouz <span className="font-arabic font-normal text-fayrouz-amber text-2xl sm:text-3xl">(فيروز)</span>
+              {BRAND_CONFIG.shortName} <span className="font-arabic font-normal text-fayrouz-amber text-2xl sm:text-3xl">({BRAND_CONFIG.shortNameAr})</span>
             </h1>
             <p className="text-sm sm:text-base text-fayrouz-foam/80 mt-1 max-w-xl">
-              Specialty Coffee Passport & Dynamic Personalization Kiosk Engine
+              {BRAND_CONFIG.name} • Universal Coffee Passport & Dynamic Kiosk Engine
             </p>
           </div>
 
           <div className="flex items-center gap-3">
             <div className="text-right">
-              <div className="text-xs text-fayrouz-muted uppercase tracking-wider font-mono">System Ritual</div>
-              <div className="font-arabic text-lg text-fayrouz-amber">قهوة الصباح وفيروزيات</div>
+              <div className="text-xs text-fayrouz-muted uppercase tracking-wider font-mono">Sensory Roastery</div>
+              <div className="font-arabic text-lg text-fayrouz-amber">قهوة الصباح وطقوس عنبر</div>
             </div>
             <div className="w-11 h-11 rounded-2xl glass-card flex items-center justify-center text-fayrouz-amber border-fayrouz-amber/30 shadow-amber-glow">
               <Coffee className="w-5 h-5" />
