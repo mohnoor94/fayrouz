@@ -47,9 +47,10 @@ export default function TasteProfileCard({ onRestart, isKiosk = false, onKioskCo
   }
 
   return (
-    <div className="flex flex-col justify-between h-full px-4 py-3 overflow-y-auto">
-      {/* Top Header */}
-      <div className="text-center flex flex-col items-center">
+    <div className="flex flex-col h-full px-4 sm:px-5 py-3 justify-between overflow-hidden">
+      <div className="flex-1 min-h-0 overflow-y-auto pr-1 flex flex-col gap-2.5">
+        {/* Top Header */}
+        <div className="text-center flex flex-col items-center">
         <div className="flex items-center gap-2 mb-1">
           <span className="w-2 h-2 rounded-full bg-fayrouz-amber animate-ping" />
           <span className="text-[10px] font-mono uppercase tracking-widest text-fayrouz-amber font-semibold">
@@ -157,9 +158,10 @@ export default function TasteProfileCard({ onRestart, isKiosk = false, onKioskCo
           <span className="text-fayrouz-gold">WALLET PASS LINKED</span>
         </div>
       </motion.div>
+    </div>
 
-      {/* Primary Action Button */}
-      <div className="flex flex-col gap-1.5 pt-2 border-t border-fayrouz-border/60">
+    {/* Pinned Primary Action Button */}
+      <div className="flex flex-col gap-1.5 pt-2 pb-1 flex-shrink-0 border-t border-fayrouz-border/60 bg-fayrouz-obsidian z-20">
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}

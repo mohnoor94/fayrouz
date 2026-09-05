@@ -21,7 +21,13 @@ export const DEMO_PRESETS = [
       roastPreference: 'dark',
       sweetnessPreference: 'unsweetened',
       palateScore: 1,
-      temperature: 'hot'
+      temperature: 'hot',
+      usualDrink: {
+        itemId: 'sidama-double-espresso',
+        orderCount: 18,
+        lastOrdered: 'Yesterday, 9:15 AM',
+        note: 'Double Ristretto • Hot • 0% Unsweetened'
+      }
     }
   },
   {
@@ -38,7 +44,13 @@ export const DEMO_PRESETS = [
       roastPreference: 'light',
       sweetnessPreference: 'subtle',
       palateScore: 5,
-      temperature: 'iced'
+      temperature: 'iced',
+      usualDrink: {
+        itemId: 'damascus-rose-cortado',
+        orderCount: 14,
+        lastOrdered: 'Today, 8:30 AM',
+        note: 'Oat Milk Swapped • Subtle Touch'
+      }
     }
   },
   {
@@ -55,7 +67,13 @@ export const DEMO_PRESETS = [
       roastPreference: 'medium',
       sweetnessPreference: 'sweet',
       palateScore: 9,
-      temperature: 'iced'
+      temperature: 'iced',
+      usualDrink: {
+        itemId: 'aleppo-pistachio-latte',
+        orderCount: 19,
+        lastOrdered: '2 days ago',
+        note: 'Flash Iced • Oat Milk • Rich Sweet'
+      }
     }
   },
   {
@@ -72,7 +90,13 @@ export const DEMO_PRESETS = [
       roastPreference: 'medium',
       sweetnessPreference: 'subtle',
       palateScore: 5,
-      temperature: 'any'
+      temperature: 'any',
+      usualDrink: {
+        itemId: 'classic-oat-flat-white',
+        orderCount: 22,
+        lastOrdered: 'Yesterday, 10:00 AM',
+        note: 'Velvety Microfoam • Extra Hot'
+      }
     }
   }
 ]
@@ -85,7 +109,13 @@ const DEFAULT_PROFILE = {
   roastPreference: 'medium',
   sweetnessPreference: 'subtle',
   palateScore: 5,
-  temperature: 'any'
+  temperature: 'any',
+  usualDrink: {
+    itemId: 'damascus-rose-cortado',
+    orderCount: 9,
+    lastOrdered: '3 days ago',
+    note: 'Hot • Subtle Touch'
+  }
 }
 
 const ProfileContext = createContext(null)

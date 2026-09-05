@@ -37,8 +37,8 @@ export default function RoastSweetnessStep({ onNext, onPrev }) {
   }
 
   return (
-    <div className="flex flex-col justify-between h-full px-5 py-4 overflow-y-auto">
-      <div className="flex flex-col gap-4">
+    <div className="flex flex-col h-full px-4 sm:px-5 py-3 justify-between overflow-hidden">
+      <div className="flex-1 min-h-0 overflow-y-auto pr-1 flex flex-col gap-3.5">
         {/* Step Header */}
         <div className="text-center flex flex-col items-center">
           <div className="w-12 h-12 rounded-2xl bg-fayrouz-surface border border-fayrouz-border flex items-center justify-center text-fayrouz-amber mb-1.5 shadow-card-depth">
@@ -140,8 +140,8 @@ export default function RoastSweetnessStep({ onNext, onPrev }) {
         </div>
       </div>
 
-      {/* Bottom Nav */}
-      <div className="pt-3 border-t border-fayrouz-border/60 flex items-center gap-3">
+      {/* Pinned Bottom Nav */}
+      <div className="pt-2.5 pb-1 flex-shrink-0 border-t border-fayrouz-border/60 bg-fayrouz-obsidian z-20 flex items-center gap-3">
         <button
           type="button"
           onClick={() => { soundFx.playTap(); onPrev(); }}

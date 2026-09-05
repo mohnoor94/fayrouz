@@ -7,6 +7,7 @@ import DynamicCuratedMenu from './DynamicCuratedMenu'
 import OrderTraySidebar from './OrderTraySidebar'
 import NfcSyncOverlay from './NfcSyncOverlay'
 import WizardContainer from '../wizard/WizardContainer'
+import { BRAND_CONFIG } from '../../constants/brandConfig'
 import { 
   Coffee, 
   Radio, 
@@ -68,10 +69,10 @@ export default function KioskContainer() {
               <div>
                 <div className="flex items-center gap-1.5">
                   <h3 className="text-sm font-serif font-bold text-fayrouz-cream tracking-tight">
-                    FAYROUZ SPECIALTY ROASTERS
+                    {BRAND_CONFIG.name}
                   </h3>
                   <span className="font-arabic text-xs text-fayrouz-amber font-normal">
-                    (محمصة فيروز)
+                    ({BRAND_CONFIG.nameAr})
                   </span>
                 </div>
                 <div className="flex items-center gap-2 text-[10px] font-mono text-fayrouz-muted">

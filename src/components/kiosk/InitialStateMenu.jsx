@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { useProfile } from '../../context/ProfileContext'
 import { soundFx } from '../../utils/soundEffects'
 import KioskItemCard from './KioskItemCard'
+import ItemCustomizerModal from './ItemCustomizerModal'
 import { Radio, Sparkles, Coffee, Search, ArrowRight, Zap, ShieldCheck } from 'lucide-react'
 
 const CATEGORY_TABS = [
@@ -18,6 +19,7 @@ export default function InitialStateMenu({ onAdd }) {
   const { rawMenuData, triggerNfcSync, isSyncing, userProfile, setIsKioskWizardOpen } = useProfile()
   const [activeTab, setActiveTab] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
+  const [customizingItem, setCustomizingItem] = useState(null)
 
   const handleNfcTap = () => {
     soundFx.playNfcBeam()
@@ -152,10 +154,18 @@ export default function InitialStateMenu({ onAdd }) {
           <KioskItemCard
             key={item.id}
             item={item}
-            onAdd={onAdd}
+            onAdd={() => setCustomizingItem(item)}
           />
         ))}
       </div>
+
+      {/* Drink Customization Modal */}
+      <ItemCustomizerModal
+        item={customizingItem}
+        isOpen={Boolean(customizingItem)}
+        onClose={() => setCustomizingItem(null)}
+        onConfirmAdd={(customized) => onAdd(customized)}
+      />
     </div>
   )
 }

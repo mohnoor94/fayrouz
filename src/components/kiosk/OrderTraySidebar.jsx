@@ -99,7 +99,7 @@ export default function OrderTraySidebar({ onResetKiosk }) {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-1">
                         <span className="text-xs font-serif font-bold text-fayrouz-cream leading-tight truncate">
-                          {item.name}
+                          {item.customizedName || item.name}
                         </span>
                         <span className="text-xs font-serif font-bold text-fayrouz-cream flex-shrink-0">
                           ${(effectivePrice * item.quantity).toFixed(2)}

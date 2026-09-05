@@ -40,9 +40,9 @@ export default function NameStep({ onNext }) {
   }
 
   return (
-    <div className="flex flex-col justify-between h-full px-5 py-4 overflow-y-auto">
-      {/* Top Section: Welcoming Ritual */}
-      <div className="flex flex-col gap-4">
+    <div className="flex flex-col h-full px-4 sm:px-5 py-3 justify-between overflow-hidden">
+      {/* Scrollable Form Content */}
+      <div className="flex-1 min-h-0 overflow-y-auto pr-1 flex flex-col gap-3">
         <div className="text-center flex flex-col items-center">
           <motion.div 
             initial={{ scale: 0.8, opacity: 0 }}
@@ -156,8 +156,8 @@ export default function NameStep({ onNext }) {
         </form>
       </div>
 
-      {/* Bottom CTA */}
-      <div className="pt-3 border-t border-fayrouz-border/60">
+      {/* Pinned Bottom CTA */}
+      <div className="pt-2.5 pb-1 flex-shrink-0 border-t border-fayrouz-border/60 bg-fayrouz-obsidian z-20">
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}

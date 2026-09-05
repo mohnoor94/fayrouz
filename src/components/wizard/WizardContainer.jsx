@@ -87,12 +87,16 @@ export default function WizardContainer({ isKiosk = false, onCloseKiosk = null }
   }
 
   return (
-    <div className="flex flex-col items-center justify-center w-full py-2">
+    <div className={`flex flex-col items-center justify-center w-full ${isKiosk ? 'p-0 h-full max-h-full' : 'py-2'}`}>
       {/* Chassis Frame: Phone on Mobile Simulator, or sleek tablet card in kiosk mode */}
-      <div className={`w-full sm:max-w-[420px] sm:h-[820px] h-full rounded-[44px] bg-gradient-to-b from-[#2a2420] via-[#1a1411] to-[#0c0908] p-3 sm:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9),0_0_0_1px_rgba(212,163,115,0.25),inset_0_1px_1px_rgba(255,255,255,0.15)] flex flex-col relative border border-[#3d2c22] ${isKiosk ? 'sm:max-w-[460px] sm:h-[720px]' : ''}`}>
+      <div className={`w-full ${
+        isKiosk 
+          ? 'sm:max-w-[450px] h-[590px] sm:h-[620px] max-h-[88vh] rounded-[32px]' 
+          : 'sm:max-w-[420px] sm:h-[820px] h-full rounded-[44px]'
+      } bg-gradient-to-b from-[#2a2420] via-[#1a1411] to-[#0c0908] p-3 sm:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9),0_0_0_1px_rgba(212,163,115,0.25),inset_0_1px_1px_rgba(255,255,255,0.15)] flex flex-col relative border border-[#3d2c22]`}>
         
         {/* Screen Glass Inner Shell */}
-        <div className="w-full h-full rounded-[38px] bg-fayrouz-obsidian flex flex-col overflow-hidden border border-fayrouz-border/50 relative shadow-inner">
+        <div className={`w-full h-full ${isKiosk ? 'rounded-[26px]' : 'rounded-[38px]'} bg-fayrouz-obsidian flex flex-col overflow-hidden border border-fayrouz-border/50 relative shadow-inner`}>
           
           {/* Top Status Bar with Dynamic Island */}
           <div className="pt-2 px-6 flex items-center justify-between z-30 flex-shrink-0 select-none">
@@ -180,7 +184,7 @@ export default function WizardContainer({ isKiosk = false, onCloseKiosk = null }
           </div>
 
           {/* Interactive Card Stack Viewport */}
-          <div className="flex-1 relative overflow-hidden flex flex-col">
+          <div className="flex-1 relative overflow-hidden flex flex-col min-h-0">
             <AnimatePresence mode="wait" custom={direction}>
               {wizardStep === 0 && (
                 <motion.div
