@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { soundFx } from '../../utils/soundEffects'
+import { useProfile } from '../../context/ProfileContext'
 import DrinkArtwork from './DrinkArtwork'
 import { 
   Plus, 
@@ -11,20 +12,77 @@ import {
   Flame, 
   Snowflake,
   ShieldAlert,
-  ArrowUpRight
+  ArrowUpRight,
+  Sliders
 } from 'lucide-react'
 
 export default function KioskItemCard({ 
   item, 
   onAdd, 
+  onCustomize,
   isHero = false, 
   isWildcard = false,
   rank = null 
 }) {
+  const { isNfcSynced, userProfile, addToOrderTray } = useProfile()
   const [isHovered, setIsHovered] = useState(false)
   const isUnsafe = Boolean(item.isUnsafe)
   const isAdapted = Boolean(item.isAdapted)
-  const effectivePrice = item.effectivePrice ?? item.price
+  const basePrice = item.effectivePrice ?? item.price
+
+  // Passport Spec computation when isNfcSynced is active
+  const isVegan = userProfile?.dietary?.includes('vegan')
+  const isLactoseFree = userProfile?.dietary?.includes('lactose_free')
+  const hasMilkOption = Boolean(item.containsDairy || item.dairyAlternative || item.category === 'velvet-milk')
+
+  const passportTemp = (userProfile?.temperature === 'iced' && item.canBeIced) 
+    ? 'iced' 
+    : (!item.canBeHot && item.canBeIced) ? 'iced' : 'hot'
+
+  const passportSize = userProfile?.preferredSize || userProfile?.usualDrink?.size || 'regular'
+
+  const passportMilk = hasMilkOption 
+    ? ((isVegan || isLactoseFree) ? 'oat' : (userProfile?.preferredMilk || 'whole'))
+    : null
+
+  const passportSweetness = userProfile?.sweetnessPreference === 'unsweetened' ? '0' :
+    userProfile?.sweetnessPreference === 'sweet' ? '100' :
+    userProfile?.sweetnessPreference === 'balanced' ? '50' : '25'
+
+  const passportAddOns = userProfile?.tasteAffinities?.includes('spiced') ? ['cardamom'] : []
+
+  // Dynamic calculated price with passport options
+  let calculatedPrice = basePrice
+  if (passportSize === 'large') calculatedPrice += 0.75
+  if (passportMilk === 'oat' || passportMilk === 'almond') calculatedPrice += 0.50
+
+  const specParts = [
+    passportSize === 'large' ? '16 oz (Large)' : '12 oz (Reg)',
+    passportTemp === 'iced' ? '❄️ Iced' : '🔥 Hot',
+    passportMilk ? (passportMilk === 'oat' ? '🥛 Oat' : passportMilk === 'almond' ? '🥛 Almond' : '🥛 Whole') : null
+  ].filter(Boolean)
+
+  const passportSpecLabel = specParts.join(' • ')
+
+  const handleFastAdd = (e) => {
+    e?.stopPropagation()
+    if (isUnsafe) return
+    soundFx.playCelebration()
+    const customizedItem = {
+      ...item,
+      id: `${item.id}-${passportTemp}-${passportMilk}-${passportSize}-${passportAddOns.join('-')}`,
+      customizedName: `${item.name} (${passportTemp === 'iced' ? 'Iced' : 'Hot'}, ${passportSize === 'large' ? 'Large' : 'Regular'}${passportMilk ? `, ${passportMilk === 'oat' ? 'Oat Milk' : passportMilk === 'almond' ? 'Almond Milk' : 'Whole Milk'}` : ''})`,
+      effectivePrice: calculatedPrice,
+      customizations: {
+        temperature: passportTemp,
+        size: passportSize,
+        milk: passportMilk,
+        sweetness: passportSweetness,
+        addOns: passportAddOns
+      }
+    }
+    addToOrderTray(customizedItem)
+  }
 
   const handleAdd = (e) => {
     e?.stopPropagation()
@@ -150,28 +208,75 @@ export default function KioskItemCard({
           )}
         </div>
 
-        {/* Hero Card Footer: Price & Add Button */}
-        <div className="flex items-center justify-between pt-3 border-t border-fayrouz-border/60 mt-1">
-          <div>
-            <div className="text-[10px] font-mono text-fayrouz-muted uppercase">Specialty Price</div>
-            <div className="text-xl font-serif font-bold text-fayrouz-cream">
-              ${effectivePrice.toFixed(2)}
+        {/* Hero Card Footer: Price & Add / Customize Buttons */}
+        <div className="flex flex-col gap-2 pt-3 border-t border-fayrouz-border/60 mt-1">
+          {/* Passport Spec Preview (when passport is synced) */}
+          {isNfcSynced && !isUnsafe && (
+            <div className="flex items-center justify-between text-[11px] font-mono text-fayrouz-gold">
+              <span className="flex items-center gap-1">
+                <Sparkles className="w-3 h-3 text-fayrouz-gold" />
+                <span>Your Spec: {passportSpecLabel}</span>
+              </span>
+              <span className="font-bold text-fayrouz-cream font-serif">
+                ${calculatedPrice.toFixed(2)}
+              </span>
             </div>
-          </div>
+          )}
 
-          <motion.button
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.94 }}
-            onClick={handleAdd}
-            className={`px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-serif font-bold flex items-center gap-2 shadow-amber-glow transition-all cursor-pointer ${
-              isWildcard
-                ? 'bg-gradient-to-r from-fayrouz-rose via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian'
-                : 'bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian'
-            }`}
-          >
-            <Plus className="w-4 h-4 stroke-[3]" />
-            <span>Add</span>
-          </motion.button>
+          <div className="flex items-center justify-between gap-3">
+            {!isNfcSynced && (
+              <div>
+                <div className="text-[10px] font-mono text-fayrouz-muted uppercase">Specialty Price</div>
+                <div className="text-xl font-serif font-bold text-fayrouz-cream">
+                  ${basePrice.toFixed(2)}
+                </div>
+              </div>
+            )}
+
+            {isNfcSynced && !isUnsafe ? (
+              <div className="flex items-center gap-2 w-full justify-end">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    soundFx.playTap()
+                    onCustomize ? onCustomize(item) : onAdd(item)
+                  }}
+                  className="px-3 py-2 rounded-xl bg-fayrouz-surface/90 hover:bg-fayrouz-surface border border-fayrouz-border hover:border-fayrouz-amber/60 text-fayrouz-cream font-serif text-xs flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
+                  title="Customize temperature, size, milk, and add-ons"
+                >
+                  <Sliders className="w-3.5 h-3.5 text-fayrouz-gold" />
+                  <span>Customize</span>
+                </button>
+
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleFastAdd}
+                  className="flex-1 px-4 py-2 rounded-xl bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian font-serif font-bold text-xs sm:text-sm shadow-amber-glow flex items-center justify-center gap-1.5 cursor-pointer"
+                  title="1-Tap add directly with your passport spec"
+                >
+                  <Plus className="w-4 h-4 stroke-[3]" />
+                  <span>Add (${calculatedPrice.toFixed(2)})</span>
+                </motion.button>
+              </div>
+            ) : (
+              <motion.button
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.94 }}
+                onClick={handleAdd}
+                disabled={isUnsafe}
+                className={`px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-serif font-bold flex items-center gap-2 shadow-amber-glow transition-all cursor-pointer ${
+                  isWildcard
+                    ? 'bg-gradient-to-r from-fayrouz-rose via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian'
+                    : 'bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian'
+                }`}
+              >
+                <Plus className="w-4 h-4 stroke-[3]" />
+                <span>Add</span>
+              </motion.button>
+            )}
+          </div>
         </div>
       </motion.div>
     )
@@ -271,26 +376,72 @@ export default function KioskItemCard({
         )}
       </div>
 
-      {/* Card Footer: Price & Add Button */}
-      <div className="flex items-center justify-between pt-2.5 border-t border-fayrouz-border/60 mt-1">
-        <div className="text-base font-serif font-bold text-fayrouz-cream">
-          ${effectivePrice.toFixed(2)}
-        </div>
+      {/* Card Footer: Price & Add / Customize Buttons */}
+      <div className="flex flex-col gap-2 pt-2.5 border-t border-fayrouz-border/60 mt-auto">
+        {/* Passport Spec Preview (when passport is synced) */}
+        {isNfcSynced && !isUnsafe && (
+          <div className="flex items-center justify-between text-[10px] font-mono text-fayrouz-gold">
+            <span className="flex items-center gap-1 min-w-0">
+              <Sparkles className="w-3 h-3 text-fayrouz-gold flex-shrink-0" />
+              <span className="truncate">Your Spec: {passportSpecLabel}</span>
+            </span>
+            <span className="font-bold text-fayrouz-cream font-serif ml-1 flex-shrink-0">
+              ${calculatedPrice.toFixed(2)}
+            </span>
+          </div>
+        )}
 
-        <motion.button
-          whileHover={!isUnsafe ? { scale: 1.04 } : {}}
-          whileTap={!isUnsafe ? { scale: 0.92 } : {}}
-          onClick={handleAdd}
-          disabled={isUnsafe}
-          className={`px-3.5 py-1.5 rounded-xl text-xs font-serif font-bold flex items-center gap-1.5 shadow-sm transition-all ${
-            isUnsafe
-              ? 'bg-fayrouz-surface text-fayrouz-muted cursor-not-allowed border border-fayrouz-border/50'
-              : 'bg-fayrouz-amber/20 hover:bg-fayrouz-amber text-fayrouz-gold hover:text-fayrouz-obsidian border border-fayrouz-amber/40 hover:shadow-amber-glow cursor-pointer'
-          }`}
-        >
-          <Plus className="w-3.5 h-3.5 stroke-[3]" />
-          <span>Add</span>
-        </motion.button>
+        <div className="flex items-center justify-between gap-2">
+          {!isNfcSynced && (
+            <div className="text-base font-serif font-bold text-fayrouz-cream">
+              ${basePrice.toFixed(2)}
+            </div>
+          )}
+
+          {isNfcSynced && !isUnsafe ? (
+            <div className="flex items-center gap-1.5 w-full justify-between sm:justify-end">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  soundFx.playTap()
+                  onCustomize ? onCustomize(item) : onAdd(item)
+                }}
+                className="px-2.5 py-1.5 rounded-xl bg-fayrouz-surface/90 hover:bg-fayrouz-surface border border-fayrouz-border hover:border-fayrouz-amber/60 text-fayrouz-cream font-serif text-xs flex items-center gap-1 transition-all cursor-pointer shadow-sm"
+                title="Customize temperature, size, milk, and add-ons"
+              >
+                <Sliders className="w-3 h-3 text-fayrouz-gold" />
+                <span>Customize</span>
+              </button>
+
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleFastAdd}
+                className="flex-1 sm:flex-initial px-3 py-1.5 rounded-xl bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian font-serif font-bold text-xs shadow-amber-glow flex items-center justify-center gap-1 cursor-pointer"
+                title="1-Tap add directly with your passport spec"
+              >
+                <Plus className="w-3.5 h-3.5 stroke-[3]" />
+                <span>Add (${calculatedPrice.toFixed(2)})</span>
+              </motion.button>
+            </div>
+          ) : (
+            <motion.button
+              whileHover={!isUnsafe ? { scale: 1.04 } : {}}
+              whileTap={!isUnsafe ? { scale: 0.92 } : {}}
+              onClick={handleAdd}
+              disabled={isUnsafe}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-serif font-bold flex items-center gap-1.5 shadow-sm transition-all ml-auto ${
+                isUnsafe
+                  ? 'bg-fayrouz-surface text-fayrouz-muted cursor-not-allowed border border-fayrouz-border/50'
+                  : 'bg-fayrouz-amber/20 hover:bg-fayrouz-amber text-fayrouz-gold hover:text-fayrouz-obsidian border border-fayrouz-amber/40 hover:shadow-amber-glow cursor-pointer'
+              }`}
+            >
+              <Plus className="w-3.5 h-3.5 stroke-[3]" />
+              <span>Add</span>
+            </motion.button>
+          )}
+        </div>
       </div>
     </motion.div>
   )

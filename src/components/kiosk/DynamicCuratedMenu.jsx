@@ -266,6 +266,7 @@ export default function DynamicCuratedMenu({ onAdd }) {
               key={item.id}
               item={item}
               onAdd={() => setCustomizingItem(item)}
+              onCustomize={() => setCustomizingItem(item)}
               isHero={true}
               rank={index + 1}
             />
@@ -277,6 +278,7 @@ export default function DynamicCuratedMenu({ onAdd }) {
               key={adventurousPick.id}
               item={adventurousPick}
               onAdd={() => setCustomizingItem(adventurousPick)}
+              onCustomize={() => setCustomizingItem(adventurousPick)}
               isHero={true}
               isWildcard={true}
             />
@@ -339,6 +341,7 @@ export default function DynamicCuratedMenu({ onAdd }) {
               key={item.id}
               item={item}
               onAdd={() => setCustomizingItem(item)}
+              onCustomize={() => setCustomizingItem(item)}
             />
           ))}
         </div>

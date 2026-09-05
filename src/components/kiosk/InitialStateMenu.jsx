@@ -161,6 +161,7 @@ export default function InitialStateMenu({ onAdd }) {
             key={item.id}
             item={item}
             onAdd={() => setCustomizingItem(item)}
+            onCustomize={() => setCustomizingItem(item)}
           />
         ))}
       </div>

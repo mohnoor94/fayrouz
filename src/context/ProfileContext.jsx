@@ -284,6 +284,17 @@ export function ProfileProvider({ children }) {
     })
   }, [])
 
+  const decreaseOrderTrayQuantity = useCallback((itemId) => {
+    setOrderTray(prev => {
+      const existing = prev.find(i => i.id === itemId)
+      if (!existing) return prev
+      if (existing.quantity <= 1) {
+        return prev.filter(i => i.id !== itemId)
+      }
+      return prev.map(i => i.id === itemId ? { ...i, quantity: i.quantity - 1 } : i)
+    })
+  }, [])
+
   const removeFromOrderTray = useCallback((itemId) => {
     setOrderTray(prev => prev.filter(i => i.id !== itemId))
   }, [])
@@ -324,6 +335,7 @@ export function ProfileProvider({ children }) {
     setIsKioskWizardOpen,
     setActiveDeviceView,
     addToOrderTray,
+    decreaseOrderTrayQuantity,
     removeFromOrderTray,
     clearOrderTray,
     loadPreset,

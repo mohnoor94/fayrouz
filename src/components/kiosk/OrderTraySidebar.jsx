@@ -22,6 +22,7 @@ export default function OrderTraySidebar({ onResetKiosk }) {
   const { 
     orderTray, 
     addToOrderTray, 
+    decreaseOrderTrayQuantity,
     removeFromOrderTray, 
     clearOrderTray,
     userProfile 
@@ -201,23 +202,35 @@ export default function OrderTraySidebar({ onResetKiosk }) {
                       ${effectivePrice.toFixed(2)} ea
                     </span>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
+                      {/* Quantity Stepper: Minus decrements by 1 */}
+                      <div className="flex items-center gap-1 bg-fayrouz-obsidian border border-fayrouz-border/80 rounded-lg p-0.5 shadow-inner">
+                        <button
+                          onClick={() => decreaseOrderTrayQuantity(item.id)}
+                          className="w-5 h-5 rounded-md bg-fayrouz-surface hover:bg-fayrouz-espresso border border-fayrouz-border flex items-center justify-center text-fayrouz-cream hover:text-fayrouz-gold transition-colors cursor-pointer"
+                          title="Decrease quantity by 1"
+                        >
+                          <Minus className="w-2.5 h-2.5" />
+                        </button>
+                        <span className="text-xs font-mono font-bold text-fayrouz-cream w-4 text-center">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() => addToOrderTray(item)}
+                          className="w-5 h-5 rounded-md bg-fayrouz-surface hover:bg-fayrouz-espresso border border-fayrouz-border flex items-center justify-center text-fayrouz-cream hover:text-fayrouz-gold transition-colors cursor-pointer"
+                          title="Increase quantity by 1"
+                        >
+                          <Plus className="w-2.5 h-2.5" />
+                        </button>
+                      </div>
+
+                      {/* Dedicated 1-Click Remove Entire Item Button */}
                       <button
                         onClick={() => removeFromOrderTray(item.id)}
-                        className="w-5 h-5 rounded-md bg-fayrouz-surface border border-fayrouz-border flex items-center justify-center text-fayrouz-muted hover:text-fayrouz-cream transition-colors cursor-pointer"
-                        title={item.quantity === 1 ? 'Remove from tray' : 'Decrease quantity'}
+                        className="w-6 h-6 rounded-lg bg-red-950/30 hover:bg-red-950/60 border border-red-900/40 hover:border-red-600/60 flex items-center justify-center text-red-400 hover:text-red-300 transition-colors cursor-pointer ml-0.5"
+                        title="Remove full item from tray"
                       >
-                        {item.quantity === 1 ? <Trash2 className="w-3 h-3 text-red-400" /> : <Minus className="w-3 h-3" />}
-                      </button>
-                      <span className="text-xs font-mono font-bold text-fayrouz-cream w-4 text-center">
-                        {item.quantity}
-                      </span>
-                      <button
-                        onClick={() => addToOrderTray(item)}
-                        className="w-5 h-5 rounded-md bg-fayrouz-surface border border-fayrouz-border flex items-center justify-center text-fayrouz-muted hover:text-fayrouz-cream transition-colors cursor-pointer"
-                        title="Increase quantity"
-                      >
-                        <Plus className="w-3 h-3" />
+                        <Trash2 className="w-3 h-3" />
                       </button>
                     </div>
                   </div>
