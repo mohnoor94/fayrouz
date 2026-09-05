@@ -92,7 +92,7 @@ export default function WizardContainer({ isKiosk = false, onCloseKiosk = null }
       <div className={`w-full ${
         isKiosk 
           ? 'sm:max-w-[450px] h-[590px] sm:h-[620px] max-h-[88vh] rounded-[32px]' 
-          : 'sm:max-w-[420px] sm:h-[820px] h-full rounded-[44px]'
+          : 'sm:max-w-[400px] h-[720px] sm:h-[750px] max-h-[86vh] rounded-[44px]'
       } bg-gradient-to-b from-[#2a2420] via-[#1a1411] to-[#0c0908] p-3 sm:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9),0_0_0_1px_rgba(212,163,115,0.25),inset_0_1px_1px_rgba(255,255,255,0.15)] flex flex-col relative border border-[#3d2c22]`}>
         
         {/* Screen Glass Inner Shell */}

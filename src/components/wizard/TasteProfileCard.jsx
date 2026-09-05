@@ -73,7 +73,7 @@ export default function TasteProfileCard({ onRestart, isKiosk = false, onKioskCo
           {userProfile.name}'s Fayrouz Taste Passport
         </h2>
         <span className="font-arabic text-xs text-fayrouz-amber">
-          جواز فيروز للتذوق الحرفي — Ambar Certified
+          جواز فيروز للتذوق الحرفي — Universal Coffee Identity
         </span>
       </div>
 
@@ -82,7 +82,7 @@ export default function TasteProfileCard({ onRestart, isKiosk = false, onKioskCo
         initial={{ scale: 0.94, opacity: 0, y: 10 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 24 }}
-        className="rounded-3xl p-4 sm:p-5 bg-gradient-to-br from-fayrouz-surface via-fayrouz-espresso to-fayrouz-obsidian border-2 border-fayrouz-copper/60 shadow-[0_15px_35px_-10px_rgba(0,0,0,0.8),inset_0_1px_0_0_rgba(184,115,51,0.5)] relative overflow-hidden my-auto"
+        className="rounded-3xl p-3.5 sm:p-4 bg-gradient-to-br from-fayrouz-surface via-fayrouz-espresso to-fayrouz-obsidian border-2 border-fayrouz-copper/60 shadow-[0_15px_35px_-10px_rgba(0,0,0,0.8),inset_0_1px_0_0_rgba(184,115,51,0.5)] relative overflow-hidden shrink-0"
       >
         {/* Holographic Ambient Sheen */}
         <div className="absolute -top-24 -right-24 w-56 h-56 bg-gradient-to-br from-fayrouz-amber/25 via-fayrouz-rose/15 to-transparent rounded-full blur-3xl pointer-events-none" />

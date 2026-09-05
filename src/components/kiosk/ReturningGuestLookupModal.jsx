@@ -268,10 +268,16 @@ export default function ReturningGuestLookupModal({ isOpen, onClose }) {
                   <div className="text-[10px] font-mono text-fayrouz-cardamom">
                     {matchedGuest.title} • {matchedGuest.profile.dietary?.length ? matchedGuest.profile.dietary.join(', ') : 'No Strict Allergens'}
                   </div>
+                  {matchedGuest.profile.usualDrink && (
+                    <div className="text-[9px] font-mono text-fayrouz-gold mt-0.5 truncate flex items-center gap-1">
+                      <span>⭐ Usual:</span>
+                      <span className="text-fayrouz-cream/80">{matchedGuest.profile.usualDrink.note}</span>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-fayrouz-cardamom text-fayrouz-obsidian font-bold">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-fayrouz-cardamom text-fayrouz-obsidian font-bold flex-shrink-0">
                 Verified
               </span>
             </motion.div>

@@ -83,7 +83,7 @@ export default function AllergenConfirmationModal({
                   {item.name}
                 </h4>
                 <span className="font-serif font-bold text-fayrouz-gold text-sm shrink-0">
-                  ${(item.effectivePrice ?? item.price).toFixed(2)}
+                  ${(Number(item.effectivePrice ?? item.price) || 0).toFixed(2)}
                 </span>
               </div>
               <div className="font-arabic text-xs text-fayrouz-amber mb-1.5 truncate">
@@ -120,7 +120,7 @@ export default function AllergenConfirmationModal({
               className="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-amber-600 via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian font-serif font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-amber-glow cursor-pointer transition-all"
             >
               <Users className="w-4 h-4" />
-              <span>Yes, Add for a Friend (${(item.effectivePrice ?? item.price).toFixed(2)})</span>
+              <span>Yes, Add for a Friend (${(Number(item.effectivePrice ?? item.price) || 0).toFixed(2)})</span>
             </motion.button>
 
             {/* Secondary Option: Customize with Alert */}

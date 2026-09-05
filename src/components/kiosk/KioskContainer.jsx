@@ -52,9 +52,9 @@ export default function KioskContainer() {
   }, [])
 
   return (
-    <div className="flex flex-col items-center justify-center w-full py-2">
+    <div className="flex flex-col items-center justify-start w-full py-0">
       {/* iPad Pro Landscape Hardware Chassis */}
-      <div className="w-full max-w-6xl h-[760px] max-h-[92vh] rounded-[38px] bg-gradient-to-b from-[#2a2420] via-[#1b1512] to-[#0c0908] p-3 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.95),0_0_0_1px_rgba(212,163,115,0.25),inset_0_1px_1px_rgba(255,255,255,0.15)] flex flex-col relative border border-[#3d2c22]">
+      <div className="w-full max-w-6xl h-[740px] max-h-[calc(100vh-100px)] rounded-[38px] bg-gradient-to-b from-[#2a2420] via-[#1b1512] to-[#0c0908] p-3 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.95),0_0_0_1px_rgba(212,163,115,0.25),inset_0_1px_1px_rgba(255,255,255,0.15)] flex flex-col relative border border-[#3d2c22]">
         
         {/* Front-Facing Landscape Camera Dot */}
         <div className="absolute top-1.5 left-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-black/90 border border-white/10 flex items-center justify-center z-40">

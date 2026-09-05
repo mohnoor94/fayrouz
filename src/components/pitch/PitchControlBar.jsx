@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useProfile } from '../../context/ProfileContext'
 import { soundFx } from '../../utils/soundEffects'
 import { BRAND_CONFIG } from '../../constants/brandConfig'
 import GuidedPitchModal from './GuidedPitchModal'
+import KeyboardShortcutsModal from './KeyboardShortcutsModal'
 import { 
   Coffee, 
   Sparkles, 
@@ -18,7 +19,8 @@ import {
   User, 
   Check, 
   Flame, 
-  ShieldCheck 
+  ShieldCheck,
+  Keyboard
 } from 'lucide-react'
 
 export default function PitchControlBar() {
@@ -33,10 +35,12 @@ export default function PitchControlBar() {
     resetNfcSync,
     isNfcSynced, 
     isSyncing, 
-    userProfile 
+    userProfile,
+    baristaOrders = []
   } = useProfile()
 
   const [isGuideOpen, setIsGuideOpen] = useState(false)
+  const [isShortcutsOpen, setIsShortcutsOpen] = useState(false)
   const [isAmbientOn, setIsAmbientOn] = useState(false)
 
   const handleSelectView = (view) => {
@@ -64,6 +68,81 @@ export default function PitchControlBar() {
     soundFx.playTap()
     resetProfile()
   }
+
+  // Keyboard Shortcuts Engine for live pitch demonstrations
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      const activeEl = document.activeElement
+      const tagName = activeEl?.tagName?.toLowerCase()
+      if (['input', 'textarea', 'select'].includes(tagName) || activeEl?.isContentEditable) {
+        return
+      }
+
+      switch (e.key) {
+        case '1':
+          e.preventDefault()
+          handleLoadPreset('purist')
+          break
+        case '2':
+          e.preventDefault()
+          handleLoadPreset('vegan')
+          break
+        case '3':
+          e.preventDefault()
+          handleLoadPreset('sweet')
+          break
+        case '4':
+          e.preventDefault()
+          handleLoadPreset('balanced')
+          break
+        case ' ':
+          e.preventDefault()
+          handleTriggerNfc()
+          break
+        case 'r':
+        case 'R':
+          e.preventDefault()
+          handleReset()
+          break
+        case 'b':
+        case 'B':
+          e.preventDefault()
+          handleSelectView(activeDeviceView === 'barista' ? 'split' : 'barista')
+          break
+        case 'd':
+        case 'D':
+        case 's':
+        case 'S':
+          e.preventDefault()
+          handleSelectView('split')
+          break
+        case 'm':
+        case 'M':
+          e.preventDefault()
+          handleSelectView('mobile')
+          break
+        case 't':
+        case 'T':
+          e.preventDefault()
+          handleSelectView('tablet')
+          break
+        case 'p':
+        case 'P':
+          e.preventDefault()
+          setIsGuideOpen((prev) => !prev)
+          break
+        case '?':
+          e.preventDefault()
+          setIsShortcutsOpen((prev) => !prev)
+          break
+        default:
+          break
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [activeDeviceView])
 
   return (
     <>
@@ -137,6 +216,23 @@ export default function PitchControlBar() {
 
             <button
               type="button"
+              onClick={() => handleSelectView('barista')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-serif font-medium transition-all ${
+                activeDeviceView === 'barista'
+                  ? 'bg-gradient-to-r from-fayrouz-amber/25 to-fayrouz-gold/25 text-fayrouz-gold border border-fayrouz-amber/40 shadow-amber-glow'
+                  : 'text-fayrouz-muted hover:text-fayrouz-cream'
+              }`}
+              title="Barista Station KDS: Live Kitchen Display System & Espresso Queue"
+            >
+              <Coffee className="w-3.5 h-3.5" />
+              <span>☕ Barista KDS</span>
+              {baristaOrders.some(o => o.status === 'in-prep') && (
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping ml-0.5" />
+              )}
+            </button>
+
+            <button
+              type="button"
               onClick={() => handleSelectView('playground')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-serif font-medium transition-all ${
                 activeDeviceView === 'playground'
@@ -157,10 +253,20 @@ export default function PitchControlBar() {
               type="button"
               onClick={() => { soundFx.playTap(); setIsGuideOpen(true); }}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-fayrouz-surface hover:bg-fayrouz-surface/80 border border-fayrouz-amber/30 text-fayrouz-gold text-xs font-serif transition-all shadow-sm cursor-pointer"
-              title="Open Presenter Talking Script & Cue Card"
+              title="Open Presenter Talking Script & Cue Card (Hotkey: P)"
             >
               <BookOpen className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Pitch Script</span>
+            </button>
+
+            {/* Keyboard Shortcuts Guide Button */}
+            <button
+              type="button"
+              onClick={() => { soundFx.playTap(); setIsShortcutsOpen(true); }}
+              className="p-2 rounded-xl bg-fayrouz-surface hover:bg-fayrouz-surface/80 border border-fayrouz-border hover:border-fayrouz-amber/40 text-fayrouz-muted hover:text-fayrouz-gold transition-colors cursor-pointer"
+              title="Presenter Keyboard Hotkeys (?)"
+            >
+              <Keyboard className="w-3.5 h-3.5" />
             </button>
 
             {/* Ambient Audio Soundscape */}
@@ -182,10 +288,13 @@ export default function PitchControlBar() {
               type="button"
               onClick={handleTriggerNfc}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian font-serif font-bold text-xs shadow-amber-glow hover:opacity-95 transition-all cursor-pointer whitespace-nowrap"
-              title="Simulate Mobile NFC Tap Handshake to Counter Kiosk"
+              title="Simulate Mobile NFC Tap Handshake to Counter Kiosk (Hotkey: Space)"
             >
               <Radio className="w-3 h-3 animate-pulse" />
               <span>{isNfcSynced ? "Re-Beam NFC" : "Tap NFC"}</span>
+              <kbd className="hidden sm:inline-block px-1 py-0.2 rounded text-[9px] font-mono bg-black/20 text-fayrouz-obsidian border border-black/20 font-bold ml-0.5">
+                Space
+              </kbd>
             </button>
 
             {/* Reset Demo Button */}
@@ -193,7 +302,7 @@ export default function PitchControlBar() {
               type="button"
               onClick={handleReset}
               className="p-2 rounded-xl bg-fayrouz-surface hover:bg-fayrouz-surface/80 border border-fayrouz-border text-fayrouz-muted hover:text-fayrouz-cream transition-colors cursor-pointer"
-              title="Reset All Demo States to Baseline Neutral"
+              title="Reset All Demo States to Baseline Neutral (Hotkey: R)"
             >
               <RotateCcw className="w-3.5 h-3.5" />
             </button>
@@ -208,7 +317,7 @@ export default function PitchControlBar() {
               1-Click Personas:
             </span>
 
-            {demoPresets.map((preset) => {
+            {demoPresets.map((preset, pIdx) => {
               const isActive = activePresetId === preset.id
               return (
                 <button
@@ -220,8 +329,11 @@ export default function PitchControlBar() {
                       ? 'bg-fayrouz-amber/20 border border-fayrouz-amber/60 text-fayrouz-gold shadow-amber-glow font-bold'
                       : 'bg-fayrouz-surface/60 border border-fayrouz-border/60 text-fayrouz-foam/80 hover:text-fayrouz-cream hover:border-fayrouz-amber/40'
                   }`}
-                  title={`${preset.title}: ${preset.description}`}
+                  title={`${preset.title}: ${preset.description} (Hotkey: ${pIdx + 1})`}
                 >
+                  <kbd className="px-1 py-0.2 rounded text-[8px] font-mono bg-fayrouz-obsidian border border-fayrouz-amber/30 text-fayrouz-amber">
+                    {pIdx + 1}
+                  </kbd>
                   <span className="font-arabic">{preset.nameAr}</span>
                   <span>({preset.name})</span>
                   {isActive && <Check className="w-3 h-3 text-fayrouz-cardamom" />}
@@ -248,6 +360,12 @@ export default function PitchControlBar() {
       <GuidedPitchModal 
         isOpen={isGuideOpen} 
         onClose={() => setIsGuideOpen(false)} 
+      />
+
+      {/* Keyboard Shortcuts Modal */}
+      <KeyboardShortcutsModal
+        isOpen={isShortcutsOpen}
+        onClose={() => setIsShortcutsOpen(false)}
       />
     </>
   )

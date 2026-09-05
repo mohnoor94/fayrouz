@@ -107,6 +107,7 @@ export default function NfcBeamBridge({ onManualSync = null }) {
                       opacity: [0, 1, 1, 0], 
                       scale: [0.6, 1.4, 0.6] 
                     }}
+                    exit={{ opacity: 0 }}
                     transition={{
                       duration: 0.8,
                       repeat: Infinity,
@@ -127,6 +128,7 @@ export default function NfcBeamBridge({ onManualSync = null }) {
                 x: ['-50%', '50%'],
                 opacity: [0.3, 0.9, 0.3]
               }}
+              exit={{ opacity: 0 }}
               transition={{
                 duration: 2.2,
                 repeat: Infinity,

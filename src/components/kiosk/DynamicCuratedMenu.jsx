@@ -22,7 +22,8 @@ import {
   Clock, 
   Sliders, 
   Check, 
-  Plus 
+  Plus,
+  Radio
 } from 'lucide-react'
 
 const CATEGORY_TABS = [
@@ -97,201 +98,180 @@ export default function DynamicCuratedMenu({ onAdd }) {
   })
 
   return (
-    <div className="flex-1 min-h-0 flex flex-col gap-6 overflow-y-auto pr-2 pb-8">
+    <div className="flex-1 min-h-0 flex flex-col gap-5 overflow-y-auto pr-2 pb-8">
       {/* =====================================================================
-          1. ELEGANT 2-TIER SPACIOUS WELCOME BOARD
+          1. UNIFIED LUXURY HYBRID HERO STRIP: WELCOME & "YOUR USUAL" REORDER
           ===================================================================== */}
       <motion.div 
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-3xl p-5 sm:p-6 bg-gradient-to-br from-fayrouz-surface via-fayrouz-espresso to-[#221612] border border-fayrouz-amber/40 shadow-card-depth flex flex-col gap-4 relative"
+        className="rounded-3xl p-3.5 sm:p-4 bg-gradient-to-br from-fayrouz-surface via-fayrouz-espresso to-[#201511] border-2 border-fayrouz-amber/40 shadow-card-depth flex flex-col gap-3 relative shrink-0"
       >
-        {/* Soft Ambient Radial Light inside dedicated clipped overlay */}
+        {/* Soft Ambient Radial Light inside rounded clip boundary */}
         <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none">
           <div className="absolute top-0 right-0 w-80 h-80 bg-fayrouz-amber/12 rounded-full blur-3xl pointer-events-none" />
         </div>
 
-        {/* Tier 1: Welcoming Greeting, Arabic Monogram & Coffee Persona */}
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 relative z-10">
-          <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-fayrouz-obsidian border-2 border-fayrouz-amber/60 flex items-center justify-center text-fayrouz-amber shadow-amber-glow flex-shrink-0">
-              <Coffee className="w-6 h-6 sm:w-7 sm:h-7" />
+        {/* ROW 1: Guest Identity, Status Beacon & 16 Dialects™ Dossier Link */}
+        <div className="flex flex-wrap items-center justify-between gap-2.5 pb-2 border-b border-fayrouz-border/50 relative z-10 w-full">
+          {/* Left: Active Pass Beacon & Welcome Heading */}
+          <div className="flex items-center gap-2.5 min-w-0 flex-1 basis-[260px]">
+            <div className="w-8 h-8 rounded-xl bg-fayrouz-obsidian border border-fayrouz-amber flex items-center justify-center text-fayrouz-amber shrink-0 shadow-amber-glow">
+              <Radio className="w-4 h-4 animate-pulse" />
             </div>
-
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-0.5">
-                <span className="w-2 h-2 rounded-full bg-fayrouz-cardamom animate-pulse flex-shrink-0" />
-                <span className="text-[10px] font-mono uppercase tracking-wider text-fayrouz-amber font-bold truncate">
-                  Fayrouz Taste Passport Synced • {persona.passportNumber}
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-fayrouz-gold font-bold flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-fayrouz-cardamom animate-pulse" />
+                  FayrouzPass™ Active • {persona.passportNumber}
+                </span>
+                <span className="text-[9px] font-mono text-fayrouz-cardamom bg-fayrouz-cardamom/15 px-1.5 py-0.2 rounded border border-fayrouz-cardamom/30 font-medium">
+                  Instant Recognition
                 </span>
               </div>
-
-              <div className="flex flex-wrap items-baseline gap-2">
-                <h3 className="text-xl sm:text-2xl font-serif font-bold text-fayrouz-cream break-words">
+              <div className="flex items-baseline gap-2 mt-0.5 flex-wrap">
+                <h3 className="text-sm sm:text-base font-serif font-bold text-fayrouz-cream">
                   Welcome back, {userProfile.name}!
                 </h3>
-                <span className="font-arabic text-base sm:text-lg text-fayrouz-amber font-normal">
-                  صباح الخير يا {userProfile.name}
+                <span className="font-arabic text-xs text-fayrouz-amber font-normal">
+                  (صباح الخير يا {userProfile.name})
                 </span>
               </div>
             </div>
           </div>
 
-          {/* The 16 Dialects™ Interactive Identity Card */}
+          {/* Right: The 16 Dialects™ Emblem & Dossier Link */}
           <button
             type="button"
             onClick={() => { soundFx.playTap(); setIsDossierOpen(true); }}
-            className="w-full lg:w-auto px-4 py-2.5 rounded-2xl bg-gradient-to-br from-fayrouz-obsidian via-[#231711] to-fayrouz-obsidian border-2 border-fayrouz-gold/60 hover:border-fayrouz-gold shadow-amber-glow flex items-center gap-3 text-left transition-all hover:scale-[1.01] cursor-pointer group max-w-full flex-shrink-0"
+            className="py-1.5 px-3 rounded-xl bg-fayrouz-obsidian/90 hover:bg-fayrouz-obsidian border border-fayrouz-gold/50 hover:border-fayrouz-gold shadow-sm flex items-center gap-2.5 text-left transition-all hover:scale-[1.01] cursor-pointer shrink-0 ml-auto sm:ml-0 group"
             title="Click to explore your certified 16 Dialects™ full identity dossier"
           >
-            {/* 4-Letter Acronym Emblem */}
-            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-fayrouz-amber/25 to-fayrouz-gold/10 border border-fayrouz-gold/80 flex flex-col items-center justify-center text-center p-0.5 shadow-inner flex-shrink-0">
-              <span className="text-xs font-mono font-black tracking-wider text-fayrouz-gold">
-                {persona.dialectCode || 'DIALECT'}
-              </span>
-              <span className="text-[8px] font-mono text-fayrouz-amber">
-                {persona.house?.symbol || '⟡'}
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-fayrouz-amber/25 to-fayrouz-gold/15 border border-fayrouz-gold/80 flex items-center justify-center text-center p-0.5 shadow-inner flex-shrink-0">
+              <span className="text-[10px] font-mono font-black tracking-wider text-fayrouz-gold">
+                {persona.dialectCode || 'POLY'}
               </span>
             </div>
-
-            <div className="flex flex-col items-start min-w-0">
-              <div className="flex items-center gap-1.5 text-[9px] font-mono uppercase tracking-widest text-fayrouz-amber font-bold truncate">
+            <div className="flex flex-col min-w-0">
+              <span className="text-[8px] font-mono uppercase tracking-wider text-fayrouz-amber font-bold flex items-center gap-1">
                 <span>The 16 Dialects™</span>
-                <span className="text-fayrouz-gold opacity-80 group-hover:opacity-100 transition-opacity">
-                  • View Dossier →
-                </span>
-              </div>
-              <div className="text-xs sm:text-sm font-serif font-bold text-fayrouz-gold group-hover:text-fayrouz-cream transition-colors truncate">
+                <span className="text-fayrouz-gold group-hover:underline">Dossier →</span>
+              </span>
+              <span className="text-xs font-serif font-bold text-fayrouz-cream whitespace-nowrap">
                 {persona.title}
-              </div>
-              <span className="font-arabic text-[11px] text-fayrouz-amber/80 font-normal truncate">
-                {persona.titleAr}
               </span>
             </div>
           </button>
         </div>
 
-        {/* Tier 2: Dedicated Taste Radar & Dietary Guardrails Ribbon */}
-        <div className="pt-3 border-t border-fayrouz-border/60 flex flex-wrap items-center justify-between gap-2.5 relative z-10">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[10px] px-3 py-1 rounded-full font-mono font-bold bg-fayrouz-obsidian text-fayrouz-gold border border-fayrouz-amber/30">
-              Palate: {userProfile.palateScore}/10
+        {/* ROW 2: Safeguards & Taste Radar Ribbon */}
+        <div className="flex flex-wrap items-center gap-1.5 relative z-10 text-xs">
+          <span className="text-[9px] px-2.5 py-0.5 rounded-full font-mono font-bold bg-fayrouz-obsidian text-fayrouz-gold border border-fayrouz-amber/30 shrink-0">
+            Palate: {userProfile.palateScore}/10
+          </span>
+
+          {persona.flavorPillarBadges?.map((badgeText, idx) => (
+            <span
+              key={idx}
+              className="text-[9px] px-2 py-0.5 rounded-full font-medium bg-fayrouz-surface/90 text-fayrouz-cream border border-fayrouz-border flex items-center gap-1 shadow-sm shrink-0"
+            >
+              {badgeText}
             </span>
+          ))}
 
-            {persona.flavorPillarBadges?.map((badgeText, idx) => (
-              <span
-                key={idx}
-                className="text-[10px] px-3 py-1 rounded-full font-medium bg-fayrouz-surface/90 text-fayrouz-cream border border-fayrouz-border flex items-center gap-1 shadow-sm"
-              >
-                {badgeText}
-              </span>
-            ))}
-
-            <span className="text-[10px] px-2.5 py-1 rounded-full font-medium bg-fayrouz-surface text-fayrouz-gold border border-fayrouz-border/80">
-              {userProfile.roastPreference === 'light' ? 'Light Roast' : userProfile.roastPreference === 'dark' ? 'Dark Roast' : 'Medium Roast'} • {userProfile.sweetnessPreference === 'unsweetened' ? '0% Sweet' : userProfile.sweetnessPreference === 'sweet' ? 'Sweet' : 'Subtle Sweet'}
+          {persona.badges.map((badge, idx) => (
+            <span
+              key={idx}
+              className="text-[9px] px-2 py-0.5 rounded-full font-medium bg-fayrouz-surface/80 text-fayrouz-foam border border-fayrouz-border flex items-center gap-1 shrink-0"
+            >
+              <Sparkles className="w-2.5 h-2.5 text-fayrouz-amber" />
+              {badge.text}
             </span>
-          </div>
-
-          {/* Safety & Protocol Badges */}
-          <div className="flex items-center gap-1.5">
-            {persona.badges.map((badge, idx) => (
-              <span
-                key={idx}
-                className="text-[10px] px-2.5 py-1 rounded-full font-medium bg-fayrouz-surface/80 text-fayrouz-foam border border-fayrouz-border flex items-center gap-1"
-              >
-                <Sparkles className="w-2.5 h-2.5 text-fayrouz-amber" />
-                {badge.text}
-              </span>
-            ))}
-          </div>
+          ))}
         </div>
+
+        {/* ROW 3: "YOUR USUAL" 1-TAP FAST REORDER FULL-WIDTH STRIP */}
+        {usualItem && (
+          <div className="p-2.5 sm:p-3 rounded-2xl bg-gradient-to-r from-[#221813] via-fayrouz-obsidian to-[#1c1410] border border-fayrouz-gold/50 shadow-inner flex flex-wrap items-center justify-between gap-3 relative z-10 w-full">
+            {/* Left: Drink Artwork, Names, and Exact Saved Recipe Notes */}
+            <div className="flex items-center gap-3 min-w-0 flex-1 basis-[280px]">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-fayrouz-surface border border-fayrouz-gold/40 flex items-center justify-center flex-shrink-0 p-1 shadow-inner relative">
+                <DrinkArtwork item={usualItem} size="sm" />
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-gradient-to-br from-fayrouz-amber to-fayrouz-gold text-fayrouz-obsidian flex items-center justify-center shadow-sm">
+                  <Star className="w-2.5 h-2.5 fill-current stroke-none" />
+                </span>
+              </div>
+
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                  <span className="px-2 py-0.5 rounded-md text-[9px] font-mono uppercase font-bold bg-gradient-to-r from-fayrouz-amber to-fayrouz-gold text-fayrouz-obsidian flex items-center gap-1 shadow-sm">
+                    <Star className="w-2.5 h-2.5 fill-current stroke-none" />
+                    Your Usual • طلبك المعتاد
+                  </span>
+                  <span className="text-[10px] font-mono text-fayrouz-gold font-bold">
+                    Ordered {usualConfig.orderCount}x
+                  </span>
+                  {usualConfig.lastOrdered && (
+                    <span className="text-[10px] font-mono text-fayrouz-muted hidden sm:inline">
+                      • Last: {usualConfig.lastOrdered}
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex items-baseline gap-2 flex-wrap">
+                  <h4 className="text-xs sm:text-sm font-serif font-bold text-fayrouz-cream">
+                    {usualItem.name}
+                  </h4>
+                  <span className="font-arabic text-[11px] text-fayrouz-amber font-normal">
+                    ({usualItem.nameAr})
+                  </span>
+                </div>
+
+                <div className="text-[10px] sm:text-[11px] font-mono text-fayrouz-foam/90 flex items-center gap-1.5 mt-0.5">
+                  <Repeat className="w-3 h-3 text-fayrouz-gold flex-shrink-0" />
+                  <span className="font-medium text-fayrouz-amber/95">{usualConfig.note}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Actions */}
+            <div className="flex items-center gap-2 flex-shrink-0 ml-auto sm:ml-0">
+              <button
+                type="button"
+                onClick={() => setCustomizingItem(usualItem)}
+                className="py-2 px-3 rounded-xl bg-fayrouz-surface hover:bg-fayrouz-surface/80 border border-fayrouz-border hover:border-fayrouz-amber/40 text-fayrouz-cream text-xs font-serif flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
+                title="Customize your usual recipe"
+              >
+                <Sliders className="w-3 h-3 text-fayrouz-gold" />
+                <span>Tweak</span>
+              </button>
+
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={handleQuickOrderUsual}
+                className={`py-2 px-4 rounded-xl font-serif font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-all shadow-amber-glow ${
+                  isUsualJustAdded
+                    ? 'bg-emerald-500 text-fayrouz-obsidian shadow-[0_0_15px_rgba(16,185,129,0.5)]'
+                    : 'bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian hover:opacity-95'
+                }`}
+              >
+                {isUsualJustAdded ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 stroke-[3]" />
+                    <span>Added to Tray!</span>
+                  </>
+                ) : (
+                  <>
+                    <Plus className="w-3.5 h-3.5 stroke-[3]" />
+                    <span>Reorder (${usualCalculatedPrice.toFixed(2)})</span>
+                  </>
+                )}
+              </motion.button>
+            </div>
+          </div>
+        )}
       </motion.div>
-
-      {/* =====================================================================
-          2. "YOUR USUAL" (طلبك المعتاد) — 1-TAP FAST REORDER HERO CARD
-          ===================================================================== */}
-      {usualItem && (
-        <motion.section 
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.25 }}
-          className="rounded-3xl p-5 sm:p-6 bg-gradient-to-br from-[#241c16] via-[#1d1612] to-[#251b14] border-2 border-fayrouz-gold/60 shadow-[0_12px_35px_-10px_rgba(233,196,106,0.3)] relative flex flex-col gap-4"
-        >
-          {/* Isolated Background Glow Overlay */}
-          <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none">
-            <div className="absolute top-0 right-0 w-80 h-80 bg-fayrouz-gold/15 rounded-full blur-3xl pointer-events-none" />
-          </div>
-
-          {/* Top Label Bar */}
-          <div className="flex flex-wrap items-center justify-between gap-2 relative z-10">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="px-3 py-1 rounded-full text-[11px] font-mono uppercase font-bold bg-gradient-to-r from-fayrouz-amber to-fayrouz-gold text-fayrouz-obsidian flex items-center gap-1.5 shadow-sm">
-                <Star className="w-3.5 h-3.5 fill-current stroke-none" />
-                Your Usual • طلبك المعتاد
-              </span>
-              <span className="text-xs font-mono text-fayrouz-gold font-bold">
-                Ordered {usualConfig.orderCount} times
-              </span>
-            </div>
-
-            <span className="text-[11px] font-mono text-fayrouz-muted flex items-center gap-1">
-              <Clock className="w-3.5 h-3.5 text-fayrouz-amber" />
-              Last ordered: {usualConfig.lastOrdered}
-            </span>
-          </div>
-
-          {/* Usual Drink Showcase */}
-          <div className="flex items-start gap-4 relative z-10 py-1">
-            {/* Drink Artwork */}
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-fayrouz-obsidian border-2 border-fayrouz-gold/50 flex items-center justify-center flex-shrink-0 p-1 shadow-inner">
-              <DrinkArtwork item={usualItem} size="md" />
-            </div>
-
-            <div className="flex-1 min-w-0">
-              <h4 className="text-lg sm:text-xl font-serif font-bold text-fayrouz-cream leading-tight">
-                {usualItem.name}
-              </h4>
-              <div className="font-arabic text-sm text-fayrouz-amber mt-0.5">
-                {usualItem.nameAr}
-              </div>
-              <div className="mt-2 p-1.5 px-3 rounded-xl bg-fayrouz-obsidian/90 border border-fayrouz-border/80 text-[11px] text-fayrouz-foam font-mono inline-flex items-center gap-1.5 flex-wrap">
-                <Repeat className="w-3 h-3 text-fayrouz-gold flex-shrink-0" />
-                <span>{usualConfig.note}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom Action Row: Dedicated 50/50 responsive grid that never overflows */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-fayrouz-border/60 relative z-10">
-            <motion.button
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={handleQuickOrderUsual}
-              className={`w-full py-3 px-4 rounded-2xl font-serif font-bold text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer transition-all ${
-                isUsualJustAdded
-                  ? 'bg-emerald-500 text-fayrouz-obsidian shadow-[0_0_20px_rgba(16,185,129,0.5)]'
-                  : 'bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian shadow-amber-glow'
-              }`}
-            >
-              <Check className="w-4 h-4 stroke-[3]" />
-              <span>
-                {isUsualJustAdded
-                  ? `✓ Added to Order! ($${usualCalculatedPrice.toFixed(2)})`
-                  : `1-Tap Order Usual ($${usualCalculatedPrice.toFixed(2)})`}
-              </span>
-            </motion.button>
-
-            <button
-              type="button"
-              onClick={() => setCustomizingItem(usualItem)}
-              className="w-full py-3 px-4 rounded-2xl bg-fayrouz-surface/90 hover:bg-fayrouz-surface border border-fayrouz-amber/50 hover:border-fayrouz-amber text-fayrouz-cream font-serif text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"
-            >
-              <Sliders className="w-3.5 h-3.5 text-fayrouz-gold" />
-              <span>Customize & Adjust Brew</span>
-            </button>
-          </div>
-        </motion.section>
-      )}
 
       {/* =====================================================================
           3. HERO SHELF: "CURATED FOR YOUR PALATE" (Spacious 2-Col Grid)
@@ -314,7 +294,7 @@ export default function DynamicCuratedMenu({ onAdd }) {
         </div>
 
         {/* 2-Column Spacious Hero Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-3.5 lg:gap-4">
           {curatedMatches.map((item, index) => (
             <KioskItemCard
               key={item.id}
@@ -389,7 +369,7 @@ export default function DynamicCuratedMenu({ onAdd }) {
         </div>
 
         {/* 2-Column Spacious Catalog Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-3.5 lg:gap-4">
           {searchedItems.map((item) => (
             <KioskItemCard
               key={item.id}

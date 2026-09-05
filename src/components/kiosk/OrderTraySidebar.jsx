@@ -26,7 +26,8 @@ export default function OrderTraySidebar({ onResetKiosk }) {
     decreaseOrderTrayQuantity,
     removeFromOrderTray, 
     clearOrderTray,
-    userProfile 
+    userProfile,
+    submitOrderToBarista
   } = useProfile()
 
   const [showConfirmation, setShowConfirmation] = useState(false)
@@ -38,8 +39,23 @@ export default function OrderTraySidebar({ onResetKiosk }) {
   const handleSendToBarista = () => {
     if (orderTray.length === 0) return
     soundFx.playPassportReveal()
-    setTicketNumber(generateOrderTicketNumber())
-    setLastOrderFriendDrinks(orderTray.some(item => item.isFriendDrink))
+    const ticket = generateOrderTicketNumber()
+    const hasFriend = orderTray.some(item => item.isFriendDrink)
+    setTicketNumber(ticket)
+    setLastOrderFriendDrinks(hasFriend)
+
+    submitOrderToBarista?.({
+      ticketNumber: ticket,
+      customerName: userProfile?.name || 'Specialty Guest',
+      customerNameAr: userProfile?.nameAr || '',
+      dialectCode: userProfile?.dialectCode || 'POLY',
+      hasCompanionItem: hasFriend,
+      items: [...orderTray],
+      subtotal,
+      tax,
+      total
+    })
+
     setShowConfirmation(true)
   }
 
@@ -90,7 +106,7 @@ export default function OrderTraySidebar({ onResetKiosk }) {
             </div>
           ) : (
             orderTray.map((item) => {
-              const effectivePrice = item.effectivePrice ?? item.price
+              const effectivePrice = Number(item.effectivePrice ?? item.price ?? 0)
               const cust = item.customizations || {}
               const isLarge = cust.size === 'large'
               const isIced = cust.temperature === 'iced' || (!cust.temperature && item.defaultTemperature === 'iced')
@@ -260,16 +276,16 @@ export default function OrderTraySidebar({ onResetKiosk }) {
         <div className="flex flex-col gap-1 text-xs">
           <div className="flex items-center justify-between text-fayrouz-muted text-[11px]">
             <span>Subtotal</span>
-            <span className="font-mono">${subtotal.toFixed(2)}</span>
+            <span className="font-mono">${(Number(subtotal) || 0).toFixed(2)}</span>
           </div>
           <div className="flex items-center justify-between text-fayrouz-muted text-[11px]">
             <span>Specialty Tax (8%)</span>
-            <span className="font-mono">${tax.toFixed(2)}</span>
+            <span className="font-mono">${(Number(tax) || 0).toFixed(2)}</span>
           </div>
           <div className="flex items-center justify-between text-sm font-serif font-bold text-fayrouz-cream pt-1.5 border-t border-fayrouz-border/60">
             <span>Total</span>
             <span className="font-serif text-base text-fayrouz-gold">
-              ${total.toFixed(2)}
+              ${(Number(total) || 0).toFixed(2)}
             </span>
           </div>
         </div>

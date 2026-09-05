@@ -1,12 +1,14 @@
-import React, { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import React, { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import { ProfileProvider, useProfile } from './context/ProfileContext'
 import PitchControlBar from './components/pitch/PitchControlBar'
 import DualDeviceCanvas from './components/pitch/DualDeviceCanvas'
 import PitchMetricsHud from './components/pitch/PitchMetricsHud'
 import KioskContainer from './components/kiosk/KioskContainer'
 import WizardContainer from './components/wizard/WizardContainer'
+import BaristaKdsView from './components/barista/BaristaKdsView'
 import EnginePlayground from './components/dev/EnginePlayground'
+import ErrorBoundary from './components/common/ErrorBoundary'
 import { BRAND_CONFIG } from './constants/brandConfig'
 import { 
   Coffee, 
@@ -48,6 +50,13 @@ function AppContent() {
   const [tapped, setTapped] = useState(false)
   const [likes, setLikes] = useState(12)
 
+  // Auto-scroll instantly to top whenever the presenter switches views
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+    if (document.documentElement) document.documentElement.scrollTop = 0
+    if (document.body) document.body.scrollTop = 0
+  }, [activeDeviceView])
+
   return (
     <div className="min-h-screen bg-fayrouz-obsidian text-fayrouz-cream flex flex-col items-center relative selection:bg-fayrouz-amber/30 selection:text-fayrouz-gold pb-16">
       {/* Background ambient warm glow */}
@@ -61,16 +70,15 @@ function AppContent() {
       <PitchControlBar />
 
       {/* Main Presentation Viewport */}
-      <main className="relative z-10 w-full flex flex-col items-center justify-start flex-1 px-2 sm:px-4 pt-3 pb-8">
-        <AnimatePresence mode="wait">
+      <main className="relative z-10 w-full flex flex-col items-center justify-start flex-1 px-2 sm:px-4 pt-1 pb-16">
+        <ErrorBoundary onReset={() => setActiveDeviceView('split')}>
           {/* Default Mode: Dual-Device Split-Screen Pitch */}
           {activeDeviceView === 'split' && (
             <motion.div
               key="view-split"
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.98 }}
-              transition={{ duration: 0.25 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.15 }}
               className="w-full flex justify-center"
             >
               <DualDeviceCanvas />
@@ -81,40 +89,16 @@ function AppContent() {
           {activeDeviceView === 'mobile' && (
             <motion.div
               key="view-mobile"
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.25 }}
-              className="flex flex-col items-center justify-center w-full py-2"
+              transition={{ duration: 0.15 }}
+              className="flex flex-col items-center justify-start w-full py-0"
             >
-              <div className="flex flex-col items-center text-center mb-3">
-                <span className="text-[11px] font-mono text-fayrouz-amber uppercase tracking-widest font-semibold">
+              <div className="flex items-center justify-center gap-2 mb-1.5 select-none">
+                <span className="text-[10px] font-mono text-fayrouz-amber uppercase tracking-widest font-semibold flex items-center gap-1.5">
+                  <Smartphone className="w-3.5 h-3.5 text-fayrouz-amber" />
                   Customer Experience Simulator • iPhone 16 Pro
                 </span>
-                <h2 className="text-xl sm:text-2xl font-serif font-bold text-fayrouz-cream mt-0.5">
-                  Sensory Onboarding & Taste Passport
-                </h2>
-
-                {/* Quick Cross-Device Switcher Ribbon */}
-                <div className="flex items-center gap-2 mt-2">
-                  <button
-                    type="button"
-                    onClick={() => setActiveDeviceView('split')}
-                    className="px-3 py-1 rounded-xl bg-fayrouz-surface/90 hover:bg-fayrouz-surface border border-fayrouz-border hover:border-fayrouz-amber/50 text-xs font-serif text-fayrouz-foam flex items-center gap-1.5 transition-all shadow-sm cursor-pointer"
-                  >
-                    <SplitSquareVertical className="w-3.5 h-3.5 text-fayrouz-amber" />
-                    <span>⚡ Dual-Device Pitch</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setActiveDeviceView('tablet')}
-                    className="px-3 py-1 rounded-xl bg-fayrouz-surface/90 hover:bg-fayrouz-surface border border-fayrouz-border hover:border-fayrouz-gold/50 text-xs font-serif text-fayrouz-foam flex items-center gap-1.5 transition-all shadow-sm cursor-pointer"
-                  >
-                    <Tablet className="w-3.5 h-3.5 text-fayrouz-gold" />
-                    <span>📟 Counter Kiosk Simulator</span>
-                  </button>
-                </div>
               </div>
               <WizardContainer />
             </motion.div>
@@ -124,56 +108,44 @@ function AppContent() {
           {activeDeviceView === 'tablet' && (
             <motion.div
               key="view-tablet"
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.25 }}
-              className="flex flex-col items-center justify-center w-full py-2"
+              transition={{ duration: 0.15 }}
+              className="flex flex-col items-center justify-start w-full py-0"
             >
-              <div className="flex flex-col items-center text-center mb-3">
-                <span className="text-[11px] font-mono text-fayrouz-amber uppercase tracking-widest font-semibold">
+              <div className="flex items-center justify-center gap-2 mb-1.5 select-none">
+                <span className="text-[10px] font-mono text-fayrouz-amber uppercase tracking-widest font-semibold flex items-center gap-1.5">
+                  <Tablet className="w-3.5 h-3.5 text-fayrouz-gold" />
                   Counter Roastery Kiosk Simulator • iPad Pro
                 </span>
-                <h2 className="text-xl sm:text-2xl font-serif font-bold text-fayrouz-cream mt-0.5">
-                  The Magic Dynamic Menu & Barista Tray
-                </h2>
-
-                {/* Quick Cross-Device Switcher Ribbon */}
-                <div className="flex items-center gap-2 mt-2">
-                  <button
-                    type="button"
-                    onClick={() => setActiveDeviceView('split')}
-                    className="px-3 py-1 rounded-xl bg-fayrouz-surface/90 hover:bg-fayrouz-surface border border-fayrouz-border hover:border-fayrouz-amber/50 text-xs font-serif text-fayrouz-foam flex items-center gap-1.5 transition-all shadow-sm cursor-pointer"
-                  >
-                    <SplitSquareVertical className="w-3.5 h-3.5 text-fayrouz-amber" />
-                    <span>⚡ Dual-Device Pitch</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setActiveDeviceView('mobile')}
-                    className="px-3 py-1 rounded-xl bg-fayrouz-surface/90 hover:bg-fayrouz-surface border border-fayrouz-border hover:border-fayrouz-amber/50 text-xs font-serif text-fayrouz-foam flex items-center gap-1.5 transition-all shadow-sm cursor-pointer"
-                  >
-                    <Smartphone className="w-3.5 h-3.5 text-fayrouz-amber" />
-                    <span>📱 Guest Mobile Pass</span>
-                  </button>
-                </div>
               </div>
               <KioskContainer />
             </motion.div>
           )}
 
-          {/* Mode 4: Dev Engine Testbench */}
+          {/* Mode 4: Barista Station KDS Display */}
+          {activeDeviceView === 'barista' && (
+            <motion.div
+              key="view-barista"
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.15 }}
+              className="w-full max-w-7xl flex flex-col items-center justify-start py-0"
+            >
+              <BaristaKdsView />
+            </motion.div>
+          )}
+
+          {/* Mode 5: Dev Engine Testbench */}
           {activeDeviceView === 'playground' && (
             <motion.div
               key="view-playground"
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.25 }}
-              className="w-full max-w-7xl py-2"
+              transition={{ duration: 0.15 }}
+              className="w-full max-w-7xl flex flex-col items-center justify-start py-0"
             >
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-fayrouz-border/60">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-fayrouz-border/60 w-full">
                 <div>
                   <span className="text-xs font-mono text-fayrouz-amber uppercase tracking-widest font-semibold">
                     Under-The-Hood Architecture
@@ -385,7 +357,7 @@ function AppContent() {
               </section>
             </motion.div>
           )}
-        </AnimatePresence>
+        </ErrorBoundary>
       </main>
 
       {/* Floating Cafe Owner Business Impact & Speed Telemetry HUD (Phase 4) */}

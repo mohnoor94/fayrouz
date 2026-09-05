@@ -162,9 +162,63 @@ export function ProfileProvider({ children }) {
   const [isNfcSynced, setIsNfcSynced] = useState(false)
   const [isSyncing, setIsSyncing] = useState(false)
   const [isKioskWizardOpen, setIsKioskWizardOpen] = useState(false)
-  const [activeDeviceView, setActiveDeviceView] = useState('split') // 'split' | 'mobile' | 'tablet'
+  const [activeDeviceView, setActiveDeviceView] = useState('split') // 'split' | 'mobile' | 'tablet' | 'barista' | 'playground'
   const [orderTray, setOrderTray] = useState([])
   const [activePresetId, setActivePresetId] = useState(null)
+  const [baristaOrders, setBaristaOrders] = useState([
+    {
+      ticketNumber: '101',
+      customerName: 'Tariq Al-Mansoor',
+      customerNameAr: 'طارق',
+      dialectCode: 'TDNR',
+      dialectTitle: 'The Obsidian Monk',
+      timestamp: '4 mins ago',
+      elapsedSeconds: 240,
+      status: 'ready',
+      hasCompanionItem: false,
+      items: [
+        {
+          id: 'sidama-espresso-1',
+          name: 'Sidama Double Espresso',
+          nameAr: 'إسبريسو سيداما المزدوج',
+          quantity: 1,
+          effectivePrice: 4.25,
+          customizations: { temperature: 'hot', milk: null, sweetness: '0' },
+          customizedName: 'Sidama Double Espresso (Hot, Double Shot, Pure Black)',
+          isFriendDrink: false
+        }
+      ],
+      subtotal: 4.25,
+      tax: 0.34,
+      total: 4.59
+    },
+    {
+      ticketNumber: '102',
+      customerName: 'Noor Al-Din',
+      customerNameAr: 'نور الدين',
+      dialectCode: 'TLNR',
+      dialectTitle: 'The High-Altitude Sage',
+      timestamp: '1 min ago',
+      elapsedSeconds: 75,
+      status: 'in-prep',
+      hasCompanionItem: false,
+      items: [
+        {
+          id: 'flat-white-1',
+          name: 'Classic Oat Flat White',
+          nameAr: 'فلات وايت بالشوفان',
+          quantity: 1,
+          effectivePrice: 5.75,
+          customizations: { temperature: 'hot', milk: 'oat', sweetness: '25', addOns: ['extra-shot'] },
+          customizedName: 'Classic Oat Flat White (Hot, 16 oz, Oat Milk, +Extra Shot)',
+          isFriendDrink: false
+        }
+      ],
+      subtotal: 5.75,
+      tax: 0.46,
+      total: 6.21
+    }
+  ])
 
   // Derived personalized menu: recalculated instantly when userProfile changes
   const personalizedMenu = useMemo(() => {
@@ -304,6 +358,38 @@ export function ProfileProvider({ children }) {
     setOrderTray([])
   }, [])
 
+  const submitOrderToBarista = useCallback((orderData) => {
+    const newOrder = {
+      ticketNumber: orderData.ticketNumber,
+      customerName: orderData.customerName || userProfile.name || 'Specialty Guest',
+      customerNameAr: orderData.customerNameAr || userProfile.nameAr || '',
+      dialectCode: orderData.dialectCode || 'POLY',
+      dialectTitle: orderData.dialectTitle || 'The Polyglot Craftsman',
+      timestamp: 'Just now',
+      elapsedSeconds: 0,
+      status: 'in-prep',
+      hasCompanionItem: Boolean(orderData.hasCompanionItem),
+      items: orderData.items || [],
+      subtotal: orderData.subtotal || 0,
+      tax: orderData.tax || 0,
+      total: orderData.total || 0
+    }
+    setBaristaOrders(prev => [newOrder, ...prev])
+  }, [userProfile])
+
+  const markBaristaOrderReady = useCallback((ticketNumber) => {
+    soundFx.playCelebration()
+    setBaristaOrders(prev => prev.map(order => 
+      order.ticketNumber === ticketNumber 
+        ? { ...order, status: 'ready', completedAt: 'Just now' } 
+        : order
+    ))
+  }, [])
+
+  const clearBaristaOrders = useCallback(() => {
+    setBaristaOrders([])
+  }, [])
+
   const value = {
     // State
     rawMenuData,
@@ -318,6 +404,7 @@ export function ProfileProvider({ children }) {
     orderTray,
     activePresetId,
     demoPresets: DEMO_PRESETS,
+    baristaOrders,
 
     // Setters & Actions
     updateProfile,
@@ -339,6 +426,9 @@ export function ProfileProvider({ children }) {
     decreaseOrderTrayQuantity,
     removeFromOrderTray,
     clearOrderTray,
+    submitOrderToBarista,
+    markBaristaOrderReady,
+    clearBaristaOrders,
     loadPreset,
     resetProfile
   }

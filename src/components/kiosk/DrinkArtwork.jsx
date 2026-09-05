@@ -20,7 +20,11 @@ const steamVariants = {
       delay: custom * 0.7,
       ease: 'easeInOut'
     }
-  })
+  }),
+  exit: {
+    opacity: 0,
+    transition: { duration: 0.1 }
+  }
 }
 
 // Bubble animation variants for cold drinks
@@ -34,7 +38,11 @@ const bubbleVariants = {
       delay: custom * 0.4,
       ease: 'easeOut'
     }
-  })
+  }),
+  exit: {
+    opacity: 0,
+    transition: { duration: 0.1 }
+  }
 }
 
 export default function DrinkArtwork({ item = {}, size = 'md', isHovered = false }) {

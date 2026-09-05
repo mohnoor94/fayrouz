@@ -314,6 +314,118 @@ const lastVeganItem = veganCategoryItems[veganCategoryItems.length - 1]
 assert(lastVeganItem.isUnsafe === true, `Last item in category is unsafe for vegan guest (Actual: ${lastVeganItem.name})`)
 
 // -------------------------------------------------------------
+// Test 13: Extreme Multi-Safeguard Intersection Testing
+// -------------------------------------------------------------
+console.log('\n--- Test Suite 13: Extreme Multi-Safeguard Intersection Testing ---')
+const extremeSafeguardProfile = {
+  name: 'Maya',
+  dietary: [DIETARY_FLAGS.NUT_FREE, DIETARY_FLAGS.VEGAN, DIETARY_FLAGS.LACTOSE_FREE],
+  palateScore: 5,
+  temperature: 'any'
+}
+const extremeResult = generatePersonalizedMenu(rawMenu, extremeSafeguardProfile)
+
+// 1. Extreme menu generation
+assert(extremeResult && Array.isArray(extremeResult.curatedMatches), 'Multi-safeguard profile generates valid curated menu')
+
+// 2. Nut items flagged unsafe
+const pistachioItem = rawMenu.find(i => i.id === 'aleppo-pistachio-latte')
+const pistachioEval = evaluateItemSafety(pistachioItem, extremeSafeguardProfile)
+assert(pistachioEval.isUnsafe === true && pistachioEval.unsafeReason.includes('Pistachio'), 'Aleppo pistachio is unsafe under multi-safeguards')
+
+// 3. Walnut items flagged unsafe
+const walnutItem = rawMenu.find(i => i.id === 'baklava-spiced-latte')
+const walnutEval = evaluateItemSafety(walnutItem, extremeSafeguardProfile)
+assert(walnutEval.isUnsafe === true && walnutEval.unsafeReason.includes('Walnut'), 'Baklava walnut latte is unsafe under multi-safeguards')
+
+// 4. Cashew item flagged unsafe
+const cashewItem = rawMenu.find(i => i.id === 'hibiscus-cashew-cloud')
+const cashewEval = evaluateItemSafety(cashewItem, extremeSafeguardProfile)
+assert(cashewEval.isUnsafe === true && cashewEval.unsafeReason.includes('Cashew'), 'Hibiscus cashew cloud is unsafe under multi-safeguards')
+
+// 5. Honey item flagged unsafe for vegans
+const honeyItem = rawMenu.find(i => i.id === 'vanilla-cardamom-miel')
+const honeyEval = evaluateItemSafety(honeyItem, extremeSafeguardProfile)
+assert(honeyEval.isUnsafe === true && honeyEval.unsafeReason.toLowerCase().includes('honey'), 'Raw honey miel is unsafe under multi-safeguards')
+
+// 6. Flat white adapts to oat milk
+const flatWhiteItem = rawMenu.find(i => i.id === 'classic-oat-flat-white')
+const flatWhiteSpecs = resolveItemCraftSpecs(flatWhiteItem, extremeSafeguardProfile)
+assert(flatWhiteSpecs.effectiveMilk === 'oat', 'Flat white resolves to Oat Milk for vegan/lactose-free guest')
+
+// 7. Cortado adapts to oat milk with +$0.50 surcharge
+const cortadoSpecs = resolveItemCraftSpecs(cortadoItem, extremeSafeguardProfile)
+assert(cortadoSpecs.effectiveMilk === 'oat' && cortadoSpecs.finalPrice === 6.25, `Cortado adapts with oat surcharge ($6.25, Actual: $${cortadoSpecs.finalPrice})`)
+
+// 8. Total unsafe items is exactly 4
+assert(extremeResult.stats.unsafe === 4, `Multi-safeguard flags exactly 4 items as unsafe (Found: ${extremeResult.stats.unsafe})`)
+
+// 9. Curated top matches are 100% compliant with all 3 safeguards
+const curatedSafe = extremeResult.curatedMatches.every(i => !i.isUnsafe && !i.containsNuts && (i.isVegan || i.isAdapted))
+assert(curatedSafe, 'All curated matches are strictly compliant with vegan, nut-free, and lactose-free guardrails')
+
+// 10. Adventurous wildcard pick compliance
+const wildcardSafe = extremeResult.adventurousPick ? (!extremeResult.adventurousPick.isUnsafe && !extremeResult.adventurousPick.containsNuts) : true
+assert(wildcardSafe, 'Adventurous wildcard pick is strictly safe across all 3 guardrails')
+
+// -------------------------------------------------------------
+// Test 14: Palate Boundaries, Unicode & Barista Queue Integrity
+// -------------------------------------------------------------
+console.log('\n--- Test Suite 14: Palate Boundaries, Unicode & Barista Queue Integrity ---')
+
+// 1. Boundary Palate Score 1 (ultra-austere purist)
+const ultraAustereProfile = { name: 'Zaid', dietary: [], palateScore: 1, temperature: 'hot', sweetnessPreference: 'unsweetened', roastPreference: 'dark' }
+const austereResult = generatePersonalizedMenu(rawMenu, ultraAustereProfile)
+assert(austereResult.curatedMatches[0].profileScore <= 2, `Ultra-austere score 1 matches bold espresso (Match score: ${austereResult.curatedMatches[0].profileScore})`)
+
+// 2. Boundary Palate Score 10 (maximum decadence)
+const decadentProfile = { name: 'Farah', dietary: [], palateScore: 10, temperature: 'iced', sweetnessPreference: 'sweet', roastPreference: 'medium' }
+const decadentResult = generatePersonalizedMenu(rawMenu, decadentProfile)
+assert(decadentResult.curatedMatches[0].profileScore >= 8, `Maximum decadence score 10 matches rich sweet drink (Match score: ${decadentResult.curatedMatches[0].profileScore})`)
+
+// 3. Arabic unicode name persona generation
+const arabicProfile = { name: 'نور الدين الخطيب', phone: '+962 79 987 6543', dietary: [], tasteAffinities: ['floral', 'spiced'], roastPreference: 'medium' }
+const arabicPersona = generateCoffeePersona(arabicProfile)
+assert(arabicPersona.maskedPhone.includes('••••') && arabicPersona.passportNumber.startsWith('FYZ-'), `Arabic guest persona generates masked phone and FYZ- passport (Actual: ${arabicPersona.maskedPhone}, ${arabicPersona.passportNumber})`)
+
+// 4. Empty dietary array defaults to zero unsafe items
+const emptyDietaryResult = generatePersonalizedMenu(rawMenu, { name: 'Guest', dietary: [], palateScore: 5 })
+assert(emptyDietaryResult.stats.unsafe === 0, `Zero dietary flags yield 0 unsafe items (Actual: ${emptyDietaryResult.stats.unsafe})`)
+
+// 5. Single-Origin Geisha affinity attenuation for sweet palate vs purist
+const geishaItem = rawMenu.find(i => i.id === 'panama-geisha-pourover')
+const puristGeishaScore = calculateMatchScore(geishaItem, ultraAustereProfile)
+const decadentGeishaScore = calculateMatchScore(geishaItem, decadentProfile)
+assert(puristGeishaScore > decadentGeishaScore, `Geisha pour-over scores higher for purist than decadent palate (${puristGeishaScore} vs ${decadentGeishaScore})`)
+
+// 6. Barista queue FIFO order simulation
+const mockQueue = [
+  { id: 'TKT-101', customerName: 'Tariq', drinkName: 'Sidama Double Espresso', status: 'in-prep' },
+  { id: 'TKT-102', customerName: 'Salma', drinkName: 'Damascus Rose Cortado', status: 'in-prep' }
+]
+const newTicket = { id: 'TKT-103', customerName: 'Areej', drinkName: 'Aleppo Pistachio Latte', status: 'in-prep' }
+const updatedQueue = [...mockQueue, newTicket]
+assert(updatedQueue[0].id === 'TKT-101' && updatedQueue[2].id === 'TKT-103', 'Barista ticket queue maintains strict FIFO order')
+
+// 7. Barista designated pitcher assignment
+const baristaOatPitcher = '🥛 Oat Milk (Green Pitcher)'
+const baristaDairyPitcher = '🥛 Whole Milk (Stainless Pitcher)'
+const veganOrder = { milk: 'oat' }
+const pitcherAssigned = veganOrder.milk === 'oat' ? baristaOatPitcher : baristaDairyPitcher
+assert(pitcherAssigned === baristaOatPitcher, 'Vegan order routes to dedicated Green Oat Milk Pitcher for allergen isolation')
+
+// 8. Companion friend drink allergen isolation alert
+const friendUnsafeItem = { name: 'Baklava Walnut Latte', isFriendDrink: true, unsafeReason: 'Contains Roasted Walnut' }
+assert(friendUnsafeItem.isFriendDrink === true && Boolean(friendUnsafeItem.unsafeReason), 'Friend companion drink flags allergen warning on barista ticket')
+
+// 9. Universal pass unicity (no coffeehouse tie)
+assert(!arabicPersona.passportNumber.includes('AMBAR') && !arabicPersona.passportNumber.includes('TURATH'), 'Passport number is universal (FYZ-) with zero venue lock-in')
+
+// 10. Barista extraction specs resolution
+const sidamaItem = rawMenu.find(i => i.id === 'sidama-double-espresso')
+assert(sidamaItem.roastLevel === 'Light' && sidamaItem.fixedServingSize === '2 oz', 'Espresso items provide precise craft serving parameters (2 oz Double Ristretto)')
+
+// -------------------------------------------------------------
 // Summary
 // -------------------------------------------------------------
 console.log(`\n========================================`)

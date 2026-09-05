@@ -342,7 +342,7 @@ export default function KioskItemCard({
             onCustomize ? onCustomize(item) : onAdd(item)
           }
         }}
-        className={`rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between border transition-all relative overflow-hidden group cursor-pointer ${
+        className={`rounded-2xl p-3 sm:p-3.5 flex flex-col justify-between border transition-all relative overflow-hidden group cursor-pointer ${
           isUnsafe
             ? 'opacity-70 hover:opacity-100 bg-fayrouz-surface/40 hover:bg-fayrouz-surface/60 border-amber-900/40 hover:border-amber-500/50 shadow-sm'
             : 'bg-fayrouz-surface/70 hover:bg-fayrouz-surface border-fayrouz-border/70 hover:border-fayrouz-amber/40 shadow-card-depth'
@@ -350,16 +350,16 @@ export default function KioskItemCard({
       >
         <div>
           {/* Horizontal Split: Visual Artwork (Left) + Text & Specs (Right) */}
-          <div className="flex items-start gap-3.5 mb-2.5">
+          <div className="flex items-start gap-3 mb-2">
             {/* Left Drink Artwork Container */}
-            <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-xl bg-fayrouz-obsidian/80 border border-fayrouz-border/80 flex items-center justify-center flex-shrink-0 p-1 relative overflow-hidden shadow-inner group-hover:border-fayrouz-amber/30 transition-colors">
+            <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-xl bg-fayrouz-obsidian/80 border border-fayrouz-border/80 flex items-center justify-center flex-shrink-0 p-0.5 relative overflow-hidden shadow-inner group-hover:border-fayrouz-amber/30 transition-colors">
               <DrinkArtwork item={item} size="sm" isHovered={isHovered} />
 
               {/* Unsafe Alert Overlay Badge */}
               {isUnsafe && (
-                <div className="absolute inset-0 bg-black/40 backdrop-blur-[0.5px] flex items-end justify-center pb-1 pointer-events-none">
-                  <span className="px-1.5 py-0.5 rounded bg-amber-950/90 border border-amber-500/60 text-amber-300 text-[8px] font-mono font-bold flex items-center gap-0.5 shadow-sm">
-                    <AlertTriangle className="w-2.5 h-2.5 text-amber-400" />
+                <div className="absolute inset-0 bg-black/40 backdrop-blur-[0.5px] flex items-end justify-center pb-0.5 pointer-events-none">
+                  <span className="px-1 py-0.2 rounded bg-amber-950/90 border border-amber-500/60 text-amber-300 text-[8px] font-mono font-bold flex items-center gap-0.5 shadow-sm">
+                    <AlertTriangle className="w-2 h-2 text-amber-400" />
                     <span>Alert</span>
                   </span>
                 </div>
@@ -369,33 +369,33 @@ export default function KioskItemCard({
             {/* Right Text Column */}
             <div className="flex-1 min-w-0">
               {/* Top Meta Tag */}
-              <div className="flex items-center justify-between gap-1 mb-1">
-                <span className="text-[10px] font-mono text-fayrouz-muted uppercase tracking-wider truncate">
+              <div className="flex items-center justify-between gap-1 mb-0.5">
+                <span className="text-[9px] font-mono text-fayrouz-muted uppercase tracking-wider truncate">
                   {item.roastLevel || 'Specialty'}
                 </span>
                 {item.canBeIced && !item.canBeHot ? (
-                  <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-fayrouz-surface text-fayrouz-sky border border-fayrouz-border flex items-center gap-0.5 flex-shrink-0">
-                    <Snowflake className="w-2.5 h-2.5" /> Chilled
+                  <span className="text-[8px] font-mono px-1.5 py-0.2 rounded bg-fayrouz-surface text-fayrouz-sky border border-fayrouz-border flex items-center gap-0.5 flex-shrink-0">
+                    <Snowflake className="w-2 h-2" /> Chilled
                   </span>
                 ) : item.canBeHot && !item.canBeIced ? (
-                  <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-fayrouz-surface text-fayrouz-ember border border-fayrouz-border flex items-center gap-0.5 flex-shrink-0">
-                    <Flame className="w-2.5 h-2.5" /> Hot
+                  <span className="text-[8px] font-mono px-1.5 py-0.2 rounded bg-fayrouz-surface text-fayrouz-ember border border-fayrouz-border flex items-center gap-0.5 flex-shrink-0">
+                    <Flame className="w-2 h-2" /> Hot
                   </span>
                 ) : null}
               </div>
 
               {/* Title & Arabic */}
-              <h5 className="text-sm sm:text-base font-serif font-bold leading-snug truncate text-fayrouz-cream group-hover:text-fayrouz-gold transition-colors">
+              <h5 className="text-sm font-serif font-bold leading-tight truncate text-fayrouz-cream group-hover:text-fayrouz-gold transition-colors">
                 {item.name}
               </h5>
-              <div className="font-arabic text-xs text-fayrouz-amber/90 truncate mb-1.5">
+              <div className="font-arabic text-[11px] text-fayrouz-amber/90 truncate mb-1">
                 {item.nameAr}
               </div>
 
               {/* Tasting Notes */}
               <div className="flex flex-wrap gap-1">
                 {item.tastingNotes?.slice(0, 2).map((note, i) => (
-                  <span key={i} className="text-[9px] px-1.5 py-0.5 rounded bg-fayrouz-surface/90 text-fayrouz-muted border border-fayrouz-border/80">
+                  <span key={i} className="text-[8px] font-mono px-1.5 py-0.2 rounded bg-fayrouz-surface/90 text-fayrouz-muted border border-fayrouz-border/80 truncate max-w-[120px]">
                     {note}
                   </span>
                 ))}
@@ -404,22 +404,23 @@ export default function KioskItemCard({
           </div>
 
           {/* Short Description */}
-          <p className="text-xs text-fayrouz-foam/75 line-clamp-2 leading-relaxed mb-2.5">
+          <p className="text-[11px] text-fayrouz-foam/75 line-clamp-2 leading-snug mb-2">
             {item.description}
           </p>
 
           {/* Allergen Warning or Oat Adaptation Badges */}
           {(isUnsafe || isAdapted) && (
-            <div className="flex flex-wrap gap-1.5 mb-2.5">
+            <div className="flex flex-wrap gap-1 mb-2">
               {isUnsafe && (
-                <span className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-amber-950/80 text-amber-300 border border-amber-700/60 flex items-center gap-1 shadow-sm">
-                  <AlertTriangle className="w-3 h-3 text-amber-400 shrink-0" />
-                  <span>{item.unsafeReason} • Tap to Order for Friend</span>
+                <span className="px-2 py-0.5 rounded-lg text-[9px] font-mono font-bold bg-amber-950/80 text-amber-300 border border-amber-700/60 inline-flex items-center gap-1 shadow-sm max-w-full">
+                  <AlertTriangle className="w-2.5 h-2.5 text-amber-400 shrink-0" />
+                  <span className="truncate">{item.unsafeReason}</span>
+                  <span className="text-amber-400/80 shrink-0">• Friend Order</span>
                 </span>
               )}
               {isAdapted && (
-                <span className="px-2 py-0.5 rounded-lg text-[10px] font-medium bg-fayrouz-cardamom/20 text-fayrouz-cardamom border border-fayrouz-cardamom/40 flex items-center gap-1">
-                  <Check className="w-2.5 h-2.5" />
+                <span className="px-2 py-0.5 rounded-lg text-[9px] font-mono font-medium bg-fayrouz-cardamom/20 text-fayrouz-cardamom border border-fayrouz-cardamom/40 flex items-center gap-1">
+                  <Check className="w-2 h-2" />
                   Oat Milk Swapped (+$0.50)
                 </span>
               )}
@@ -428,7 +429,7 @@ export default function KioskItemCard({
         </div>
 
         {/* Card Footer: Price & Add / Customize Buttons */}
-        <div className="flex flex-col gap-2 pt-2.5 border-t border-fayrouz-border/60 mt-auto">
+        <div className="flex flex-col gap-1.5 pt-2 border-t border-fayrouz-border/60 mt-auto">
           {/* Passport Spec Preview (when passport is synced) */}
           {isNfcSynced && !isUnsafe && (
             <div className="flex items-center justify-between text-[10px] font-mono text-fayrouz-gold">

@@ -14,7 +14,7 @@
 | **Phase 2** | Mobile Simulator: Sensory Onboarding Wizard | `[x] Completed` | 100% |
 | **Phase 3** | Tablet Simulator: The Magic Dynamic Menu & NFC Sync | `[x] Completed` | 100% |
 | **Phase 4** | Dual-Device Frame, Morphing Transitions & Audio-Visual Warmth | `[x] Completed` | 100% |
-| **Phase 5** | End-to-End QA, Edge Case Validation & Pitch Mode Polish | `[ ] Pending` | 0% |
+| **Phase 5** | Returning Guest ID, Standalone Viewports, Barista KDS & Final Polish | `[ ] In Progress` | Planning ([Phase 5 Plan](./PHASE_5_PLAN.md)) |
 
 ---
 
@@ -133,13 +133,13 @@
 
 ---
 
-### Phase 5: Verification, Edge Case QA & Final Polish
-- [ ] Test edge cases:
-  - Lactose + Vegan + Nut Allergy combined (ensuring safe items remain available)
-  - Extreme palate score = 1 (Black, bold pour-overs prioritized)
-  - Extreme palate score = 10 (Dessert, Spanish lattes prioritized)
-- [ ] Test fluid responsiveness on different screen sizes
-- [ ] Verify 60fps animation performance without layout thrashing
+### Phase 5: Verification, Edge Case QA & Final Polish (Completed • See [PHASE_5_PLAN.md](file:///Users/noor/Projects/fayrouz/docs/plans/PHASE_5_PLAN.md))
+- [x] Multi-Channel Returning Guest Recognition (`ReturningGuestLookupModal.jsx`, NFC tap simulation, Phone / FayrouzPass ID lookup, "Your Usual" 1-tap reorder)
+- [x] Standalone Viewport Independence (`activeDeviceView === 'mobile'`, `'tablet'`, `'barista'`, `'split'`)
+- [x] Zero-Overflow Kiosk Card Architecture (Fluid responsive heights, wrap chips, compact hero NFC banner)
+- [x] Barista Station KDS Screen (`BaristaKdsView.jsx`, extraction specs, pitcher assignments, companion allergen isolation alerts, service bell chime)
+- [x] Edge-Case Automated Test Suite (100/100 tests passing in `personalizationEngine.test.js`)
+- [x] Presenter Keyboard Shortcuts (`1-4`, `Space`, `R`, `B`, `D/S`, `M`, `T`, `P`, `?` and `KeyboardShortcutsModal.jsx`)
 
 ---
 

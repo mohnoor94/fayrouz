@@ -334,7 +334,7 @@ export default function EnginePlayground() {
                       </span>
                     </div>
                     <div className="text-base font-serif font-bold text-fayrouz-cream mt-0.5">
-                      ${item.effectivePrice.toFixed(2)}
+                      ${(Number(item.effectivePrice ?? item.price) || 0).toFixed(2)}
                     </div>
                   </div>
                 </motion.div>
@@ -380,7 +380,7 @@ export default function EnginePlayground() {
                 </div>
 
                 <div className="text-xl font-serif font-bold text-fayrouz-gold">
-                  ${adventurousPick.effectivePrice.toFixed(2)}
+                  ${(Number(adventurousPick.effectivePrice ?? adventurousPick.price) || 0).toFixed(2)}
                 </div>
               </div>
 
@@ -475,7 +475,7 @@ export default function EnginePlayground() {
                         {item.matchScore}%
                       </span>
                       <span className="font-serif font-bold text-fayrouz-cream text-xs">
-                        ${item.effectivePrice.toFixed(2)}
+                        ${(Number(item.effectivePrice ?? item.price) || 0).toFixed(2)}
                       </span>
                     </div>
                   </div>

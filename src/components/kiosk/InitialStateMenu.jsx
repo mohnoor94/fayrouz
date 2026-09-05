@@ -112,63 +112,61 @@ export default function InitialStateMenu({ onAdd }) {
   return (
     <div className="flex-1 min-h-0 flex flex-col gap-4 overflow-y-auto pr-1">
       {/* =====================================================================
-          1. PERSISTENT PROMINENT NFC RECOGNITION HERO BANNER (NO OVERFLOW)
+          1. PERSISTENT PROMINENT NFC RECOGNITION HERO BANNER (COMPACT & SLEEK)
           ===================================================================== */}
       <motion.div 
         initial={{ opacity: 0, y: -6 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl p-3.5 sm:p-4 bg-gradient-to-r from-fayrouz-surface via-[#201713] to-fayrouz-espresso border-2 border-fayrouz-amber/50 shadow-[0_8px_25px_-5px_rgba(212,163,115,0.25)] flex flex-col gap-2.5 relative shrink-0"
+        className="rounded-2xl p-3 sm:p-3.5 bg-gradient-to-r from-fayrouz-surface via-[#201713] to-fayrouz-espresso border-2 border-fayrouz-amber/50 shadow-[0_8px_25px_-5px_rgba(212,163,115,0.25)] flex flex-col gap-2 relative shrink-0"
       >
-        {/* Animated Amber Glow Wave */}
-        <div className="absolute top-0 right-0 w-72 h-full bg-gradient-to-l from-fayrouz-amber/12 via-fayrouz-gold/8 to-transparent pointer-events-none rounded-2xl overflow-hidden" />
+        {/* Animated Amber Glow Wave inside clipped layer */}
+        <div className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
+          <div className="absolute top-0 right-0 w-72 h-full bg-gradient-to-l from-fayrouz-amber/12 via-fayrouz-gold/8 to-transparent" />
+        </div>
 
         {/* Row 1: Reader Emblem, Title/Calligraphy/Description (Left), Primary Tap Button (Right) */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 relative z-10 w-full">
-          <div className="flex items-start gap-3 min-w-0 flex-1">
-            <div className="w-10 h-10 rounded-xl bg-fayrouz-obsidian border border-fayrouz-amber flex items-center justify-center text-fayrouz-amber shrink-0 shadow-[0_0_15px_rgba(212,163,115,0.3)] relative mt-0.5 sm:mt-0">
-              <Radio className="w-5 h-5 animate-pulse text-fayrouz-amber" />
+        <div className="flex flex-wrap items-center justify-between gap-2.5 relative z-10 w-full">
+          <div className="flex items-start gap-2.5 min-w-0 flex-1 basis-[280px]">
+            <div className="w-9 h-9 rounded-xl bg-fayrouz-obsidian border border-fayrouz-amber flex items-center justify-center text-fayrouz-amber shrink-0 shadow-[0_0_15px_rgba(212,163,115,0.3)] relative mt-0.5 sm:mt-0">
+              <Radio className="w-4 h-4 animate-pulse text-fayrouz-amber" />
               <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-fayrouz-amber animate-ping" />
             </div>
 
             <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                <span className="text-[10px] font-mono uppercase tracking-wider text-fayrouz-gold font-bold flex items-center gap-1 bg-fayrouz-obsidian/90 px-2 py-0.5 rounded border border-fayrouz-amber/30">
-                  <Zap className="w-3 h-3 text-fayrouz-gold" />
+              <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
+                <span className="text-[9px] font-mono uppercase tracking-wider text-fayrouz-gold font-bold flex items-center gap-1 bg-fayrouz-obsidian/90 px-1.5 py-0.2 rounded border border-fayrouz-amber/30">
+                  <Zap className="w-2.5 h-2.5 text-fayrouz-gold" />
                   FayrouzPass™ Reader
                 </span>
-                <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-fayrouz-cardamom/20 text-fayrouz-cardamom border border-fayrouz-cardamom/30 font-medium">
+                <span className="text-[8px] font-mono px-1.5 py-0.2 rounded-full bg-fayrouz-cardamom/20 text-fayrouz-cardamom border border-fayrouz-cardamom/30 font-medium">
                   Instant Recognition • 3-Sec Ordering
                 </span>
               </div>
 
               <div className="flex flex-wrap items-baseline gap-1.5">
-                <h3 className="text-sm sm:text-base font-serif font-bold text-fayrouz-cream">
+                <h3 className="text-xs sm:text-sm font-serif font-bold text-fayrouz-cream">
                   Have a Fayrouz Taste Passport? <span className="text-fayrouz-amber">Tap Phone Here</span>
                 </h3>
-                <span className="font-arabic text-xs text-fayrouz-amber font-normal">
+                <span className="font-arabic text-[11px] text-fayrouz-amber font-normal">
                   (معك جواز فيروز؟ قرّب هاتفك من الشاشة)
                 </span>
               </div>
-
-              <p className="text-[11px] text-fayrouz-foam/80 mt-0.5 leading-snug">
-                Collapses the 25-item catalog into your 3 personalized matches and safeguards your dietary rules.
-              </p>
             </div>
           </div>
 
-          {/* Primary NFC Beam CTA Button (Desktop/Tablet Top Right) */}
+          {/* Primary NFC Beam CTA Button */}
           <button
             type="button"
             onClick={handleNfcTap}
-            className="w-full sm:w-auto py-2.5 px-4 rounded-xl bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian font-serif font-bold text-xs shadow-amber-glow flex items-center justify-center gap-2 hover:scale-[1.02] transition-transform cursor-pointer shrink-0"
+            className="py-2 px-3.5 rounded-xl bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian font-serif font-bold text-xs shadow-amber-glow flex items-center justify-center gap-1.5 hover:scale-[1.02] transition-transform cursor-pointer shrink-0 ml-auto sm:ml-0"
           >
-            <Radio className={`w-4 h-4 ${isSyncing ? 'animate-spin' : 'animate-pulse'}`} />
-            <span>{isSyncing ? 'Beaming Passport...' : 'Tap Phone (NFC Beam)'}</span>
+            <Radio className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : 'animate-pulse'}`} />
+            <span>{isSyncing ? 'Beaming...' : 'Tap Phone (NFC Beam)'}</span>
           </button>
         </div>
 
         {/* Row 2: Secondary Lookups (Left) + 1-Click Pitch Demo Personas (Right) */}
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2.5 pt-2 border-t border-fayrouz-border/40 relative z-10 text-xs">
+        <div className="flex flex-wrap items-center justify-between gap-2.5 pt-2 border-t border-fayrouz-border/40 relative z-10 text-xs w-full">
           {/* Alternative Lookups */}
           <div className="flex items-center gap-2 flex-wrap">
             <button
@@ -201,7 +199,7 @@ export default function InitialStateMenu({ onAdd }) {
 
           {/* 1-Tap Demo Personas */}
           {demoPresets.length > 0 && (
-            <div className="flex items-center gap-1.5 flex-wrap">
+            <div className="flex items-center gap-1.5 flex-wrap ml-auto lg:ml-0">
               <span className="text-[10px] font-mono uppercase tracking-wider text-fayrouz-muted flex items-center gap-1 mr-0.5">
                 <Sparkles className="w-3 h-3 text-fayrouz-amber" />
                 <span>1-Tap Demo:</span>
@@ -334,7 +332,7 @@ export default function InitialStateMenu({ onAdd }) {
                 </div>
 
                 {/* 2-Column Spacious Catalog Grid for this Category */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-3.5 lg:gap-4">
                   {cat.items.map((item) => (
                     <KioskItemCard
                       key={item.id}
