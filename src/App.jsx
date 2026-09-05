@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ProfileProvider } from './context/ProfileContext'
+import KioskContainer from './components/kiosk/KioskContainer'
 import WizardContainer from './components/wizard/WizardContainer'
 import EnginePlayground from './components/dev/EnginePlayground'
 import { 
@@ -15,6 +16,7 @@ import {
   ShieldCheck,
   Heart,
   Smartphone,
+  Tablet,
   Cpu,
   Layers
 } from 'lucide-react'
@@ -37,7 +39,7 @@ const PALETTE_SWATCHES = [
 ]
 
 function AppContent() {
-  const [activeTab, setActiveTab] = useState('phase2') // 'phase2' | 'phase1' | 'phase0'
+  const [activeTab, setActiveTab] = useState('phase3') // 'phase3' | 'phase2' | 'phase1' | 'phase0'
   const [tapped, setTapped] = useState(false)
   const [likes, setLikes] = useState(12)
 
@@ -49,16 +51,16 @@ function AppContent() {
         <div className="absolute -bottom-40 right-10 w-[500px] h-[400px] bg-fayrouz-rose/5 rounded-full blur-[120px]" />
       </div>
 
-      <div className="relative z-10 max-w-6xl w-full flex flex-col gap-6">
+      <div className="relative z-10 max-w-7xl w-full flex flex-col gap-6">
         {/* Universal Top Header */}
         <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-fayrouz-border/70 pb-5">
           <div>
             <div className="flex items-center gap-3 mb-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium tracking-wide bg-fayrouz-amber/15 text-fayrouz-amber border border-fayrouz-amber/30">
                 <Sparkles className="w-3.5 h-3.5" />
-                Phase 2 Active: Mobile Sensory Wizard
+                Phase 3 Active: Dynamic Tablet Kiosk & NFC Sync
               </span>
-              <span className="text-xs text-fayrouz-muted font-mono">React 18 + iPhone 16 Pro Chassis</span>
+              <span className="text-xs text-fayrouz-muted font-mono">React 18 + iPad Pro Landscape Chassis</span>
             </div>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-gold-gradient tracking-tight">
               Fayrouz <span className="font-arabic font-normal text-fayrouz-amber text-2xl sm:text-3xl">(فيروز)</span>
@@ -81,6 +83,18 @@ function AppContent() {
 
         {/* Phase Navigation Tabs */}
         <div className="flex flex-wrap items-center gap-2 p-1.5 rounded-2xl bg-fayrouz-espresso/80 border border-fayrouz-border/80 w-fit">
+          <button
+            onClick={() => setActiveTab('phase3')}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-medium transition-all ${
+              activeTab === 'phase3'
+                ? 'bg-fayrouz-surface text-fayrouz-amber border border-fayrouz-amber/40 shadow-amber-glow'
+                : 'text-fayrouz-muted hover:text-fayrouz-cream'
+            }`}
+          >
+            <Tablet className="w-3.5 h-3.5" />
+            <span>Phase 3: Tablet Kiosk Simulator</span>
+          </button>
+
           <button
             onClick={() => setActiveTab('phase2')}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-medium transition-all ${
@@ -120,6 +134,19 @@ function AppContent() {
 
         {/* View Switcher */}
         <AnimatePresence mode="wait">
+          {activeTab === 'phase3' && (
+            <motion.div
+              key="phase3"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+              className="flex justify-center w-full"
+            >
+              <KioskContainer />
+            </motion.div>
+          )}
+
           {activeTab === 'phase2' && (
             <motion.div
               key="phase2"
@@ -304,7 +331,7 @@ function AppContent() {
                   {/* Status Checklist Box */}
                   <div className="mt-4 pt-4 border-t border-fayrouz-border/60 flex flex-col gap-2">
                     <div className="text-xs font-mono uppercase tracking-wider text-fayrouz-muted">
-                      Phase 0, 1 & 2 Verification Status
+                      Phase 0, 1, 2 & 3 Verification Status
                     </div>
                     <div className="grid grid-cols-1 gap-1.5 text-xs text-fayrouz-foam/90">
                       <div className="flex items-center gap-2">
@@ -321,7 +348,7 @@ function AppContent() {
                       </div>
                       <div className="flex items-center gap-2">
                         <CheckCircle2 className="w-3.5 h-3.5 text-fayrouz-cardamom" />
-                        <span>Phase 2: Holographic Taste Passport & Web Audio</span>
+                        <span>Phase 3: iPad Pro Kiosk Simulator & NFC Wave Sync</span>
                       </div>
                     </div>
                   </div>

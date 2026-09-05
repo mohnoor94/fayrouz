@@ -156,6 +156,74 @@ class SoundEngine {
       })
     } catch (e) {}
   }
+
+  /**
+   * Ambient Levantine Cafe Soundscape (Warm acoustic arpeggio loop)
+   */
+  startAmbientCafe() {
+    if (this.isAmbientPlaying) return
+    try {
+      this.init()
+      if (!this.ctx) return
+
+      this.isAmbientPlaying = true
+      const chords = [
+        [261.63, 329.63, 392.00, 493.88], // C maj 7
+        [220.00, 261.63, 329.63, 440.00], // A min 7
+        [174.61, 220.00, 261.63, 329.63], // F maj 7
+        [196.00, 246.94, 293.66, 392.00], // G dom 7
+      ]
+      let stepIndex = 0
+
+      this.ambientTimer = setInterval(() => {
+        if (!this.isAmbientPlaying || this.isMuted || !this.ctx) return
+
+        const chord = chords[Math.floor(stepIndex / 4) % chords.length]
+        const note = chord[stepIndex % chord.length]
+        const now = this.ctx.currentTime
+
+        const osc = this.ctx.createOscillator()
+        const gain = this.ctx.createGain()
+        const filter = this.ctx.createBiquadFilter()
+
+        filter.type = 'lowpass'
+        filter.frequency.setValueAtTime(900, now)
+
+        osc.type = 'sine'
+        osc.frequency.setValueAtTime(note, now)
+
+        gain.gain.setValueAtTime(0.025, now)
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.9)
+
+        osc.connect(filter)
+        filter.connect(gain)
+        gain.connect(this.ctx.destination)
+
+        osc.start(now)
+        osc.stop(now + 0.9)
+
+        stepIndex++
+      }, 450)
+    } catch (e) {}
+  }
+
+  stopAmbientCafe() {
+    this.isAmbientPlaying = false
+    if (this.ambientTimer) {
+      clearInterval(this.ambientTimer)
+      this.ambientTimer = null
+    }
+  }
+
+  toggleAmbientCafe() {
+    if (this.isAmbientPlaying) {
+      this.stopAmbientCafe()
+      return false
+    } else {
+      this.startAmbientCafe()
+      return true
+    }
+  }
 }
 
 export const soundFx = new SoundEngine()

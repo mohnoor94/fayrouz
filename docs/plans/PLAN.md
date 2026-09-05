@@ -12,7 +12,7 @@
 | **Phase 0** | Project Scaffolding, Design System & Dependencies | `[x] Completed` | 100% |
 | **Phase 1** | Mock Data Layer & Personalization Logic Engine | `[x] Completed` | 100% |
 | **Phase 2** | Mobile Simulator: Sensory Onboarding Wizard | `[x] Completed` | 100% |
-| **Phase 3** | Tablet Simulator: The Magic Dynamic Menu & NFC Sync | `[ ] Pending` | 0% |
+| **Phase 3** | Tablet Simulator: The Magic Dynamic Menu & NFC Sync | `[x] Completed` | 100% |
 | **Phase 4** | Dual-Device Frame, Morphing Transitions & Audio-Visual Warmth | `[ ] Pending` | 0% |
 | **Phase 5** | End-to-End QA, Edge Case Validation & Pitch Mode Polish | `[ ] Pending` | 0% |
 
@@ -61,54 +61,34 @@
   - Smooth 60fps bidirectional card-stack transitions with Framer Motion
   - Visual 5-step progress indicator with glowing amber beads and back button
 - [x] Build Web Audio API sound synthesis engine (`src/utils/soundEffects.js`) with mute toggle
-- [x] Step 1: **Identity & Levantine Hospitality** (`NameStep.jsx`):
-  - Cultural greeting: *"صباح الخير.. أهلاً وسهلاً بك في فيروز"*
-  - 4 quick-tap persona shortcuts (*Tariq*, *Salma*, *Areej*, *Noor*) for instant pitch demoing
-- [x] Step 2: **Dietary Guardrails** (`DietaryStep.jsx`):
-  - Multi-select tactile chips (Lactose-Free, Vegan, Nut Allergy, No Restrictions)
-  - Mutual exclusivity logic and real-time safety protocol reassurance banner
-- [x] Step 3: **The Sensory Palate Slider** (`PalateStep.jsx`):
-  - 1 to 10 tactile range slider spanning 3 sensory zones (Dark/Bold, Balanced/Floral, Sweet/Velvet)
-  - Real-time ambient background color temperature shifting
-  - Dynamic tasting notes pills lighting up based on slider position
-- [x] Step 4: **Temperature Affinity** (`TemperatureStep.jsx`):
-  - Animated rising steam ribbons for Warm & Steaming card
-  - Ice crystal refraction and frost shimmer for Cold & Crisp card
-  - "I love both equally" option
-- [x] Step 5: **The Generated Taste Passport Card** (`TasteProfileCard.jsx`):
-  - Holographic luxury passport card with gold/copper metallic rim and subtle angled sheen
-  - Confetti burst on reveal (`canvas-confetti`) with celebratory chord
-  - Persona title engine (`src/utils/personaGenerator.js`): English and Arabic titles (*"The Single-Origin Purist"*, *"The Sweet Alchemist"*)
-  - 10-segmented palate gauge, dietary badges, and unique passport number
-  - Pulsing primary action: **"Step Up to Counter & Tap (NFC)"** triggering simulated counter sync
+- [x] Step 1: **Identity & Levantine Hospitality** (`NameStep.jsx`)
+- [x] Step 2: **Dietary Guardrails** (`DietaryStep.jsx`)
+- [x] Step 3: **The Sensory Palate Slider** (`PalateStep.jsx`)
+- [x] Step 4: **Temperature Affinity** (`TemperatureStep.jsx`)
+- [x] Step 5: **The Generated Taste Passport Card** (`TasteProfileCard.jsx`)
 
 ---
 
 ### Phase 3: The Magic Dynamic Menu (Tablet Kiosk Simulator)
-- [ ] Build `src/components/kiosk/KioskContainer.jsx`:
-  - iPad Pro bezel simulation with landscape ratio and camera dot
-  - Cafe Header: *"FAYROUZ SPECIALTY ROASTERS"*, live clock, ambient cafe soundtrack toggle
-  - Mode toggle: Switch between Mobile View, Tablet Kiosk View, and Side-by-Side Pitch Mode
-- [ ] Build `src/components/kiosk/InitialStateMenu.jsx`:
-  - Standard, overwhelming menu showing 20+ items across multiple tabs
-  - Represents the high cognitive load of traditional cafe ordering
-- [ ] Build `src/components/kiosk/NfcSyncOverlay.jsx`:
-  - Tactile **"Tap Phone to Sync Passport (NFC)"** glowing reader zone
-  - Click-to-tap or drag-phone interaction
-  - Sound/visual ripple wave propagation across the tablet screen upon sync
-- [ ] Build `src/components/kiosk/DynamicCuratedMenu.jsx`:
-  - **"Curated for You, [Name]"** hero shelf:
-    - 3-4 top matches dynamically sorted by relevance
-    - 1 highlighted **"Adventurous Pick"** with subtle shimmer effect and justification note (*"Because you enjoy silky textures, explore our Cardamom Rose Mist"*)
-  - Real-time catalog transformation:
-    - Irrelevant/unsafe items smoothly collapse or dim out
-    - Dairy drinks dynamically badge with `(Oat Milk)`
-    - Framer Motion `layout` prop ensures 60fps repositioning of cards
-- [ ] Build `src/components/kiosk/MenuItemCard.jsx`:
-  - High-res visual illustration / photo
-  - English and Arabic typography
-  - Tasting note pills, dietary tags, temperature indicator
-  - Quick-order tap interaction with simulated order tray
+- [x] Build `src/components/kiosk/KioskContainer.jsx`:
+  - iPad Pro bezel simulation with landscape 16:10 ratio and front camera dot
+  - Cafe Header: *"FAYROUZ SPECIALTY ROASTERS"*, live clock, ambient cafe soundtrack toggle, and unsync button
+- [x] Build `src/components/kiosk/InitialStateMenu.jsx`:
+  - Standard, overwhelming menu showing 25 items across 5 categories
+  - Demonstrates baseline high cognitive load of traditional cafe ordering
+  - Glowing NFC Passport Reader target inviting instant phone tap
+- [x] Build `src/components/kiosk/NfcSyncOverlay.jsx`:
+  - Expanding golden radial ripple waves spreading across the iPad display
+  - Spatial dual-tone chime on sync
+- [x] Build `src/components/kiosk/DynamicCuratedMenu.jsx`:
+  - Personalized welcoming header (*"صباح الخير يا [Name]"*) with Persona title and safety badges
+  - **"Curated for You"** hero shelf: 3 top matches + 1 highlighted **Adventurous Discovery Pick** with custom Levantine storytelling rationale
+  - Real-time catalog transformation: unsafe items dimmed to 35% opacity with warning badges, and dairy drinks badged `(Oat Milk)`
+  - Framer Motion `layout` prop ensures 60fps card repositioning
+- [x] Build `src/components/kiosk/KioskItemCard.jsx`:
+  - English and Arabic typography, tasting notes, temperature indicators, and spring tap physics
+- [x] Build `src/components/kiosk/OrderTraySidebar.jsx`:
+  - Persistent 280px-wide cart sidebar tracking quantities, subtotal, 8% tax, and Barista order submission modal
 
 ---
 
