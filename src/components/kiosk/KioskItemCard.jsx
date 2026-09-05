@@ -170,7 +170,7 @@ export default function KioskItemCard({
             }`}
           >
             <Plus className="w-4 h-4 stroke-[3]" />
-            <span>Add to Order</span>
+            <span>Add</span>
           </motion.button>
         </div>
       </motion.div>

@@ -457,7 +457,7 @@ export default function ItemCustomizerModal({ item, isOpen, onClose, onConfirmAd
             className="px-6 py-3 rounded-2xl font-serif font-bold text-xs sm:text-sm bg-gradient-to-r from-fayrouz-amber via-fayrouz-gold to-fayrouz-amber text-fayrouz-obsidian shadow-amber-glow flex items-center gap-2 cursor-pointer"
           >
             <Plus className="w-4 h-4 stroke-[3]" />
-            <span>Add to Order Tray</span>
+            <span>Add</span>
           </motion.button>
         </div>
       </motion.div>
